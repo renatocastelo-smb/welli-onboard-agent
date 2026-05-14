@@ -15,7 +15,7 @@
 html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;padding:20px;}
 
 /* ── Shell ── */
-.shell{width:420px;max-width:100%;background:var(--ow);border-radius:20px;overflow:hidden;border:1px solid var(--ow2);box-shadow:0 8px 32px rgba(27,19,64,.12);}
+.shell{width:420px;max-width:100%;background:var(--ow);border-radius:20px;overflow:hidden;border:1px solid var(--ow2);box-shadow:0 8px 32px rgba(27,19,64,.12);display:flex;flex-direction:column;}
 
 /* ── Header ── */
 .hdr{background:var(--dp);padding:16px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
@@ -42,7 +42,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .sb p{font-size:11px;color:var(--dm);font-weight:500;}
 
 /* ── Messages ── */
-.msgs{overflow-y:auto;padding:14px 14px 4px;display:flex;flex-direction:column;gap:11px;height:360px;scroll-behavior:smooth;}
+.msgs{overflow-y:auto;padding:14px 14px 4px;display:flex;flex-direction:column;gap:11px;flex:1;min-height:0;scroll-behavior:smooth;}
 .msgs::-webkit-scrollbar{width:3px;}
 .msgs::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
 .msg{display:flex;flex-direction:column;gap:2px;animation:fu .22s ease;}
@@ -406,11 +406,101 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .gp-arr{font-size:15px;color:var(--mg);font-weight:700;line-height:1;}
 
 /* ── Messages area (positioning context for panel) ── */
-#msgs-area{position:relative;overflow:hidden;}
+#msgs-area{position:relative;overflow:hidden;flex:1;display:flex;flex-direction:column;min-height:0;}
 
 /* ── Golden Path Panel ── */
 #gp-panel{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--ow);display:flex;flex-direction:column;transform:translateX(102%);transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:10;}
 #gp-panel.open{transform:translateX(0);}
+
+/* ══ SPLIT-PANEL LAYOUT ══ */
+
+/* Mobile: full-screen shell */
+@media(max-width:719px){
+  html,body{padding:0;align-items:stretch;justify-content:flex-start;}
+  .shell{width:100%;border-radius:0;border-left:none;border-right:none;min-height:100dvh;}
+}
+
+/* Desktop: wide shell after intro */
+@media(min-width:720px){
+  html,body{padding:16px;}
+  .shell.shell-wide{width:min(960px,calc(100vw - 32px));height:calc(100dvh - 32px);max-height:780px;}
+}
+
+/* App main wrapper */
+#app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+
+/* Mobile tab bar */
+.mobile-tabs{display:flex;background:#fff;border-bottom:.5px solid var(--ow2);flex-shrink:0;}
+.mt-tab{flex:1;padding:10px 4px;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#bbb;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;}
+.mt-tab.active{color:var(--dp);border-bottom-color:var(--mg);}
+@media(min-width:720px){.mobile-tabs{display:none;}}
+
+/* Split layout */
+.app-split{flex:1;display:flex;overflow:hidden;min-height:0;}
+
+/* Panels */
+.content-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--ow);}
+.chat-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--ow);}
+@media(max-width:719px){
+  .content-panel,.chat-panel{flex:0 0 100%;max-width:100%;min-height:0;}
+  .mp-hidden{display:none!important;}
+}
+@media(min-width:720px){
+  .content-panel{flex:0 0 55%;border-right:.5px solid var(--ow2);}
+  .chat-panel{flex:1;}
+}
+
+/* Content panel views */
+.cp-view{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;}
+.cp-view.cp-active{display:flex;}
+
+/* ── Content Overview ── */
+.cov-scroll{flex:1;overflow-y:auto;padding:14px 16px 20px;}
+.cov-scroll::-webkit-scrollbar{width:3px;}
+.cov-scroll::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
+.cov-hdr{margin-bottom:14px;}
+.cov-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mg);margin-bottom:4px;}
+.cov-title{font-size:17px;font-weight:800;color:var(--dp);letter-spacing:-.4px;line-height:1.2;margin-bottom:2px;}
+.cov-sub{font-size:11px;color:#bbb;font-weight:500;}
+.cov-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ccc;margin:12px 0 6px;}
+/* Benefit cards (Stage 1) */
+.cov-bcard{background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:.5px solid var(--ow2);}
+.cov-bcard-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center;}
+.cov-bcard-title{font-size:12px;font-weight:700;color:var(--dp);margin-bottom:1px;}
+.cov-bcard-desc{font-size:11px;color:rgba(27,19,64,.5);line-height:1.4;}
+.cov-vid{background:var(--dp);border-radius:12px;padding:11px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;margin-bottom:7px;transition:opacity .2s;}
+.cov-vid:hover{opacity:.88;}
+.cov-vid-play{width:32px;height:32px;border-radius:50%;background:var(--mg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cov-vid-play::after{content:'';width:0;height:0;border-style:solid;border-width:5px 0 5px 10px;border-color:transparent transparent transparent #fff;margin-left:2px;}
+.cov-vid-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px;}
+.cov-vid-sub{font-size:10px;color:rgba(255,255,255,.45);}
+.cov-link{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(168,128,255,.08);border-radius:12px;border:.5px solid rgba(168,128,255,.2);text-decoration:none;margin-bottom:7px;}
+.cov-link-icon{font-size:15px;flex-shrink:0;}
+.cov-link-text{font-size:11px;color:rgba(27,19,64,.6);line-height:1.5;}
+.cov-link-text strong{color:var(--mp);}
+/* GP checklist (Stage 2) */
+.cov-prog-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.cov-prog-bar{flex:1;height:5px;background:var(--ow2);border-radius:4px;overflow:hidden;}
+.cov-prog-fill{height:100%;background:linear-gradient(90deg,var(--mgrn),#5ACC8A);border-radius:4px;transition:width .4s ease;width:0%;}
+.cov-prog-count{font-size:11px;font-weight:700;color:var(--mgrn);white-space:nowrap;}
+.cov-step{display:flex;align-items:flex-start;gap:9px;padding:8px 10px;background:#fff;border-radius:10px;margin-bottom:5px;cursor:pointer;transition:background .15s;border:.5px solid var(--ow2);}
+.cov-step:hover{background:var(--xlmg);}
+.cov-step-check{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--ow2);background:#fff;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:10px;color:transparent;}
+.cov-step.done .cov-step-check{background:var(--mgrn);border-color:var(--mgrn);color:#fff;}
+.cov-step-body{flex:1;}
+.cov-step-title{font-size:11.5px;font-weight:600;color:var(--blk);line-height:1.4;}
+.cov-step.done .cov-step-title{color:#aaa;text-decoration:line-through;}
+.cov-step-sub{font-size:10px;color:#bbb;margin-top:1px;line-height:1.4;}
+.cov-builders{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;}
+.cov-builder-btn{background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:11px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--dp);cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.3;}
+.cov-builder-btn:hover{background:var(--xlmg);border-color:var(--lmg);}
+.cov-btn-icon{font-size:19px;}
+/* Stage 3 action cards */
+.cov-action{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border-radius:12px;margin-bottom:7px;border:.5px solid var(--ow2);}
+.cov-action-icon{font-size:17px;flex-shrink:0;margin-top:1px;}
+.cov-action-title{font-size:12px;font-weight:700;color:var(--dp);margin-bottom:2px;}
+.cov-action-desc{font-size:11px;color:rgba(27,19,64,.5);line-height:1.4;}
+.cov-action-tag{font-size:9px;font-weight:700;color:var(--mg);background:var(--xlmg);padding:2px 6px;border-radius:8px;display:inline-block;margin-top:3px;}
 .gpp-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .gpp-back{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);display:flex;align-items:center;gap:4px;padding:0;transition:color .15s;}
 .gpp-back:hover{color:var(--dm);}
@@ -716,141 +806,156 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     </button>
   </div>
 
-  <!-- ══ CHAT CONTENT (hidden until intro ends) ══ -->
-  <div id="chat-content" style="display:none;">
-  <div class="phase-bar">
-    <div class="phase-meta">
-      <div class="phase-name" id="fase-nome">Stage 1 — Get to Know Wellhub</div>
-      <div class="phase-period" id="fase-periodo">Days 1–3</div>
+  <!-- ══ APP MAIN — post-intro split panel ══ -->
+  <div id="app-main" style="display:none;">
+    <!-- Mobile tab bar (hidden on desktop ≥720px) -->
+    <div class="mobile-tabs">
+      <button class="mt-tab" id="mt-content" onclick="switchMobileTab('content')">📄 Content</button>
+      <button class="mt-tab active" id="mt-chat" onclick="switchMobileTab('chat')">💬 Chat</button>
     </div>
-    <div class="phase-track">
-      <div class="ps" id="ps1" onclick="mudarFase(1)" title="Get to Know Wellhub for Companies"></div>
-      <div class="ps" id="ps2" onclick="mudarFase(2)" title="Get Ready to Launch Wellhub"></div>
-      <div class="ps" id="ps3" onclick="mudarFase(3)" title="Life After Launch"></div>
-    </div>
-  </div>
-  <div class="gp-row" id="gp-row" onclick="toggleGP()">
-    <div class="gp-mini-bar"><div class="gp-mini-fill" id="gp-fill"></div></div>
-    <span id="gp-label">Golden Path · 0 of 7 steps</span>
-    <span class="gp-arr">›</span>
-  </div>
-  <div class="sb"><div class="sd"></div><p>Online · Wellhub Onboarding Assistant</p></div>
-  <div id="msgs-area">
-    <div class="msgs" id="msgs"></div>
-    <div class="chips" id="chips"></div>
+    <!-- Split: content panel (left) + chat panel (right) -->
+    <div class="app-split">
 
-    <!-- ══ GOLDEN PATH PANEL ══ -->
-    <div id="gp-panel">
-      <div class="gpp-hdr">
-        <button class="gpp-back" onclick="toggleGP()">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to chat
-        </button>
-        <span class="gpp-title">Golden Path</span>
-      </div>
-      <div class="gpp-progress">
-        <div class="gpp-bar"><div class="gpp-bar-fill" id="gpp-fill"></div></div>
-        <span id="gpp-count">0 of 7 complete</span>
-      </div>
-      <div class="gpp-list" id="gpp-list"></div>
-    </div>
-  </div>
-  <div class="ftr">
-    <textarea class="inp" id="inp" placeholder="Ask Welli about your onboarding…" rows="1"></textarea>
-    <button class="sbtn" id="sbtn" onclick="send()">
-      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    </button>
-  </div>
-  </div><!-- /chat-content -->
-  <!-- ══ TEASER BUILDER ══ -->
-  <div id="teaser-screen">
-    <div class="ts-hdr">
-      <button class="ts-back" onclick="hideTeaserScreen()">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Back to chat
-      </button>
-      <span class="ts-hdr-title">Teaser Builder</span>
-    </div>
-    <!-- Tab bar -->
-    <div class="ts-tabs">
-      <button class="ts-tab active" id="ts-tab-build" onclick="switchTsTab('build')">🎨 Create your own</button>
-      <button class="ts-tab" id="ts-tab-lib" onclick="switchTsTab('lib')">📁 Brand Library</button>
-    </div>
-    <!-- Build pane -->
-    <div id="ts-build-pane">
-      <div class="ts-picker" id="ts-picker"></div>
-      <div class="ts-preview-wrap">
-        <div id="ts-preview" class="ts-preview"></div>
-      </div>
-      <div class="ts-controls">
-        <div class="ts-field">
-          <label>Headline</label>
-          <input id="ts-h" oninput="renderTeaser()" placeholder="Wellhub is coming to Acme">
-        </div>
-        <div class="ts-field">
-          <label>Subline</label>
-          <input id="ts-s" oninput="renderTeaser()" value="Your new employee wellness benefit">
-        </div>
-        <div class="ts-field">
-          <label>Badge</label>
-          <input id="ts-b" oninput="renderTeaser()" value="COMING SOON">
-        </div>
-        <div class="ts-logo-row">
-          <button class="ts-logo-btn" onclick="document.getElementById('ts-logo-inp').click()">📎 Upload your logo</button>
-          <button class="ts-logo-clear" id="ts-logo-clear" onclick="clearTsLogo()">✕ Remove</button>
-          <input type="file" id="ts-logo-inp" accept="image/*" style="display:none" onchange="handleTsLogo(this)">
-        </div>
-      </div>
-      <div class="ts-dl-wrap">
-        <button class="ts-dl-btn" id="ts-dl-btn" onclick="downloadTeaser()">Download PNG →</button>
-      </div>
-    </div>
-    <!-- Brand Library pane -->
-    <div id="ts-lib-pane" style="display:none;">
-      <div class="ts-library" id="ts-library"></div>
-    </div>
-  </div>
+      <!-- ▌ CONTENT PANEL ▌ -->
+      <div class="content-panel mp-hidden" id="content-panel">
 
-  <!-- ══ LEADERSHIP ANNOUNCEMENT BUILDER ══ -->
-  <div id="announce-screen">
-    <div class="an-hdr">
-      <button class="an-back" onclick="hideAnnounceScreen()">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Back to chat
-      </button>
-      <span class="an-hdr-title">Announcement Builder</span>
-    </div>
-    <!-- Channel selector -->
-    <div class="an-seg-row">
-      <button class="an-seg active" id="an-seg-email" onclick="setAnChannel('email')">✉️ Email</button>
-      <button class="an-seg" id="an-seg-slack" onclick="setAnChannel('slack')">💬 Chat / Slack</button>
-    </div>
-    <!-- Length selector -->
-    <div class="an-len-row">
-      <button class="an-len active" id="an-len-short"  onclick="setAnLength('short')">Short</button>
-      <button class="an-len"        id="an-len-medium" onclick="setAnLength('medium')">Medium ★</button>
-      <button class="an-len"        id="an-len-long"   onclick="setAnLength('long')">Long</button>
-    </div>
-    <!-- Customization fields -->
-    <div class="an-fields">
-      <div class="an-frow">
-        <span class="an-flabel">Sender</span>
-        <input class="an-finput" id="an-sender" placeholder="e.g. Sarah" oninput="renderAnnounce()">
-      </div>
-      <div class="an-frow">
-        <span class="an-flabel">Title</span>
-        <input class="an-finput" id="an-title" placeholder="e.g. Chief People Officer" oninput="renderAnnounce()">
-      </div>
-    </div>
-    <!-- Preview -->
-    <div class="an-preview-wrap">
-      <div class="an-preview" id="an-preview"></div>
-    </div>
-    <!-- Copy button -->
-    <div class="an-dl-wrap">
-      <button class="an-copy-btn" id="an-copy-btn" onclick="copyAnnounce()">Copy to clipboard →</button>
-    </div>
-  </div>
+        <!-- View: Overview (default) -->
+        <div class="cp-view cp-active" id="cp-overview">
+          <div class="cov-scroll" id="cov-inner"></div>
+        </div>
+
+        <!-- View: Teaser Builder -->
+        <div class="cp-view" id="cp-teaser">
+          <div class="ts-hdr">
+            <button class="ts-back" onclick="showPanel('overview')">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
+            <span class="ts-hdr-title">Teaser Builder</span>
+          </div>
+          <div class="ts-tabs">
+            <button class="ts-tab active" id="ts-tab-build" onclick="switchTsTab('build')">🎨 Create your own</button>
+            <button class="ts-tab" id="ts-tab-lib" onclick="switchTsTab('lib')">📁 Brand Library</button>
+          </div>
+          <div id="ts-build-pane">
+            <div class="ts-picker" id="ts-picker"></div>
+            <div class="ts-preview-wrap">
+              <div id="ts-preview" class="ts-preview"></div>
+            </div>
+            <div class="ts-controls">
+              <div class="ts-field">
+                <label>Headline</label>
+                <input id="ts-h" oninput="renderTeaser()" placeholder="Wellhub is coming to Acme">
+              </div>
+              <div class="ts-field">
+                <label>Subline</label>
+                <input id="ts-s" oninput="renderTeaser()" value="Your new employee wellness benefit">
+              </div>
+              <div class="ts-field">
+                <label>Badge</label>
+                <input id="ts-b" oninput="renderTeaser()" value="COMING SOON">
+              </div>
+              <div class="ts-logo-row">
+                <button class="ts-logo-btn" onclick="document.getElementById('ts-logo-inp').click()">📎 Upload your logo</button>
+                <button class="ts-logo-clear" id="ts-logo-clear" onclick="clearTsLogo()">✕ Remove</button>
+                <input type="file" id="ts-logo-inp" accept="image/*" style="display:none" onchange="handleTsLogo(this)">
+              </div>
+            </div>
+            <div class="ts-dl-wrap">
+              <button class="ts-dl-btn" id="ts-dl-btn" onclick="downloadTeaser()">Download PNG →</button>
+            </div>
+          </div>
+          <div id="ts-lib-pane" style="display:none;">
+            <div class="ts-library" id="ts-library"></div>
+          </div>
+        </div><!-- /cp-teaser -->
+
+        <!-- View: Announcement Builder -->
+        <div class="cp-view" id="cp-announce">
+          <div class="an-hdr">
+            <button class="an-back" onclick="showPanel('overview')">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
+            <span class="an-hdr-title">Announcement Builder</span>
+          </div>
+          <div class="an-seg-row">
+            <button class="an-seg active" id="an-seg-email" onclick="setAnChannel('email')">✉️ Email</button>
+            <button class="an-seg" id="an-seg-slack" onclick="setAnChannel('slack')">💬 Chat / Slack</button>
+          </div>
+          <div class="an-len-row">
+            <button class="an-len active" id="an-len-short"  onclick="setAnLength('short')">Short</button>
+            <button class="an-len"        id="an-len-medium" onclick="setAnLength('medium')">Medium ★</button>
+            <button class="an-len"        id="an-len-long"   onclick="setAnLength('long')">Long</button>
+          </div>
+          <div class="an-fields">
+            <div class="an-frow">
+              <span class="an-flabel">Sender</span>
+              <input class="an-finput" id="an-sender" placeholder="e.g. Sarah" oninput="renderAnnounce()">
+            </div>
+            <div class="an-frow">
+              <span class="an-flabel">Title</span>
+              <input class="an-finput" id="an-title" placeholder="e.g. Chief People Officer" oninput="renderAnnounce()">
+            </div>
+          </div>
+          <div class="an-preview-wrap">
+            <div class="an-preview" id="an-preview"></div>
+          </div>
+          <div class="an-dl-wrap">
+            <button class="an-copy-btn" id="an-copy-btn" onclick="copyAnnounce()">Copy to clipboard →</button>
+          </div>
+        </div><!-- /cp-announce -->
+
+      </div><!-- /content-panel -->
+
+      <!-- ▌ CHAT PANEL ▌ -->
+      <div class="chat-panel" id="chat-panel">
+        <div class="phase-bar">
+          <div class="phase-meta">
+            <div class="phase-name" id="fase-nome">Stage 1 — Get to Know Wellhub</div>
+            <div class="phase-period" id="fase-periodo">Days 1–3</div>
+          </div>
+          <div class="phase-track">
+            <div class="ps" id="ps1" onclick="mudarFase(1)" title="Get to Know Wellhub for Companies"></div>
+            <div class="ps" id="ps2" onclick="mudarFase(2)" title="Get Ready to Launch Wellhub"></div>
+            <div class="ps" id="ps3" onclick="mudarFase(3)" title="Life After Launch"></div>
+          </div>
+        </div>
+        <div class="gp-row" id="gp-row" onclick="toggleGP()">
+          <div class="gp-mini-bar"><div class="gp-mini-fill" id="gp-fill"></div></div>
+          <span id="gp-label">Golden Path · 0 of 7 steps</span>
+          <span class="gp-arr">›</span>
+        </div>
+        <div class="sb"><div class="sd"></div><p>Online · Wellhub Onboarding Assistant</p></div>
+        <div id="msgs-area">
+          <div class="msgs" id="msgs"></div>
+          <div class="chips" id="chips"></div>
+          <!-- ══ GOLDEN PATH PANEL ══ -->
+          <div id="gp-panel">
+            <div class="gpp-hdr">
+              <button class="gpp-back" onclick="toggleGP()">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Back to chat
+              </button>
+              <span class="gpp-title">Golden Path</span>
+            </div>
+            <div class="gpp-progress">
+              <div class="gpp-bar"><div class="gpp-bar-fill" id="gpp-fill"></div></div>
+              <span id="gpp-count">0 of 7 complete</span>
+            </div>
+            <div class="gpp-list" id="gpp-list"></div>
+          </div>
+        </div>
+        <div class="ftr">
+          <textarea class="inp" id="inp" placeholder="Ask Welli about your onboarding…" rows="1"></textarea>
+          <button class="sbtn" id="sbtn" onclick="send()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div><!-- /chat-panel -->
+
+    </div><!-- /app-split -->
+  </div><!-- /app-main -->
 
   <div class="brand"><span>Powered by</span><span class="pill">Wellhub AI</span></div>
 </div>
@@ -971,13 +1076,16 @@ function skipSetup() {
 
 function showChat() {
   hideIntroBar();
-  const chat = document.getElementById('chat-content');
-  chat.style.display = 'block';
-  chat.style.opacity = '0';
-  chat.style.transition = 'opacity .4s ease';
-  requestAnimationFrame(() => { chat.style.opacity = '1'; });
+  document.querySelector('.shell').classList.add('shell-wide');
+  const main = document.getElementById('app-main');
+  main.style.display = 'flex';
+  main.style.flexDirection = 'column';
+  main.style.opacity = '0';
+  main.style.transition = 'opacity .4s ease';
+  requestAnimationFrame(() => { main.style.opacity = '1'; });
   atualizarFaseUI();
   updateGPProgress();
+  renderPanelOverview();
   renderChips();
   if (!chatInitialized) { showWelcome(); chatInitialized = true; }
 }
@@ -1078,14 +1186,16 @@ function completePathScreen() {
     s.style.display = 'none';
     jumpedFromIntro = false;
     if (chatInitialized) {
-      // Return to existing chat without re-running welcome
       hideIntroBar();
-      const chat = document.getElementById('chat-content');
-      chat.style.display = 'block';
-      chat.style.opacity = '0';
-      chat.style.transition = 'opacity .4s ease';
-      requestAnimationFrame(() => { chat.style.opacity = '1'; });
+      document.querySelector('.shell').classList.add('shell-wide');
+      const main = document.getElementById('app-main');
+      main.style.display = 'flex';
+      main.style.flexDirection = 'column';
+      main.style.opacity = '0';
+      main.style.transition = 'opacity .4s ease';
+      requestAnimationFrame(() => { main.style.opacity = '1'; });
       renderChips();
+      renderPanelOverview();
     } else {
       showChat();
     }
@@ -1132,15 +1242,18 @@ function introSend() {
   if (!chatInitialized) {
     showChat();
   } else {
-    document.getElementById('chat-content').style.display = 'block';
-    renderChips(); // re-render to show resume chip
+    document.querySelector('.shell').classList.add('shell-wide');
+    const main = document.getElementById('app-main');
+    main.style.display = 'flex';
+    main.style.flexDirection = 'column';
+    renderChips();
   }
   if (txt) setTimeout(() => { document.getElementById('inp').value = txt; send(); }, 150);
 }
 
 function resumeSetup() {
-  // Go back to path screen from chat
-  document.getElementById('chat-content').style.display = 'none';
+  document.getElementById('app-main').style.display = 'none';
+  document.querySelector('.shell').classList.remove('shell-wide');
   showIntroBar();
   showPathScreen();
 }
@@ -1279,21 +1392,15 @@ function switchTsTab(tab) {
 }
 
 function showTeaserScreen() {
-  document.getElementById('chat-content').style.display = 'none';
-  const ts = document.getElementById('teaser-screen');
-  ts.style.display = 'flex';
-  // Always open on the build tab
+  showPanel('teaser');
   switchTsTab('build');
-  // Pre-fill headline with company name if set
   const co = localStorage.getItem('welli_company');
   const hInput = document.getElementById('ts-h');
   if (!hInput.value && co) hInput.value = `Wellhub is coming to ${co}`;
-  // Hide logo clear button initially if no logo
   document.getElementById('ts-logo-clear').style.display = tsLogoSrc ? 'inline-flex' : 'none';
   buildThumbs();
   renderTeaser();
   buildLibrary();
-  // Lazy-load html2canvas
   if (!window.html2canvas) {
     const s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
@@ -1301,10 +1408,7 @@ function showTeaserScreen() {
   }
 }
 
-function hideTeaserScreen() {
-  document.getElementById('teaser-screen').style.display = 'none';
-  document.getElementById('chat-content').style.display = '';
-}
+function hideTeaserScreen() { showPanel('overview'); }
 
 function downloadTeaser() {
   const btn = document.getElementById('ts-dl-btn');
@@ -1521,9 +1625,7 @@ function copyAnnounce() {
 }
 
 function showAnnounceScreen() {
-  document.getElementById('chat-content').style.display = 'none';
-  document.getElementById('announce-screen').style.display = 'flex';
-  // Reset to defaults
+  showPanel('announce');
   anChannel = 'email'; anLength = 'short';
   document.getElementById('an-seg-email').classList.add('active');
   document.getElementById('an-seg-slack').classList.remove('active');
@@ -1533,9 +1635,136 @@ function showAnnounceScreen() {
   renderAnnounce();
 }
 
-function hideAnnounceScreen() {
-  document.getElementById('announce-screen').style.display = 'none';
-  document.getElementById('chat-content').style.display = '';
+function hideAnnounceScreen() { showPanel('overview'); }
+
+// ── Panel management (split layout) ─────────────────────────────────────────
+function showPanel(view) {
+  ['overview','teaser','announce'].forEach(v => {
+    document.getElementById('cp-' + v).classList.toggle('cp-active', v === view);
+  });
+  // On mobile: switching to a tool view → show content tab
+  if (view !== 'overview') switchMobileTab('content');
+}
+
+function switchMobileTab(tab) {
+  const cp = document.getElementById('content-panel');
+  const ch = document.getElementById('chat-panel');
+  const mc = document.getElementById('mt-content');
+  const mh = document.getElementById('mt-chat');
+  if (!cp || !ch) return;
+  if (tab === 'content') {
+    cp.classList.remove('mp-hidden');
+    ch.classList.add('mp-hidden');
+    mc.classList.add('active');
+    mh.classList.remove('active');
+  } else {
+    ch.classList.remove('mp-hidden');
+    cp.classList.add('mp-hidden');
+    mh.classList.add('active');
+    mc.classList.remove('active');
+  }
+}
+
+function renderPanelOverview() {
+  const inner = document.getElementById('cov-inner');
+  if (!inner) return;
+  if (faseAtual === 1) {
+    inner.innerHTML = `
+      <div class="cov-hdr">
+        <div class="cov-tag">Stage 1</div>
+        <div class="cov-title">Get to Know Wellhub</div>
+        <div class="cov-sub">Days 1–3 · Explore the platform</div>
+      </div>
+      <div class="cov-bcard">
+        <div class="cov-bcard-icon">🏋️</div>
+        <div><div class="cov-bcard-title">Gyms &amp; Studios</div><div class="cov-bcard-desc">Thousands of locations — chains, boutique studios, and more.</div></div>
+      </div>
+      <div class="cov-bcard">
+        <div class="cov-bcard-icon">🧘</div>
+        <div><div class="cov-bcard-title">Wellness Apps</div><div class="cov-bcard-desc">Meditation, sleep, nutrition, mental health — 50+ apps.</div></div>
+      </div>
+      <div class="cov-bcard">
+        <div class="cov-bcard-icon">💻</div>
+        <div><div class="cov-bcard-title">Live &amp; On-Demand Classes</div><div class="cov-bcard-desc">Yoga, HIIT, cycling, pilates — streamed anywhere.</div></div>
+      </div>
+      <div class="cov-bcard">
+        <div class="cov-bcard-icon">👩‍⚕️</div>
+        <div><div class="cov-bcard-title">Personal Coaching</div><div class="cov-bcard-desc">1:1 fitness, nutrition, and wellness coaching sessions.</div></div>
+      </div>
+      <div class="cov-section">Resources</div>
+      <a class="cov-vid" href="https://drive.google.com/file/d/1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze/view" target="_blank" rel="noopener">
+        <div class="cov-vid-play"></div>
+        <div><div class="cov-vid-title">Platform Walkthrough</div><div class="cov-vid-sub">Watch the full demo →</div></div>
+      </a>
+      <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
+        <div class="cov-link-icon">📚</div>
+        <div class="cov-link-text">Visit the <strong>Help Center</strong> for guides, FAQs, and platform documentation.</div>
+      </a>`;
+  } else if (faseAtual === 2) {
+    const total = GP_STEPS.length;
+    const done  = GP_STEPS.filter(s => gpState[s.id]).length;
+    const pct   = total > 0 ? (done / total) * 100 : 0;
+    const steps = GP_STEPS.map(s => `
+      <div class="cov-step${gpState[s.id] ? ' done' : ''}" onclick="toggleCovStep('${s.id}')">
+        <div class="cov-step-check">✓</div>
+        <div class="cov-step-body">
+          <div class="cov-step-title">${s.title}</div>
+          <div class="cov-step-sub">${s.sub}</div>
+        </div>
+      </div>`).join('');
+    inner.innerHTML = `
+      <div class="cov-hdr">
+        <div class="cov-tag">Stage 2</div>
+        <div class="cov-title">Get Ready to Launch</div>
+        <div class="cov-sub">Golden Path — ${done} of ${total} steps complete</div>
+      </div>
+      <div class="cov-prog-row">
+        <div class="cov-prog-bar"><div class="cov-prog-fill" style="width:${pct}%"></div></div>
+        <span class="cov-prog-count">${done}/${total}</span>
+      </div>
+      ${steps}
+      <div class="cov-builders">
+        <button class="cov-builder-btn" onclick="showTeaserScreen()"><span class="cov-btn-icon">🎨</span>Teaser Builder</button>
+        <button class="cov-builder-btn" onclick="showAnnounceScreen()"><span class="cov-btn-icon">📢</span>Announcement Builder</button>
+      </div>`;
+  } else {
+    inner.innerHTML = `
+      <div class="cov-hdr">
+        <div class="cov-tag">Stage 3</div>
+        <div class="cov-title">Life After Launch</div>
+        <div class="cov-sub">Month 1+ · Drive ongoing engagement</div>
+      </div>
+      <div class="cov-section">Monthly Actions</div>
+      <div class="cov-action">
+        <div class="cov-action-icon">📊</div>
+        <div><div class="cov-action-title">Check your enrollment rate</div><div class="cov-action-desc">Review signups vs. eligible employees in the Wellhub portal.</div><span class="cov-action-tag">Monthly</span></div>
+      </div>
+      <div class="cov-action">
+        <div class="cov-action-icon">📧</div>
+        <div><div class="cov-action-title">Share communication assets</div><div class="cov-action-desc">Forward Wellhub's ready-made emails and social posts to boost awareness.</div><span class="cov-action-tag">Monthly</span></div>
+      </div>
+      <div class="cov-action">
+        <div class="cov-action-icon">🏆</div>
+        <div><div class="cov-action-title">Run a Challenge or Raffle</div><div class="cov-action-desc">Wellhub Challenges drive check-ins and re-engage inactive members.</div><span class="cov-action-tag">Quarterly</span></div>
+      </div>
+      <div class="cov-action">
+        <div class="cov-action-icon">📈</div>
+        <div><div class="cov-action-title">Review the EEP report</div><div class="cov-action-desc">Employee Engagement Performance shows ROI and engagement trends.</div><span class="cov-action-tag">Monthly</span></div>
+      </div>
+      <div class="cov-section">Resources</div>
+      <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
+        <div class="cov-link-icon">📚</div>
+        <div class="cov-link-text"><strong>Help Center</strong> — engagement guides, challenge setup, EEP reports.</div>
+      </a>`;
+  }
+}
+
+function toggleCovStep(id) {
+  gpState[id] = !gpState[id];
+  try { localStorage.setItem('welli_gp', JSON.stringify(gpState)); } catch(e) {}
+  updateGPProgress();
+  renderPanelOverview();
+  renderChips();
 }
 
 // ── Phase state ────────────────────────────────────────────────────────────
@@ -1709,6 +1938,8 @@ function mudarFase(f) {
   hist = [];
   atualizarFaseUI();
   renderChips();
+  renderPanelOverview();
+  showPanel('overview'); // always return to overview when switching stage
   document.getElementById('msgs').innerHTML = '';
   showWelcome();
 }
