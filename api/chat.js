@@ -194,15 +194,34 @@ module.exports = async function handler(req, res) {
   // ── #feedback handler (bypasses orchestrator) ──────────────────────────
   if (message.trim().toLowerCase().startsWith('#feedback')) {
     const feedbackText = message.trim().replace(/^#feedback\s*/i, '') || '(no text provided)';
-    const entry = `\n**${new Date().toISOString()}** — Phase ${phase}\n> ${feedbackText}\n`;
+
+    // Post to GitHub Issues so feedback survives the serverless environment
     try {
-      const fs = require('fs');
-      const path = require('path');
-      const feedbackFile = path.join(process.cwd(), 'feedback.md');
-      fs.appendFileSync(feedbackFile, entry);
+      const issueBody = [
+        `**Stage:** ${phase}/3`,
+        `**Company:** ${company || 'Not set'}`,
+        `**Time:** ${new Date().toISOString()}`,
+        `---`,
+        feedbackText
+      ].join('\n');
+
+      await fetch('https://api.github.com/repos/renatocastelo-smb/welli-onboard-agent/issues', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
+          'Content-Type': 'application/json',
+          'X-GitHub-Api-Version': '2022-11-28'
+        },
+        body: JSON.stringify({
+          title: `Feedback: ${feedbackText.substring(0, 72)}`,
+          body: issueBody,
+          labels: ['feedback']
+        })
+      });
     } catch (e) {
-      console.log('Feedback (log only):', entry); // fallback for production
+      console.error('Feedback GitHub error:', e.message);
     }
+
     return res.status(200).json({
       response: "Feedback saved. I'll flag this for the KB update.",
       agentKey: 'FEEDBACK',
