@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welli — Wellhub Onboarding Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --dp:#1B1340;--mg:#F2496B;--lmg:#FFB2C6;--xlmg:#FFEBF1;
+  --mp:#A880FF;--grn:#DCFF79;--mgrn:#0C8046;
+  --ow:#FBF8EC;--ow1:#F6EDDF;--ow2:#ECE0CD;--dm:#590931;--blk:#1D1D1F;
+}
+html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;padding:20px;}
+
+/* ── Shell ── */
+.shell{width:420px;max-width:100%;background:var(--ow);border-radius:20px;overflow:hidden;border:1px solid var(--ow2);box-shadow:0 8px 32px rgba(27,19,64,.12);}
+
+/* ── Header ── */
+.hdr{background:var(--dp);padding:16px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;background:rgba(242,73,107,.15);pointer-events:none;}
+.av{width:42px;height:42px;border-radius:50%;background:var(--mg);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;position:relative;z-index:1;}
+.av::after{content:'';position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:var(--grn);border-radius:50%;border:2px solid var(--dp);}
+.hi{z-index:1;flex:1;}.hi h2{font-size:14px;font-weight:600;color:#fff;margin:0;}.hi p{font-size:11px;color:var(--mp);margin:2px 0 0;}
+.wm{z-index:1;font-size:15px;font-weight:700;color:#fff;letter-spacing:-.5px;}
+.wm-dot{display:inline-block;width:5px;height:5px;background:var(--mg);border-radius:50%;margin-left:1px;vertical-align:middle;}
+
+/* ── Phase bar ── */
+.phase-bar{background:#fff;border-bottom:.5px solid var(--ow2);padding:9px 16px;display:flex;flex-direction:column;gap:5px;}
+.phase-meta{display:flex;justify-content:space-between;align-items:center;}
+.phase-name{font-size:10px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:.05em;}
+.phase-period{font-size:10px;color:#bbb;}
+.phase-track{display:flex;gap:4px;}
+.ps{flex:1;height:4px;border-radius:4px;background:var(--ow2);cursor:pointer;transition:background .15s;}
+.ps:hover{background:var(--lmg);}
+.ps.done{background:var(--mgrn);}.ps.active{background:var(--mg);}
+
+/* ── Status bar ── */
+.sb{background:var(--xlmg);padding:5px 16px;display:flex;align-items:center;gap:6px;}
+.sd{width:6px;height:6px;background:var(--mgrn);border-radius:50%;flex-shrink:0;}
+.sb p{font-size:11px;color:var(--dm);font-weight:500;}
+
+/* ── Messages ── */
+.msgs{overflow-y:auto;padding:14px 14px 4px;display:flex;flex-direction:column;gap:11px;height:360px;scroll-behavior:smooth;}
+.msgs::-webkit-scrollbar{width:3px;}
+.msgs::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
+.msg{display:flex;flex-direction:column;gap:2px;animation:fu .22s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.msg.u{align-items:flex-end;}.msg.b{align-items:flex-start;}
+.lbl{font-size:10px;font-weight:500;padding:0 3px;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.b .lbl{color:var(--mg);}.u .lbl{color:#5B4191;}
+.agent-badge{font-size:9px;font-weight:600;letter-spacing:.04em;opacity:.9;padding:1px 6px;border-radius:20px;background:rgba(0,0,0,.06);}
+.bbl{max-width:84%;padding:10px 14px;font-size:13px;line-height:1.6;}
+.b .bbl{background:#fff;color:var(--blk);border-radius:14px 14px 14px 3px;border:.5px solid var(--ow2);}
+.u .bbl{background:var(--dp);color:#fff;border-radius:14px 14px 3px 14px;white-space:pre-wrap;}
+/* ── Markdown rendering in bot bubbles ── */
+.b .bbl .mp{margin:0;line-height:1.65;}
+.b .bbl .mgap{height:7px;}
+.b .bbl .mol,.b .bbl .mul{padding-left:17px;margin:3px 0;}
+.b .bbl .mol li,.b .bbl .mul li{line-height:1.65;margin:2px 0;padding-left:2px;}
+.b .bbl .mol{list-style:decimal;}
+.b .bbl .mul{list-style:disc;}
+.b .bbl strong{font-weight:600;color:var(--blk);}
+.b .bbl .marr{color:var(--mg);font-weight:600;padding:3px 0;display:block;}
+.b .bbl .mhd{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#aaa;margin:6px 0 3px;}
+
+/* ── Feedback bubble ── */
+.feedback-bubble{background:linear-gradient(135deg,#2d1b69 0%,#1B1340 100%);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;max-width:92%;animation:fu .22s ease;border:.5px solid rgba(168,128,255,.4);}
+.feedback-icon{font-size:16px;flex-shrink:0;}
+.feedback-text{font-size:12px;color:var(--mp);font-weight:500;}
+
+/* ── CS Escalation Card ── */
+.card{background:#fff;border:.5px solid var(--ow2);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;max-width:92%;animation:fu .28s ease;}
+.card-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.card-title{font-size:13px;font-weight:600;color:var(--blk);}
+.card-desc{font-size:12px;color:#666;line-height:1.6;}
+.card-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:9px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s;color:#fff;background:#D9534F;}
+.card-btn:hover{background:#b33a37;}
+
+/* ── Milestone Card ── */
+.milestone-card{background:linear-gradient(135deg,var(--dp) 0%,#2A1960 100%);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;max-width:92%;animation:fu .28s ease;border:.5px solid rgba(168,128,255,.3);}
+.milestone-card .mc-title{font-size:13px;font-weight:600;color:#fff;}
+.milestone-card .mc-desc{font-size:12px;color:var(--mp);}
+
+/* ── Typing ── */
+.twrap{display:flex;flex-direction:column;gap:2px;align-items:flex-start;}
+.typ{display:flex;align-items:center;gap:4px;padding:12px 14px;background:#fff;border-radius:14px 14px 14px 3px;border:.5px solid var(--ow2);width:fit-content;}
+.dt{width:6px;height:6px;background:var(--mg);border-radius:50%;animation:bc 1.2s infinite;}
+.dt:nth-child(2){animation-delay:.18s;}.dt:nth-child(3){animation-delay:.36s;}
+@keyframes bc{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+/* ── Inline GP "Mark as done" action ── */
+.gp-action-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(12,128,70,.08);border:1px solid rgba(12,128,70,.25);border-radius:20px;padding:6px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mgrn);cursor:pointer;transition:all .2s;margin-top:2px;}
+.gp-action-btn:hover{background:rgba(12,128,70,.16);border-color:var(--mgrn);}
+.gp-action-btn.done{background:rgba(12,128,70,.06);color:#aaa;border-color:rgba(0,0,0,.08);cursor:default;}
+
+/* ── Chips ── */
+.chips{display:flex;gap:6px;padding:8px 14px 10px;overflow-x:auto;scrollbar-width:none;border-top:.5px solid var(--ow2);}
+.chips::-webkit-scrollbar{display:none;}
+.chip{white-space:nowrap;background:#fff;border:.5px solid var(--lmg);border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Inter',sans-serif;color:var(--dm);cursor:pointer;font-weight:500;transition:all .15s;flex-shrink:0;}
+.chip:hover{background:var(--xlmg);border-color:var(--mg);color:var(--mg);}
+.chip-next{background:var(--dp);border-color:var(--dp);color:#fff;font-weight:600;letter-spacing:-.1px;}
+.chip-next:hover{background:var(--mg);border-color:var(--mg);color:#fff;}
+.chip-resume{background:rgba(168,128,255,.1);border-color:rgba(168,128,255,.35);color:var(--mp);}
+.chip-resume:hover{background:rgba(168,128,255,.2);border-color:var(--mp);}
+
+/* ── Footer ── */
+.ftr{background:#fff;border-top:.5px solid var(--ow2);padding:10px 14px;display:flex;gap:8px;align-items:center;}
+.inp{flex:1;border:.5px solid var(--ow2);border-radius:22px;padding:9px 16px;font-family:'Inter',sans-serif;font-size:13px;color:var(--blk);background:var(--ow);outline:none;resize:none;max-height:72px;line-height:1.5;transition:border-color .15s,background .15s;}
+.inp:focus{border-color:var(--mg);background:#fff;}.inp::placeholder{color:#bbb;}
+.sbtn{width:36px;height:36px;border-radius:50%;background:var(--mg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .1s;}
+.sbtn:hover{background:var(--dm);}.sbtn:active{transform:scale(.95);}.sbtn:disabled{background:var(--lmg);cursor:not-allowed;}
+.sbtn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── Welcome Kit overview (screen 1) ── */
+#intro-screen{background:#EDE8FF;display:flex;flex-direction:column;overflow-y:auto;}
+.wk-wrap{padding:22px 20px 20px;display:flex;flex-direction:column;flex:1;}
+.wk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.wk-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mp);background:rgba(168,128,255,.18);padding:4px 10px;border-radius:20px;border:.5px solid rgba(168,128,255,.35);}
+.wk-skip{background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;color:rgba(27,19,64,.3);cursor:pointer;transition:color .15s;padding:0;}
+.wk-skip:hover{color:rgba(27,19,64,.6);}
+.wk-headline{font-size:19px;font-weight:800;color:var(--dp);letter-spacing:-.5px;line-height:1.2;margin-bottom:16px;}
+.wk-section{display:flex;gap:14px;padding:13px 0;}
+.wk-section+.wk-section{border-top:1.5px dashed rgba(27,19,64,.1);}
+.wk-num{width:30px;height:30px;border-radius:50%;background:var(--dp);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.wk-body{flex:1;}
+.wk-title{font-size:14px;font-weight:700;color:var(--dp);line-height:1.3;margin-bottom:2px;}
+.wk-sub{font-size:11px;color:rgba(27,19,64,.5);font-weight:500;margin-bottom:7px;line-height:1.5;}
+.wk-list{display:flex;flex-direction:column;gap:3px;}
+.wk-li{font-size:12px;color:rgba(27,19,64,.6);line-height:1.5;display:flex;align-items:flex-start;gap:6px;}
+.wk-li::before{content:'•';color:var(--mp);font-weight:700;flex-shrink:0;}
+.wk-cta{background:var(--dp);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;margin-top:16px;width:100%;}
+.wk-cta:hover{background:var(--mg);}.wk-cta:active{transform:scale(.97);}
+
+/* ── W4C Intro slides (screen 2) ── */
+#w4c-screen{position:relative;background:#EDE8FF;height:490px;overflow:hidden;display:none;}
+.w4c-slide{position:absolute;top:0;left:0;right:0;bottom:58px;padding:20px 20px 8px;overflow-y:auto;opacity:0;transform:translateX(20px);transition:opacity .32s ease,transform .32s ease;pointer-events:none;}
+.w4c-slide::-webkit-scrollbar{width:2px;}.w4c-slide::-webkit-scrollbar-thumb{background:rgba(27,19,64,.15);border-radius:2px;}
+.w4c-slide.active{opacity:1;transform:translateX(0);pointer-events:all;}
+.w4c-slide.exit{opacity:0;transform:translateX(-20px);}
+.w4c-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.w4c-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mp);background:rgba(168,128,255,.18);padding:4px 10px;border-radius:20px;border:.5px solid rgba(168,128,255,.3);}
+.w4c-skip{background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;color:rgba(27,19,64,.28);cursor:pointer;padding:0;transition:color .15s;}
+.w4c-skip:hover{color:rgba(27,19,64,.6);}
+.w4c-headline{font-size:18px;font-weight:800;color:var(--dp);letter-spacing:-.4px;line-height:1.2;margin-bottom:14px;}
+.w4c-sub{font-size:12px;color:rgba(27,19,64,.5);line-height:1.6;margin-top:-8px;margin-bottom:14px;}
+/* Value prop cards */
+.vp-card{background:#fff;border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.vp-icon{font-size:26px;flex-shrink:0;width:36px;text-align:center;}
+.vp-title{font-size:13px;font-weight:700;color:var(--dp);margin-bottom:2px;}
+.vp-desc{font-size:12px;color:rgba(27,19,64,.55);line-height:1.5;}
+/* Video card */
+.vid-card{background:var(--dp);border-radius:14px;padding:15px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:opacity .2s;text-decoration:none;margin-bottom:8px;}
+.vid-card:hover{opacity:.88;}
+.vid-play{width:42px;height:42px;border-radius:50%;background:var(--mg);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vid-play::after{content:'';width:0;height:0;border-style:solid;border-width:7px 0 7px 13px;border-color:transparent transparent transparent #fff;margin-left:3px;}
+.vid-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.vid-sub{font-size:11px;color:rgba(255,255,255,.5);}
+/* Inline video player */
+.vid-player{border-radius:12px;overflow:hidden;margin-bottom:8px;background:#000;aspect-ratio:16/9;animation:fu .32s ease;position:relative;}
+.vid-player iframe{width:100%;height:100%;border:none;display:block;}
+.vid-card.playing{opacity:.55;pointer-events:none;}
+/* Help link */
+.help-link{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(168,128,255,.1);border-radius:14px;border:.5px solid rgba(168,128,255,.25);text-decoration:none;margin-bottom:8px;}
+.help-link-icon{font-size:18px;flex-shrink:0;}
+.help-link-text{font-size:12px;color:rgba(27,19,64,.65);line-height:1.5;}
+.help-link-text strong{color:var(--mp);}
+/* Ask Welli card */
+.ask-card{background:rgba(242,73,107,.07);border-radius:14px;padding:12px 14px;border:.5px solid rgba(242,73,107,.18);}
+.ask-card p{font-size:12px;color:rgba(27,19,64,.6);line-height:1.6;}
+.ask-card strong{color:var(--mg);}
+/* Step cards */
+.step-card{background:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:flex-start;gap:11px;margin-bottom:8px;}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--dp);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.step-title{font-size:13px;font-weight:700;color:var(--dp);margin-bottom:2px;}
+.step-desc{font-size:12px;color:rgba(27,19,64,.55);line-height:1.5;}
+.step-tip{font-size:10px;background:rgba(168,128,255,.12);border-radius:6px;padding:3px 8px;color:var(--mp);margin-top:5px;display:inline-block;font-weight:500;line-height:1.5;}
+/* Mission full-bleed slide */
+.w4c-slide-mission{padding:0 !important;overflow:hidden !important;}
+.msn-bg{position:absolute;inset:0;background:linear-gradient(160deg,#1B1340 0%,#2d1b69 55%,#1a0f3a 100%);z-index:0;}
+.msn-orb{position:absolute;border-radius:50%;pointer-events:none;}
+.msn-orb1{width:320px;height:320px;background:radial-gradient(circle,rgba(242,73,107,.32) 0%,transparent 65%);top:-100px;right:-80px;}
+.msn-orb2{width:240px;height:240px;background:radial-gradient(circle,rgba(168,128,255,.24) 0%,transparent 65%);bottom:-80px;left:-60px;}
+.msn-orb3{width:180px;height:180px;background:radial-gradient(circle,rgba(220,255,121,.16) 0%,transparent 65%);top:42%;left:50%;transform:translate(-50%,-50%);}
+.msn-skip{position:absolute;top:16px;right:20px;z-index:3;background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,.3);cursor:pointer;padding:0;transition:color .15s;}
+.msn-skip:hover{color:rgba(255,255,255,.65);}
+.msn-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;height:100%;padding:28px 30px;gap:20px;}
+.msn-globe{font-size:58px;animation:msn-float 3.2s ease-in-out infinite;}
+@keyframes msn-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.msn-headline{font-size:29px;font-weight:800;color:#fff;line-height:1.18;letter-spacing:-.6px;}
+.msn-headline em{color:var(--grn);font-style:normal;}
+.msn-body{font-size:13px;color:rgba(255,255,255,.48);line-height:1.7;max-width:270px;}
+/* Nav bar adapts for mission slide */
+.w4c-nav.on-mission{background:rgba(20,12,52,.75);backdrop-filter:blur(10px);border-top:.5px solid rgba(255,255,255,.07);}
+.w4c-nav.on-mission .w4c-pbtn{color:rgba(255,255,255,.32);}
+.w4c-nav.on-mission .w4c-pbtn:hover{color:rgba(255,255,255,.7);}
+.w4c-nav.on-mission .w4c-dot{background:rgba(255,255,255,.2);}
+.w4c-nav.on-mission .w4c-dot.active{background:#fff;}
+/* Navigation bar */
+.w4c-nav{position:absolute;bottom:0;left:0;right:0;height:58px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;background:rgba(237,232,255,.9);backdrop-filter:blur(4px);border-top:.5px solid rgba(27,19,64,.08);}
+.w4c-dots{display:flex;gap:5px;}
+.w4c-dot{height:6px;border-radius:4px;background:rgba(27,19,64,.18);transition:all .25s;width:6px;}
+.w4c-dot.active{background:var(--dp);width:18px;}
+.w4c-pbtn{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:rgba(27,19,64,.35);cursor:pointer;padding:0;transition:color .15s;visibility:hidden;}
+.w4c-pbtn:hover{color:rgba(27,19,64,.7);}
+.w4c-nbtn{background:var(--dp);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s;}
+.w4c-nbtn:hover{background:var(--mg);}
+
+/* ── Path to Success screen ── */
+#path-screen{background:#EDE8FF;height:490px;overflow:hidden;display:none;flex-direction:column;}
+.path-hdr{background:var(--dp);padding:18px 20px 20px;flex-shrink:0;position:relative;overflow:hidden;}
+.path-hdr::before{content:'';position:absolute;top:-50px;right:-50px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.22) 0%,transparent 70%);pointer-events:none;}
+.path-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grn);background:rgba(220,255,121,.12);padding:4px 10px;border-radius:20px;border:.5px solid rgba(220,255,121,.25);display:inline-block;margin-bottom:9px;}
+.path-title{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.4px;line-height:1.2;margin-bottom:3px;}
+.path-sub{font-size:11.5px;color:rgba(255,255,255,.42);line-height:1.5;}
+.path-steps{flex:1;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;}
+.path-steps::-webkit-scrollbar{display:none;}
+.path-step{display:flex;gap:12px;opacity:0;transform:translateY(10px);transition:opacity .38s ease,transform .38s ease;pointer-events:none;}
+.path-step.visible{opacity:1;transform:translateY(0);pointer-events:all;}
+.path-step-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.path-step-num{width:28px;height:28px;border-radius:50%;background:var(--dp);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;}
+.path-step-line{width:2px;flex:1;min-height:14px;background:rgba(27,19,64,.14);margin:3px 0;}
+.path-step-body{flex:1;padding-bottom:13px;}
+.path-step-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px;}
+.path-step-name{font-size:13px;font-weight:700;color:var(--dp);line-height:1.3;}
+.path-step-date{font-size:10px;font-weight:700;color:#fff;background:var(--mp);padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+.path-step-desc{font-size:12px;color:rgba(27,19,64,.62);line-height:1.5;margin-bottom:3px;}
+.path-step-detail{font-size:11px;color:rgba(27,19,64,.38);line-height:1.45;}
+.path-nav{background:rgba(237,232,255,.95);backdrop-filter:blur(4px);border-top:.5px solid rgba(27,19,64,.08);padding:0 20px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.path-counter{font-size:11px;font-weight:600;color:rgba(27,19,64,.35);}
+.path-dots{display:flex;gap:5px;}
+.path-dot{height:6px;border-radius:4px;background:rgba(27,19,64,.15);transition:all .25s;width:6px;}
+.path-dot.active{background:var(--dp);width:18px;}
+.path-nbtn{background:var(--dp);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s;}
+.path-nbtn:hover{background:var(--mg);}
+
+/* ── Setup screen ── */
+#setup-screen{position:relative;background:var(--dp);height:490px;overflow:hidden;display:none;align-items:center;justify-content:center;padding:32px;}
+#setup-screen::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.18) 0%,transparent 70%);pointer-events:none;}
+#setup-screen::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(168,128,255,.12) 0%,transparent 70%);pointer-events:none;}
+.setup-card{display:flex;flex-direction:column;gap:16px;width:100%;max-width:300px;position:relative;z-index:2;}
+/* Stage transition indicator */
+.setup-stage-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:2px;}
+.setup-stage-pill{font-size:10px;font-weight:700;letter-spacing:.05em;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.setup-stage-pill.done{background:rgba(12,128,70,.2);color:var(--grn);border:.5px solid rgba(12,128,70,.3);}
+.setup-stage-pill.done::before{content:'✓  ';}
+.setup-stage-pill.next{background:rgba(242,73,107,.2);color:var(--lmg);border:.5px solid rgba(242,73,107,.3);}
+.setup-stage-arrow{font-size:13px;color:rgba(255,255,255,.25);}
+.setup-kicker{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mg);text-align:center;}
+.setup-title{font-size:20px;font-weight:700;color:#fff;text-align:center;letter-spacing:-.3px;line-height:1.25;margin-top:-2px;}
+.setup-sub{font-size:12px;color:rgba(255,255,255,.45);text-align:center;line-height:1.65;margin-top:-4px;}
+.setup-field{display:flex;flex-direction:column;gap:5px;}
+.setup-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.04em;}
+.setup-input{background:rgba(255,255,255,.08);border:.5px solid rgba(255,255,255,.15);border-radius:10px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:13px;color:#fff;outline:none;transition:border-color .15s,background .15s;width:100%;-webkit-appearance:none;}
+.setup-input::placeholder{color:rgba(255,255,255,.22);}
+.setup-input:focus{border-color:var(--mg);background:rgba(255,255,255,.12);}
+.setup-input[type="date"]{color-scheme:dark;}
+.setup-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;margin-top:2px;}
+.setup-btn:hover{background:var(--dm);}.setup-btn:active{transform:scale(.97);}
+.setup-skip{background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,.25);cursor:pointer;transition:color .15s;text-align:center;padding:2px;}
+.setup-skip:hover{color:rgba(255,255,255,.55);}
+
+/* ── Engagement screen ── */
+#engage-screen{position:relative;background:linear-gradient(160deg,#1B1340 0%,#2d1b69 55%,#1a0f3a 100%);height:490px;overflow:hidden;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.eng-orb{position:absolute;border-radius:50%;pointer-events:none;}
+.eng-orb1{width:280px;height:280px;background:radial-gradient(circle,rgba(242,73,107,.22) 0%,transparent 65%);top:-80px;right:-80px;}
+.eng-orb2{width:200px;height:200px;background:radial-gradient(circle,rgba(168,128,255,.2) 0%,transparent 65%);bottom:-60px;left:-40px;}
+.eng-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:22px 20px 20px;gap:13px;width:100%;overflow-y:auto;}
+.eng-inner::-webkit-scrollbar{display:none;}
+.eng-tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grn);background:rgba(220,255,121,.12);padding:4px 12px;border-radius:20px;border:.5px solid rgba(220,255,121,.25);align-self:flex-start;}
+.eng-headline{font-size:23px;font-weight:800;color:#fff;line-height:1.18;letter-spacing:-.5px;align-self:flex-start;}
+.eng-headline em{color:var(--grn);font-style:normal;}
+.eng-chart-card{background:#fff;border-radius:16px;padding:14px 14px 10px;width:100%;}
+.eng-chart-title{font-size:11px;font-weight:700;color:var(--dp);text-align:center;margin-bottom:10px;letter-spacing:-.1px;}
+.eng-chart-title em{color:var(--mp);font-style:normal;}
+.eng-chart-legend{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:8px;}
+.eng-legend-item{font-size:10px;font-weight:500;color:#888;display:flex;align-items:center;gap:5px;}
+.eng-legend-item::before{content:'';display:inline-block;width:22px;height:3px;border-radius:2px;}
+.eng-legend-engaged::before{background:var(--dp);}
+.eng-legend-dis::before{background:#C5BCEF;}
+.eng-source{font-size:9px;color:#bbb;text-align:center;margin-top:5px;line-height:1.4;}
+.eng-body{font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;text-align:left;align-self:flex-start;}
+.eng-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;width:100%;}
+.eng-btn:hover{background:var(--dm);}.eng-btn:active{transform:scale(.97);}
+
+/* ── Persistent intro chat bar ── */
+#intro-bar{background:#fff;border-top:.5px solid var(--ow2);padding:8px 14px;display:none;gap:8px;align-items:center;}
+#intro-bar .hint{font-size:10px;color:#ccc;white-space:nowrap;letter-spacing:.01em;}
+.intro-inp{flex:1;border:.5px solid var(--ow2);border-radius:22px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--blk);background:var(--ow);outline:none;resize:none;max-height:60px;line-height:1.5;transition:border-color .15s,background .15s;}
+.intro-inp:focus{border-color:var(--mp);background:#fff;}.intro-inp::placeholder{color:#bbb;}
+.intro-sbtn{width:34px;height:34px;border-radius:50%;background:var(--mp);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;}
+.intro-sbtn:hover{background:var(--dp);}
+.intro-sbtn svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ── Brand ── */
+.brand{background:var(--ow1);border-top:.5px solid var(--ow2);padding:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.brand span{font-size:10px;font-weight:500;color:#5B4191;letter-spacing:.05em;text-transform:uppercase;}
+.pill{background:var(--dp);color:var(--grn);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:2px 7px;}
+
+/* ── Golden Path row trigger ── */
+.gp-row{background:#fff;border-bottom:.5px solid var(--ow2);padding:7px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;user-select:none;}
+.gp-row:hover{background:var(--xlmg);}
+.gp-mini-bar{height:4px;border-radius:4px;background:var(--ow2);overflow:hidden;flex:1;}
+.gp-mini-fill{height:100%;background:var(--mgrn);border-radius:4px;transition:width .4s ease;width:0%;}
+#gp-label{font-size:11px;font-weight:600;color:var(--dm);white-space:nowrap;}
+.gp-arr{font-size:15px;color:var(--mg);font-weight:700;line-height:1;}
+
+/* ── Messages area (positioning context for panel) ── */
+#msgs-area{position:relative;overflow:hidden;}
+
+/* ── Golden Path Panel ── */
+#gp-panel{position:absolute;top:0;left:0;right:0;bottom:0;background:var(--ow);display:flex;flex-direction:column;transform:translateX(102%);transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:10;}
+#gp-panel.open{transform:translateX(0);}
+.gpp-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.gpp-back{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);display:flex;align-items:center;gap:4px;padding:0;transition:color .15s;}
+.gpp-back:hover{color:var(--dm);}
+.gpp-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;letter-spacing:-.2px;}
+.gpp-progress{padding:11px 16px 8px;flex-shrink:0;}
+.gpp-bar{height:5px;background:var(--ow2);border-radius:4px;overflow:hidden;margin-bottom:5px;}
+.gpp-bar-fill{height:100%;background:linear-gradient(90deg,var(--mgrn),#5ACC8A);border-radius:4px;transition:width .4s ease;width:0%;}
+#gpp-count{font-size:11px;font-weight:600;color:var(--mgrn);}
+.gpp-list{flex:1;overflow-y:auto;padding:4px 0 16px;}
+.gpp-list::-webkit-scrollbar{width:3px;}.gpp-list::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
+.gpp-group{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb;padding:10px 16px 4px;}
+.gpp-item{display:flex;align-items:flex-start;gap:12px;padding:9px 16px;cursor:pointer;transition:background .15s;}
+.gpp-item:hover{background:var(--xlmg);}
+.gpp-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ow2);background:#fff;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.gpp-check::after{content:'✓';font-size:11px;color:#fff;font-weight:700;display:none;}
+.gpp-item.done .gpp-check{background:var(--mgrn);border-color:var(--mgrn);}
+.gpp-item.done .gpp-check::after{display:block;}
+.gpp-item.done .gpp-item-title{color:#aaa;text-decoration:line-through;}
+.gpp-item-text{flex:1;}
+.gpp-item-title{font-size:13px;font-weight:500;color:var(--blk);line-height:1.4;}
+.gpp-item-sub{font-size:11px;color:#aaa;margin-top:2px;line-height:1.45;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="hdr">
+    <div class="av" id="av" onclick="devReset()">W</div>
+    <div class="hi"><h2>Welli</h2><p>Wellhub · Onboarding Assistant</p></div>
+    <div class="wm">wellhub<span class="wm-dot"></span></div>
+  </div>
+  <!-- ══ WELCOME KIT OVERVIEW ══ -->
+  <div id="intro-screen">
+    <div class="wk-wrap">
+      <div class="wk-top">
+        <div class="wk-tag">Your onboarding overview</div>
+        <button class="wk-skip" onclick="skipToW4C()">Skip →</button>
+      </div>
+      <div class="wk-headline">Everything you need<br>for a successful launch.</div>
+      <div class="wk-section">
+        <div class="wk-num">1</div>
+        <div class="wk-body">
+          <div class="wk-title">Get to Know Wellhub for Companies</div>
+          <div class="wk-sub">Your all-in-one admin platform.</div>
+          <div class="wk-list">
+            <div class="wk-li">A whistle stop tour of Wellhub for Companies</div>
+            <div class="wk-li">Live demo: uploading your employee list to unlock access</div>
+            <div class="wk-li">Live demo: schedule your launch day invitations</div>
+          </div>
+        </div>
+      </div>
+      <div class="wk-section">
+        <div class="wk-num">2</div>
+        <div class="wk-body">
+          <div class="wk-title">Get Ready to Launch Wellhub</div>
+          <div class="wk-sub">We'll guide you through each step for a successful rollout.</div>
+          <div class="wk-list">
+            <div class="wk-li">A step-by-step guide to launching Wellhub</div>
+            <div class="wk-li">Understanding the Wellhub resources</div>
+            <div class="wk-li">Discover where to find all your Wellhub materials</div>
+          </div>
+        </div>
+      </div>
+      <div class="wk-section">
+        <div class="wk-num">3</div>
+        <div class="wk-body">
+          <div class="wk-title">What happens next?</div>
+          <div class="wk-sub">A quick overview of 'life after launch' with Wellhub.</div>
+          <div class="wk-list">
+            <div class="wk-li">An overview of your go-to resources</div>
+            <div class="wk-li">Where to access support resources</div>
+          </div>
+        </div>
+      </div>
+      <button class="wk-cta" onclick="skipToW4C()">Let's get started →</button>
+    </div>
+  </div>
+
+  <!-- ══ W4C INTRO (screen 2) ══ -->
+  <div id="w4c-screen">
+
+    <!-- Slide 1: Platform value props -->
+    <div class="w4c-slide active">
+      <div class="w4c-top">
+        <div class="w4c-tag">Wellhub for Companies</div>
+        <button class="w4c-skip" onclick="completeW4C()">Skip →</button>
+      </div>
+      <div class="w4c-headline">Simplify wellbeing with<br>one easy-to-use platform.</div>
+      <div class="vp-card">
+        <div class="vp-icon">⏱️</div>
+        <div>
+          <div class="vp-title">Save Time</div>
+          <div class="vp-desc">Manage eligibility, billing, and employee access in one place.</div>
+        </div>
+      </div>
+      <div class="vp-card">
+        <div class="vp-icon">🤝</div>
+        <div>
+          <div class="vp-title">Boost Engagement</div>
+          <div class="vp-desc">Share invites and track adoption with tools built to drive signups.</div>
+        </div>
+      </div>
+      <div class="vp-card">
+        <div class="vp-icon">📊</div>
+        <div>
+          <div class="vp-title">Show Results</div>
+          <div class="vp-desc">Monitor membership, subscriptions, and check-ins to prove ROI.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Video + resources -->
+    <div class="w4c-slide">
+      <div class="w4c-top">
+        <div class="w4c-tag">Wellhub for Companies</div>
+        <button class="w4c-skip" onclick="completeW4C()">Skip →</button>
+      </div>
+      <div class="w4c-headline">See everything<br>that's available.</div>
+      <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;">
+        <div class="vid-play"></div>
+        <div>
+          <div class="vid-title">Wellhub for Companies</div>
+          <div class="vid-sub" id="vid-sub-lbl">Watch the platform walkthrough →</div>
+        </div>
+      </div>
+      <a class="help-link" href="https://helpcenter.gympass.com/pt-br/articles/guia-do-wellhub-para-empresas-o-que-e-e-como-usar-a-plataforma-de-gestao-do-beneficio" target="_blank">
+        <div class="help-link-icon">📚</div>
+        <div class="help-link-text">Want to know more? Visit our <strong>Help Center</strong> for the full platform guide.</div>
+      </a>
+      <div class="ask-card">
+        <p>💬 <strong>Or just ask Welli</strong> — I can answer any question about the platform at any time.</p>
+      </div>
+    </div>
+
+    <!-- Slide 3: Mission bridge (full-bleed) -->
+    <div class="w4c-slide w4c-slide-mission">
+      <div class="msn-bg"></div>
+      <div class="msn-orb msn-orb1"></div>
+      <div class="msn-orb msn-orb2"></div>
+      <div class="msn-orb msn-orb3"></div>
+      <button class="msn-skip" onclick="completeW4C()">Skip →</button>
+      <div class="msn-content">
+        <div class="msn-globe">🌍</div>
+        <div class="msn-headline">Let's make your<br>employees <em>happier</em><br>and <em>healthier.</em></div>
+        <div class="msn-body">Now that you know what Wellhub for Companies can do — let's give your team access to the best wellbeing platform on earth.</div>
+      </div>
+    </div>
+
+    <!-- Slide 4: Action steps -->
+    <div class="w4c-slide">
+      <div class="w4c-top">
+        <div class="w4c-tag">Wellhub for Companies</div>
+        <button class="w4c-skip" onclick="completeW4C()">Skip →</button>
+      </div>
+      <div class="w4c-headline">Upload emails to give<br>employees access.</div>
+      <div class="w4c-sub">We'll walk you through it live today so everything is clear and stress-free.</div>
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Login to Wellhub for Companies</div>
+          <div class="step-desc">Access your admin platform at clients.gympass.com and log in with your email and password.</div>
+          <div class="step-tip">💡 Add team members that will need admin access.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Upload Your Full Employee List</div>
+          <div class="step-desc">Valid emails ensure everyone can join Wellhub without delays.</div>
+          <div class="step-tip">💡 Keep your list updated so new employees can get started right away.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Kick Off Employee Invitations</div>
+          <div class="step-desc">Choose a launch date, up to 30 days in advance, to invite your employees.</div>
+          <div class="step-tip">💡 Use Smart Invites to target both eligibles and members!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="w4c-nav">
+      <button class="w4c-pbtn" id="w4c-prev-btn" onclick="w4cPrev()">← Back</button>
+      <div class="w4c-dots">
+        <div class="w4c-dot active"></div>
+        <div class="w4c-dot"></div>
+        <div class="w4c-dot"></div>
+        <div class="w4c-dot"></div>
+      </div>
+      <button class="w4c-nbtn" id="w4c-next-btn" onclick="w4cNext()">Next →</button>
+    </div>
+
+  </div>
+
+  <!-- ══ SETUP SCREEN ══ -->
+  <div id="setup-screen">
+    <div class="setup-card">
+      <div class="setup-stage-row">
+        <div class="setup-stage-pill done">Stage 1 — Get to Know</div>
+        <div class="setup-stage-arrow">→</div>
+        <div class="setup-stage-pill next">Stage 2 — Get Ready</div>
+      </div>
+      <div class="setup-title">Now let's get your<br>launch ready.</div>
+      <div class="setup-sub">Set your launch date and Welli will guide you through every step — from first communications to launch day.</div>
+      <div class="setup-field">
+        <div class="setup-label">Your company name</div>
+        <input class="setup-input" id="setup-company" type="text" placeholder="e.g. Acme Corp" autocomplete="organization">
+      </div>
+      <div class="setup-field">
+        <div class="setup-label">Planned launch date</div>
+        <input class="setup-input" id="setup-date" type="date">
+      </div>
+      <button class="setup-btn" onclick="completeSetup()">Start Stage 2 →</button>
+      <button class="setup-skip" onclick="skipSetup()">Skip for now</button>
+    </div>
+  </div>
+
+  <!-- ══ ENGAGEMENT SCREEN ══ -->
+  <div id="engage-screen">
+    <div class="eng-orb eng-orb1"></div>
+    <div class="eng-orb eng-orb2"></div>
+    <div class="eng-inner">
+      <div class="eng-tag">Success Story</div>
+      <div class="eng-headline">Engaged clients see<br><em>4x more enrollment</em><br>over time.</div>
+      <div class="eng-chart-card">
+        <div class="eng-chart-title">Employee <em>Subscription</em> Growth</div>
+        <svg viewBox="0 0 300 128" style="width:100%;height:auto;display:block;">
+          <defs>
+            <linearGradient id="engFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1B1340" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#1B1340" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="disFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#A880FF" stop-opacity="0.12"/>
+              <stop offset="100%" stop-color="#A880FF" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <!-- Grid lines -->
+          <line x1="20" y1="20" x2="280" y2="20" stroke="#f0f0f0" stroke-width=".5"/>
+          <line x1="20" y1="45" x2="280" y2="45" stroke="#f0f0f0" stroke-width=".5"/>
+          <line x1="20" y1="70" x2="280" y2="70" stroke="#f0f0f0" stroke-width=".5"/>
+          <!-- X axis -->
+          <line x1="20" y1="95" x2="284" y2="95" stroke="#e8e8e8" stroke-width="1"/>
+          <!-- Area fills -->
+          <path d="M 20,95 L 63,47 L 107,37 L 150,31 L 193,26 L 237,22 L 280,18 L 280,95 Z" fill="url(#engFill)"/>
+          <path d="M 20,95 L 63,86 L 107,83 L 150,80 L 193,79 L 237,78 L 280,77 L 280,95 Z" fill="url(#disFill)"/>
+          <!-- Disengaged line -->
+          <polyline points="20,95 63,86 107,83 150,80 193,79 237,78 280,77" fill="none" stroke="#C5BCEF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Engaged line -->
+          <polyline points="20,95 63,47 107,37 150,31 193,26 237,22 280,18" fill="none" stroke="#1B1340" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Dots: engaged -->
+          <circle cx="63" cy="47" r="3" fill="#1B1340"/>
+          <circle cx="280" cy="18" r="3" fill="#1B1340"/>
+          <!-- Dots: disengaged -->
+          <circle cx="63" cy="86" r="2.5" fill="#C5BCEF"/>
+          <circle cx="280" cy="77" r="2.5" fill="#C5BCEF"/>
+          <!-- Labels: engaged -->
+          <text x="63" y="41" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#1B1340">27.4%</text>
+          <text x="280" y="12" text-anchor="middle" font-family="Inter,sans-serif" font-size="7.5" font-weight="700" fill="#1B1340">41.3%</text>
+          <!-- Labels: disengaged -->
+          <text x="63" y="80" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#bbb">5.4%</text>
+          <text x="280" y="71" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#bbb">10.2%</text>
+          <!-- X axis labels -->
+          <text x="20"  y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">Launch</text>
+          <text x="63"  y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">M1</text>
+          <text x="107" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">M2</text>
+          <text x="150" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">M3</text>
+          <text x="193" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">M4</text>
+          <text x="237" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">M5</text>
+          <text x="280" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.5" fill="#bbb">M6</text>
+        </svg>
+        <div class="eng-chart-legend">
+          <span class="eng-legend-item eng-legend-engaged">Engaged Clients</span>
+          <span class="eng-legend-item eng-legend-dis">Disengaged Clients</span>
+        </div>
+        <div class="eng-source">Source: Wellhub Internal Analysis, June 2024–July 2025</div>
+      </div>
+      <div class="eng-body">Ongoing communication helps you reach more employees and maximize your benefit.</div>
+      <button class="eng-btn" onclick="completeEngage()">I want to be an engaged client →</button>
+    </div>
+  </div>
+
+  <!-- ══ PATH TO SUCCESS SCREEN ══ -->
+  <div id="path-screen">
+    <div class="path-hdr">
+      <div class="path-tag">Strategy</div>
+      <div class="path-title">Your Path to Success</div>
+      <div class="path-sub">The first 60 days set the tone. Let's make them count.</div>
+    </div>
+    <div class="path-steps" id="path-steps"></div>
+    <div class="path-nav">
+      <div class="path-dots" id="path-dots"></div>
+      <button class="path-nbtn" id="path-nbtn" onclick="pathNext()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══ PERSISTENT INTRO CHAT BAR ══ -->
+  <div id="intro-bar">
+    <textarea class="intro-inp" id="intro-inp" placeholder="Ask Welli anything, or skip ahead…" rows="1"></textarea>
+    <button class="intro-sbtn" onclick="introSend()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+  <!-- ══ CHAT CONTENT (hidden until intro ends) ══ -->
+  <div id="chat-content" style="display:none;">
+  <div class="phase-bar">
+    <div class="phase-meta">
+      <div class="phase-name" id="fase-nome">Stage 1 — Get to Know Wellhub</div>
+      <div class="phase-period" id="fase-periodo">Days 1–3</div>
+    </div>
+    <div class="phase-track">
+      <div class="ps" id="ps1" onclick="mudarFase(1)" title="Get to Know Wellhub for Companies"></div>
+      <div class="ps" id="ps2" onclick="mudarFase(2)" title="Get Ready to Launch Wellhub"></div>
+      <div class="ps" id="ps3" onclick="mudarFase(3)" title="Life After Launch"></div>
+    </div>
+  </div>
+  <div class="gp-row" id="gp-row" onclick="toggleGP()">
+    <div class="gp-mini-bar"><div class="gp-mini-fill" id="gp-fill"></div></div>
+    <span id="gp-label">Golden Path · 0 of 7 steps</span>
+    <span class="gp-arr">›</span>
+  </div>
+  <div class="sb"><div class="sd"></div><p>Online · Wellhub Onboarding Assistant</p></div>
+  <div id="msgs-area">
+    <div class="msgs" id="msgs"></div>
+    <div class="chips" id="chips"></div>
+
+    <!-- ══ GOLDEN PATH PANEL ══ -->
+    <div id="gp-panel">
+      <div class="gpp-hdr">
+        <button class="gpp-back" onclick="toggleGP()">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to chat
+        </button>
+        <span class="gpp-title">Golden Path</span>
+      </div>
+      <div class="gpp-progress">
+        <div class="gpp-bar"><div class="gpp-bar-fill" id="gpp-fill"></div></div>
+        <span id="gpp-count">0 of 7 complete</span>
+      </div>
+      <div class="gpp-list" id="gpp-list"></div>
+    </div>
+  </div>
+  <div class="ftr">
+    <textarea class="inp" id="inp" placeholder="Ask Welli about your onboarding…" rows="1"></textarea>
+    <button class="sbtn" id="sbtn" onclick="send()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+  </div><!-- /chat-content -->
+  <div class="brand"><span>Powered by</span><span class="pill">Wellhub AI</span></div>
+</div>
+
+<script>
+// ── W4C Intro slides ───────────────────────────────────────────────────────
+let w4cSlide = 0;
+const W4C_TOTAL = 4;
+
+function goW4C(n) {
+  document.querySelectorAll('.w4c-slide').forEach((s, i) => {
+    s.classList.remove('active', 'exit');
+    if (i === n)    s.classList.add('active');
+    else if (i < n) s.classList.add('exit');
+  });
+  document.querySelectorAll('.w4c-dot').forEach((d, i) => d.classList.toggle('active', i === n));
+  w4cSlide = n;
+  document.getElementById('w4c-next-btn').textContent = n === W4C_TOTAL - 1 ? "I'm ready →" : 'Next →';
+  document.getElementById('w4c-prev-btn').style.visibility = n > 0 ? 'visible' : 'hidden';
+  // Dark nav on mission slide (index 2)
+  document.querySelector('.w4c-nav').classList.toggle('on-mission', n === 2);
+}
+
+function w4cNext() {
+  if (w4cSlide < W4C_TOTAL - 1) goW4C(w4cSlide + 1);
+  else completeW4C();
+}
+
+function w4cPrev() {
+  if (w4cSlide > 0) goW4C(w4cSlide - 1);
+}
+
+// ── Screen 1 → Screen 2: Welcome Kit overview → W4C slides ────────────────
+function skipToW4C() {
+  const intro = document.getElementById('intro-screen');
+  intro.style.transition = 'opacity .35s ease';
+  intro.style.opacity = '0';
+  setTimeout(() => {
+    intro.style.display = 'none';
+    showW4C();
+  }, 350);
+}
+
+function showW4C() {
+  const s = document.getElementById('w4c-screen');
+  s.style.display = 'block';
+  s.style.opacity = '0';
+  s.style.transition = 'opacity .35s ease';
+  goW4C(0);
+  requestAnimationFrame(() => { s.style.opacity = '1'; });
+}
+
+// ── Screen 2 → Setup/Chat: W4C slides complete or skipped ─────────────────
+function completeW4C() {
+  localStorage.setItem('welli_seen_welcome', '1');
+  const s = document.getElementById('w4c-screen');
+  s.style.transition = 'opacity .35s ease';
+  s.style.opacity = '0';
+  setTimeout(() => {
+    s.style.display = 'none';
+    if (!localStorage.getItem('welli_company')) showSetup();
+    else showChat();
+  }, 350);
+}
+
+function showSetup() {
+  const s = document.getElementById('setup-screen');
+  s.style.display = 'flex';
+  s.style.opacity = '0';
+  s.style.transition = 'opacity .35s ease';
+  requestAnimationFrame(() => { s.style.opacity = '1'; });
+  // Set today as min date, and default to ~2 weeks from now as a hint
+  const inp = document.getElementById('setup-date');
+  const today = new Date();
+  inp.min = today.toISOString().split('T')[0];
+  // Focus company field
+  setTimeout(() => document.getElementById('setup-company').focus(), 350);
+  // Enter key on either field submits
+  ['setup-company','setup-date'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') completeSetup();
+    });
+  });
+}
+
+function completeSetup() {
+  const name = document.getElementById('setup-company').value.trim();
+  const date = document.getElementById('setup-date').value;
+  if (!name) { document.getElementById('setup-company').focus(); return; }
+  localStorage.setItem('welli_company', name);
+  if (date) localStorage.setItem('welli_launch_date', date);
+  const s = document.getElementById('setup-screen');
+  s.style.opacity = '0';
+  setTimeout(() => { s.style.display = 'none'; showEngageScreen(); }, 300);
+}
+
+function showEngageScreen() {
+  const s = document.getElementById('engage-screen');
+  s.style.display = 'flex';
+  s.style.opacity = '0';
+  s.style.transition = 'opacity .35s ease';
+  requestAnimationFrame(() => { s.style.opacity = '1'; });
+}
+
+function completeEngage() {
+  const s = document.getElementById('engage-screen');
+  s.style.transition = 'opacity .35s ease';
+  s.style.opacity = '0';
+  setTimeout(() => { s.style.display = 'none'; showPathScreen(); }, 350);
+}
+
+function skipSetup() {
+  localStorage.setItem('welli_company', '');  // mark as seen so we don't show again
+  const s = document.getElementById('setup-screen');
+  s.style.opacity = '0';
+  setTimeout(() => { s.style.display = 'none'; showChat(); }, 300);
+}
+
+function showChat() {
+  hideIntroBar();
+  const chat = document.getElementById('chat-content');
+  chat.style.display = 'block';
+  chat.style.opacity = '0';
+  chat.style.transition = 'opacity .4s ease';
+  requestAnimationFrame(() => { chat.style.opacity = '1'; });
+  atualizarFaseUI();
+  updateGPProgress();
+  renderChips();
+  if (!chatInitialized) { showWelcome(); chatInitialized = true; }
+}
+
+// ── Path to Success screen ────────────────────────────────────────────────
+let pathVisible = 0;
+
+const PATH_STEPS = [
+  { emoji: '📢', title: 'Teaser',                  offset: -14,
+    desc:   'Early awareness message to build excitement.',
+    detail: 'Share on your preferred channels · Copy + visuals provided by Wellhub' },
+  { emoji: '✉️', title: 'Leadership Announcement',  offset: -7,
+    desc:   'First official message from your CEO or HR Director.',
+    detail: 'Send on your preferred channels · Template provided by Wellhub' },
+  { emoji: '🚀', title: 'Invitation to Sign Up',    offset: 0,
+    desc:   'Branded email with Magic Link sent to all eligible employees.',
+    detail: 'Automatically re-sent to anyone not yet signed up' },
+  { emoji: '🎙️', title: 'Welcome Webinar',           offset: 7,
+    desc:   'Live session led by Wellhub to help your employees get started.',
+    detail: 'Share via your preferred channels · Host on Zoom or your own platform' },
+  { emoji: '📋', title: 'Communication Assets',     offset: 30,
+    desc:   'Flyers, posters, digital screens, challenges and more.',
+    detail: 'Post on your preferred channels · Assets from Wellhub, use as needed' }
+];
+
+function pathDate(offset) {
+  const ld = localStorage.getItem('welli_launch_date');
+  if (ld) {
+    const d = new Date(ld); d.setDate(d.getDate() + offset);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+  if (offset < 0)  return Math.abs(offset) + ' days before launch';
+  if (offset === 0) return 'Launch day';
+  return offset + ' days after launch';
+}
+
+function buildPathSteps() {
+  const container = document.getElementById('path-steps');
+  const dotsEl    = document.getElementById('path-dots');
+  container.innerHTML = '';
+  dotsEl.innerHTML    = '';
+  PATH_STEPS.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'path-step';
+    el.id = 'ps-' + i;
+    el.innerHTML = `
+      <div class="path-step-left">
+        <div class="path-step-num">${i + 1}</div>
+        ${i < PATH_STEPS.length - 1 ? '<div class="path-step-line"></div>' : ''}
+      </div>
+      <div class="path-step-body">
+        <div class="path-step-top">
+          <span class="path-step-name">${s.emoji} ${s.title}</span>
+          <span class="path-step-date">${pathDate(s.offset)}</span>
+        </div>
+        <div class="path-step-desc">${s.desc}</div>
+        <div class="path-step-detail">${s.detail}</div>
+      </div>`;
+    container.appendChild(el);
+    const dot = document.createElement('div');
+    dot.className = 'path-dot'; dot.id = 'pd-' + i;
+    dotsEl.appendChild(dot);
+  });
+}
+
+function pathNext() {
+  if (pathVisible < PATH_STEPS.length) {
+    const el = document.getElementById('ps-' + pathVisible);
+    if (el) el.classList.add('visible');
+    document.getElementById('pd-' + pathVisible)?.classList.add('active');
+    pathVisible++;
+    // Scroll to newly revealed step
+    document.getElementById('path-steps').scrollTop = 9999;
+    const btn = document.getElementById('path-nbtn');
+    if (pathVisible >= PATH_STEPS.length) {
+      btn.textContent = "Let's start →";
+      btn.onclick = completePathScreen;
+    }
+  }
+}
+
+function showPathScreen() {
+  pathVisible = 0;
+  buildPathSteps();
+  const s = document.getElementById('path-screen');
+  s.style.display = 'flex';
+  s.style.opacity = '0';
+  s.style.transition = 'opacity .35s ease';
+  requestAnimationFrame(() => { s.style.opacity = '1'; });
+  setTimeout(pathNext, 420); // auto-reveal step 1 on load
+}
+
+function completePathScreen() {
+  const s = document.getElementById('path-screen');
+  s.style.transition = 'opacity .35s ease';
+  s.style.opacity = '0';
+  setTimeout(() => {
+    s.style.display = 'none';
+    jumpedFromIntro = false;
+    if (chatInitialized) {
+      // Return to existing chat without re-running welcome
+      hideIntroBar();
+      const chat = document.getElementById('chat-content');
+      chat.style.display = 'block';
+      chat.style.opacity = '0';
+      chat.style.transition = 'opacity .4s ease';
+      requestAnimationFrame(() => { chat.style.opacity = '1'; });
+      renderChips();
+    } else {
+      showChat();
+    }
+  }, 350);
+}
+
+// ── Inline video player ────────────────────────────────────────────────────
+function toggleVidPlayer(card, fileId) {
+  const existing = card.nextElementSibling;
+  if (existing && existing.classList.contains('vid-player')) {
+    // Toggle off — remove player and restore card
+    existing.remove();
+    card.classList.remove('playing');
+    card.querySelector('.vid-sub') && (card.querySelector('.vid-sub').textContent = 'Watch the platform walkthrough →');
+    return;
+  }
+  // Toggle on — inject iframe below the card
+  card.classList.add('playing');
+  card.querySelector('.vid-sub') && (card.querySelector('.vid-sub').textContent = 'Click to close ×');
+  const wrap = document.createElement('div');
+  wrap.className = 'vid-player';
+  wrap.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay" allowfullscreen></iframe>`;
+  card.insertAdjacentElement('afterend', wrap);
+}
+
+// ── Intro bar: persistent chat during onboarding ──────────────────────────
+let chatInitialized = false;
+let jumpedFromIntro  = false;
+
+function showIntroBar() { document.getElementById('intro-bar').style.display = 'flex'; }
+function hideIntroBar() { document.getElementById('intro-bar').style.display = 'none'; }
+
+function introSend() {
+  const inp = document.getElementById('intro-inp');
+  const txt = inp.value.trim();
+  inp.value = ''; inp.style.height = 'auto';
+  // Mark welcome as seen so returning visits skip intro
+  localStorage.setItem('welli_seen_welcome', '1');
+  // Hide all intro screens
+  ['intro-screen','w4c-screen','setup-screen','engage-screen','path-screen']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  hideIntroBar();
+  jumpedFromIntro = true;
+  if (!chatInitialized) {
+    showChat();
+  } else {
+    document.getElementById('chat-content').style.display = 'block';
+    renderChips(); // re-render to show resume chip
+  }
+  if (txt) setTimeout(() => { document.getElementById('inp').value = txt; send(); }, 150);
+}
+
+function resumeSetup() {
+  // Go back to path screen from chat
+  document.getElementById('chat-content').style.display = 'none';
+  showIntroBar();
+  showPathScreen();
+}
+
+// ── Phase state ────────────────────────────────────────────────────────────
+let faseAtual = 1;
+
+// ── Golden Path ────────────────────────────────────────────────────────────
+const GP_STEPS = [
+  { id: 'upload',     group: 'Portal Setup',      title: 'Upload your employee list',         sub: 'Add eligible employees via spreadsheet import in the portal.' },
+  { id: 'invites',    group: 'Portal Setup',       title: 'Configure Smart Invites',           sub: 'Turn on auto-invitations so new eligibles get invited automatically.' },
+  { id: 'teaser',     group: 'Pre-Launch',         title: 'Post a teaser on internal channels', sub: 'Build buzz via email, Slack, or intranet 1–2 weeks before launch.' },
+  { id: 'leadership', group: 'Pre-Launch',         title: 'Send the leadership announcement',  sub: 'A CEO or HR Director message — the single highest-impact action.' },
+  { id: 'i2s',        group: 'Launch Day',         title: 'Schedule the Kick-off email (I2S)', sub: 'The invitation with Magic Link goes out automatically on the date you set.' },
+  { id: 'webinar',    group: 'Week 1 Post-Launch', title: 'Host the Welcome Webinar',          sub: 'Free 30-min Wellhub-run session — book the date before you launch.' },
+  { id: 'comms',      group: 'Ongoing',            title: 'Share monthly communication assets', sub: 'Forward Wellhub\'s ready-made emails; run challenges and raffles.' }
+];
+
+let gpState = {};
+try { gpState = JSON.parse(localStorage.getItem('welli_gp') || '{}'); } catch(e) {}
+let gpPanelOpen  = false;
+let gpStepTicked = false; // tracks whether a step was checked during this panel session
+
+function toggleGP() {
+  gpPanelOpen = !gpPanelOpen;
+  const panel = document.getElementById('gp-panel');
+  if (gpPanelOpen) {
+    gpStepTicked = false;
+    panel.classList.add('open');
+    renderGPList();
+  } else {
+    panel.classList.remove('open');
+    if (gpStepTicked) renderChips(); // surface "next step" chip after completing a step
+  }
+}
+
+function renderGPList() {
+  const list = document.getElementById('gpp-list');
+  list.innerHTML = '';
+  let lastGroup = '';
+  GP_STEPS.forEach(step => {
+    if (step.group !== lastGroup) {
+      lastGroup = step.group;
+      const g = document.createElement('div');
+      g.className = 'gpp-group'; g.textContent = step.group;
+      list.appendChild(g);
+    }
+    const done = !!gpState[step.id];
+    const item = document.createElement('div');
+    item.className = 'gpp-item' + (done ? ' done' : '');
+    item.onclick = () => toggleStep(step.id);
+    item.innerHTML = `<div class="gpp-check"></div><div class="gpp-item-text"><div class="gpp-item-title">${step.title}</div><div class="gpp-item-sub">${step.sub}</div></div>`;
+    list.appendChild(item);
+  });
+  updateGPProgress();
+}
+
+function toggleStep(id) {
+  gpState[id] = !gpState[id];
+  try { localStorage.setItem('welli_gp', JSON.stringify(gpState)); } catch(e) {}
+  if (gpState[id]) gpStepTicked = true; // a step was just completed
+  renderGPList();
+}
+
+function updateGPProgress() {
+  const total = GP_STEPS.length;
+  const done  = GP_STEPS.filter(s => gpState[s.id]).length;
+  const pct   = total > 0 ? (done / total) * 100 : 0;
+  document.getElementById('gp-fill').style.width  = pct + '%';
+  document.getElementById('gp-label').textContent = 'Golden Path · ' + done + ' of ' + total + ' steps';
+  const fillEl  = document.getElementById('gpp-fill');
+  const countEl = document.getElementById('gpp-count');
+  if (fillEl)  fillEl.style.width  = pct + '%';
+  if (countEl) countEl.textContent = done + ' of ' + total + ' complete';
+}
+
+function gpContext() {
+  const done    = GP_STEPS.filter(s => gpState[s.id]);
+  const pending = GP_STEPS.filter(s => !gpState[s.id]);
+  return {
+    completed:   done.length,
+    total:       GP_STEPS.length,
+    nextPending: pending.length ? pending[0].title : null
+  };
+}
+
+// ── Conversation history (Messages API format) ─────────────────────────────
+let hist = [];
+let busy = false;
+
+// ── Phase metadata ─────────────────────────────────────────────────────────
+const FASES = {
+  1: {
+    nome: 'Stage 1 — Get to Know Wellhub', periodo: 'Days 1–3',
+    chips: ['How do I upload my employee list?', 'How do I set up Smart Invites?', 'How do I add an admin?', 'What is Wellhub+?']
+  },
+  2: {
+    nome: 'Stage 2 — Get Ready to Launch', periodo: 'Pre-launch',
+    chips: ['What are the 5 Golden Path steps?', 'How do I write the leadership email?', 'How do I schedule the Kick-off email?', 'How do I book the Welcome Webinar?']
+  },
+  3: {
+    nome: 'Stage 3 — Life After Launch', periodo: 'Month 1+',
+    chips: ['How do I check my enrollment rate?', 'My enrollment is low — what do I do?', 'How do I run a Challenge?', 'What is the EEP?']
+  }
+};
+
+// ── Launch date helpers ────────────────────────────────────────────────────
+function daysUntilLaunch() {
+  const ld = localStorage.getItem('welli_launch_date');
+  if (!ld) return null;
+  const diff = new Date(ld).setHours(0,0,0,0) - new Date().setHours(0,0,0,0);
+  return Math.round(diff / (1000 * 60 * 60 * 24));
+}
+
+function launchLine() {
+  const days = daysUntilLaunch();
+  if (days === null) return '';
+  if (days > 1)  return ` You have ${days} days until launch.`;
+  if (days === 1) return ' Launch is tomorrow!';
+  if (days === 0) return ' Today is launch day!';
+  return ` You launched ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''} ago.`;
+}
+
+function launchPeriod() {
+  const days = daysUntilLaunch();
+  if (days === null) return null;
+  if (days > 1)  return `${days} days to launch`;
+  if (days === 1) return 'Tomorrow!';
+  if (days === 0) return 'Launch day!';
+  return `Launched ${Math.abs(days)}d ago`;
+}
+
+// ── Welcome message (GP + company + launch aware) ─────────────────────────
+const PHASE_BODY = {
+  1: "You're in Stage 1 — let's get your portal set up. Your first step is uploading your employee list so your team can access Wellhub. Want me to walk you through it?",
+  2: "You're in Stage 2 — time to prepare your launch. The Golden Path has 5 steps that determine whether your rollout succeeds. Want to start with the most important one?",
+  3: "You're in Stage 3 — your Wellhub is live. Now it's about keeping enrollment growing and employees engaged. Want to start with how to read your enrollment numbers?"
+};
+
+function buildWelcomeText() {
+  const company = localStorage.getItem('welli_company') || null;
+  const done    = GP_STEPS.filter(s => gpState[s.id]);
+  const pending = GP_STEPS.filter(s => !gpState[s.id]);
+
+  const hi      = company ? `Hi ${company}!` : "Hi! I'm Welli, your Wellhub onboarding assistant.";
+  const ll      = launchLine();
+
+  if (done.length === 0) {
+    return `${hi}${ll}\n\n${PHASE_BODY[faseAtual]}`;
+  }
+  if (done.length === GP_STEPS.length) {
+    return `${hi}${ll}\n\nYou've completed all 7 Golden Path steps — great work. Want to review your enrollment numbers or plan your next engagement initiative?`;
+  }
+  const next = pending[0];
+  return `${hi}${ll}\n\nYou have ${done.length} of 7 Golden Path steps done.\n\nYour next action:\n→ ${next.title}\n${next.sub}\n\nWant me to walk you through it?`;
+}
+
+// ── Phase UI ───────────────────────────────────────────────────────────────
+function atualizarFaseUI() {
+  const f = faseAtual;
+  document.getElementById('fase-nome').textContent    = FASES[f].nome;
+  document.getElementById('fase-periodo').textContent = launchPeriod() || FASES[f].periodo;
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('ps' + i).className = 'ps' + (i < f ? ' done' : i === f ? ' active' : '');
+  }
+  // Golden Path row only visible in Stage 2
+  document.getElementById('gp-row').style.display = f === 2 ? 'flex' : 'none';
+}
+
+function mudarFase(f) {
+  if (f === faseAtual || busy) return;
+  faseAtual = f;
+  hist = [];
+  atualizarFaseUI();
+  renderChips();
+  document.getElementById('msgs').innerHTML = '';
+  showWelcome();
+}
+
+// ── Chips ──────────────────────────────────────────────────────────────────
+function renderChips() {
+  const box = document.getElementById('chips');
+  box.innerHTML = '';
+  box.style.display = 'flex';
+
+  // Resume setup chip — only shown when user jumped ahead from intro
+  if (jumpedFromIntro) {
+    const rb = document.createElement('button');
+    rb.className = 'chip chip-resume';
+    rb.textContent = '← Resume setup';
+    rb.onclick = resumeSetup;
+    box.appendChild(rb);
+  }
+
+  // Pinned "next step" smart chip — always first
+  const nb = document.createElement('button');
+  nb.className = 'chip chip-next';
+  nb.textContent = '→ What\'s my next step?';
+  nb.onclick = askNextStep;
+  box.appendChild(nb);
+
+  FASES[faseAtual].chips.forEach(txt => {
+    const b = document.createElement('button');
+    b.className = 'chip'; b.textContent = txt;
+    b.onclick = () => { document.getElementById('inp').value = txt; send(); };
+    box.appendChild(b);
+  });
+}
+
+// ── Markdown renderer (bot messages only) ────────────────────────────────
+function renderMarkdown(raw) {
+  // Escape HTML entities first
+  let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Bold: **text**
+  s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+  const lines = s.split('\n');
+  const out   = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+    // Numbered list: collect consecutive numbered lines
+    if (/^\d+\.\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        items.push(`<li>${lines[i].replace(/^\d+\.\s+/,'')}</li>`);
+        i++;
+      }
+      out.push(`<ol class="mol">${items.join('')}</ol>`);
+      continue;
+    }
+    // Bullet list: - or •
+    if (/^[-•]\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^[-•]\s/.test(lines[i])) {
+        items.push(`<li>${lines[i].replace(/^[-•]\s+/,'')}</li>`);
+        i++;
+      }
+      out.push(`<ul class="mul">${items.join('')}</ul>`);
+      continue;
+    }
+    // Arrow line → ...
+    if (/^→/.test(line)) {
+      out.push(`<span class="marr">${line}</span>`);
+      i++; continue;
+    }
+    // Inline header pattern: "Word:" at the start of a standalone line (e.g. "Steps:", "Why:")
+    if (/^[A-Z][^:]{0,30}:\s*$/.test(line.trim())) {
+      out.push(`<div class="mhd">${line.trim().replace(/:$/, '')}</div>`);
+      i++; continue;
+    }
+    // Empty line → small gap
+    if (line.trim() === '') {
+      out.push('<div class="mgap"></div>');
+      i++; continue;
+    }
+    // Normal paragraph line
+    out.push(`<div class="mp">${line}</div>`);
+    i++;
+  }
+  return out.join('');
+}
+
+// ── Message rendering ──────────────────────────────────────────────────────
+function addMsg(role, text, agentName, agentColor) {
+  const c = document.getElementById('msgs');
+  const w = document.createElement('div'); w.className = 'msg ' + (role === 'b' ? 'b' : 'u');
+  const l = document.createElement('div'); l.className = 'lbl';
+  l.textContent = role === 'b' ? 'Welli' : 'You';
+  const b = document.createElement('div'); b.className = 'bbl';
+  if (role === 'b') b.innerHTML = renderMarkdown(text);
+  else              b.textContent = text;
+  w.append(l, b); c.append(w); c.scrollTop = c.scrollHeight;
+}
+
+function showTyping() {
+  const c = document.getElementById('msgs');
+  const w = document.createElement('div'); w.id = 'typ'; w.className = 'twrap';
+  const l = document.createElement('div'); l.className = 'lbl'; l.style.color = 'var(--mg)'; l.textContent = 'Welli';
+  const t = document.createElement('div'); t.className = 'typ';
+  t.innerHTML = '<div class="dt"></div><div class="dt"></div><div class="dt"></div>';
+  w.append(l, t); c.append(w); c.scrollTop = c.scrollHeight;
+}
+
+function rmTyping() { const e = document.getElementById('typ'); if (e) e.remove(); }
+
+function renderEscalation() {
+  const c = document.getElementById('msgs');
+  const wrap = document.createElement('div'); wrap.className = 'msg b';
+  const lbl  = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = 'var(--mg)'; lbl.textContent = 'Welli';
+  const card = document.createElement('div'); card.className = 'card';
+  card.innerHTML = `
+    <div class="card-tag" style="color:#D9534F">Escalating to CS</div>
+    <div class="card-title">Connecting you with our team</div>
+    <div class="card-desc">This needs attention from our Customer Success team. They'll get back to you during business hours (Mon–Fri, 9am–6pm ET).</div>
+    <a class="card-btn" href="https://support.wellhub.com" target="_blank">Contact CS →</a>`;
+  wrap.append(lbl, card); c.append(wrap); c.scrollTop = c.scrollHeight;
+}
+
+function renderMilestone() {
+  const emojis = ['🎉','🏆','⭐','🚀'];
+  const emoji  = emojis[Math.floor(Math.random() * emojis.length)];
+  const c = document.getElementById('msgs');
+  const wrap = document.createElement('div'); wrap.className = 'msg b';
+  const lbl  = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = 'var(--mg)'; lbl.textContent = 'Welli';
+  const card = document.createElement('div'); card.className = 'milestone-card';
+  card.innerHTML = `<div style="font-size:22px">${emoji}</div><div class="mc-title">Milestone reached!</div><div class="mc-desc">Great progress — keep it up!</div>`;
+  wrap.append(lbl, card); c.append(wrap); c.scrollTop = c.scrollHeight;
+}
+
+// ── Feedback confirm bubble ────────────────────────────────────────────────
+function renderFeedbackConfirm(original) {
+  const text = original.replace(/^#feedback\s*/i, '').trim() || '(no text)';
+  const c = document.getElementById('msgs');
+  const wrap = document.createElement('div'); wrap.className = 'msg b';
+  const lbl  = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = 'var(--mp)'; lbl.textContent = 'Feedback saved';
+  const bubble = document.createElement('div'); bubble.className = 'feedback-bubble';
+  bubble.innerHTML = `<div class="feedback-icon">📝</div><div class="feedback-text">"${text}"</div>`;
+  wrap.append(lbl, bubble); c.append(wrap); c.scrollTop = c.scrollHeight;
+}
+
+// ── "What's my next step?" smart action ───────────────────────────────────
+function askNextStep() {
+  if (busy) return;
+  const done    = GP_STEPS.filter(s => gpState[s.id]).map(s => s.title);
+  const pending = GP_STEPS.filter(s => !gpState[s.id]);
+
+  let richPrompt;
+  if (pending.length === 0) {
+    richPrompt = `I've completed all 7 Golden Path steps and I'm in ${FASES[faseAtual].nome}. What should I focus on now to maintain strong engagement and enrollment?`;
+  } else {
+    const doneStr = done.length > 0 ? `Steps already completed: ${done.join(', ')}. ` : '';
+    richPrompt = `I'm in ${FASES[faseAtual].nome} (${FASES[faseAtual].periodo}). My Golden Path progress: ${done.length} of ${GP_STEPS.length} steps complete. ${doneStr}My next pending step is "${pending[0].title}". What is my single most important action right now, and exactly how do I do it?`;
+  }
+  sendDirect("What's my next step?", richPrompt);
+}
+
+// ── sendDirect — show one label to user, send a richer prompt to Welli ─────
+async function sendDirect(displayText, internalMsg) {
+  const btn = document.getElementById('sbtn');
+  if (busy) return;
+  busy = true; btn.disabled = true;
+  document.getElementById('chips').style.display = 'none';
+  addMsg('u', displayText);
+  showTyping();
+  try {
+    const { response, agentKey, agentName, agentColor, hasEscalation, hasMilestone, gpStepId } = await callWelli(internalMsg);
+    rmTyping();
+    hist.push({ role: 'user', content: internalMsg });
+    hist.push({ role: 'assistant', content: response });
+    if (response) addMsg('b', response, agentName, agentColor);
+    if (gpStepId)      renderGPAction(gpStepId);
+    if (hasEscalation) renderEscalation();
+    if (hasMilestone)  renderMilestone();
+  } catch (err) {
+    rmTyping();
+    addMsg('b', 'Something went wrong: ' + err.message);
+  }
+  busy = false; btn.disabled = false; document.getElementById('inp').focus();
+}
+
+// ── Inline "Mark as done" action button ───────────────────────────────────
+function renderGPAction(id) {
+  if (gpState[id]) return; // already checked — don't show
+  const step = GP_STEPS.find(s => s.id === id);
+  if (!step) return;
+  const c   = document.getElementById('msgs');
+  const row = document.createElement('div');
+  row.className = 'msg b';
+  const btn = document.createElement('button');
+  btn.className = 'gp-action-btn';
+  btn.innerHTML = '✓ Mark "' + step.title + '" as done';
+  btn.onclick = () => {
+    gpState[id] = true;
+    try { localStorage.setItem('welli_gp', JSON.stringify(gpState)); } catch(e) {}
+    gpStepTicked = true;
+    updateGPProgress();
+    btn.className = 'gp-action-btn done';
+    btn.innerHTML = '✓ Marked as done';
+    btn.disabled = true;
+    askNextStep(); // automatically surface the next step inline
+  };
+  row.appendChild(btn);
+  c.appendChild(row);
+  c.scrollTop = c.scrollHeight;
+}
+
+// ── API call ───────────────────────────────────────────────────────────────
+async function callWelli(userMsg) {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message:        userMsg,
+      history:        hist.slice(-6),
+      phase:          faseAtual,
+      goldenPath:     gpContext(),
+      company:        localStorage.getItem('welli_company') || null,
+      daysToLaunch:   daysUntilLaunch()
+    })
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Server error ${res.status}`);
+  }
+
+  const data = await res.json();
+
+  // Detect inline signals in response text
+  const hasEscalation = /<<<ESCALAR_CS>>>/i.test(data.response);
+  const hasMilestone  = /<<<MARCO>>>/i.test(data.response);
+  const gpMatch       = data.response.match(/<<<GP:(\w+)>>>/i);
+  const gpStepId      = gpMatch ? gpMatch[1].toLowerCase() : null;
+  const cleanText     = data.response.replace(/<<<GP:\w+>>>/gi, '').replace(/<<<[A-Z_]+>>>/gi, '').trim();
+
+  return { ...data, response: cleanText, hasEscalation, hasMilestone, gpStepId };
+}
+
+// ── Send ───────────────────────────────────────────────────────────────────
+async function send() {
+  const inp = document.getElementById('inp');
+  const btn = document.getElementById('sbtn');
+  const txt = inp.value.trim();
+  if (!txt || busy) return;
+
+  busy = true; btn.disabled = true;
+  inp.value = ''; inp.style.height = 'auto';
+  document.getElementById('chips').style.display = 'none';
+  addMsg('u', txt);
+  showTyping();
+
+  try {
+    const { response, agentKey, agentName, agentColor, hasEscalation, hasMilestone, gpStepId } = await callWelli(txt);
+    rmTyping();
+
+    if (agentKey === 'FEEDBACK') {
+      renderFeedbackConfirm(txt);
+    } else {
+      // Update conversation history for next turn
+      hist.push({ role: 'user', content: txt });
+      hist.push({ role: 'assistant', content: response });
+      if (response) addMsg('b', response, agentName, agentColor);
+      if (gpStepId)      renderGPAction(gpStepId);
+      if (hasEscalation) renderEscalation();
+      if (hasMilestone)  renderMilestone();
+    }
+
+  } catch (err) {
+    rmTyping();
+    addMsg('b', 'Something went wrong: ' + err.message);
+  }
+
+  busy = false; btn.disabled = false; inp.focus();
+}
+
+// ── Dynamic welcome (GP-aware, no API call) ───────────────────────────────
+function showWelcome() {
+  const text = buildWelcomeText();
+  addMsg('b', text);
+  // Seed history so the first user reply has context
+  hist = [{ role: 'assistant', content: text }];
+}
+
+// ── Input handlers ─────────────────────────────────────────────────────────
+const inpEl = document.getElementById('inp');
+inpEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+inpEl.addEventListener('input', () => { inpEl.style.height = 'auto'; inpEl.style.height = Math.min(inpEl.scrollHeight, 72) + 'px'; });
+
+const introInpEl = document.getElementById('intro-inp');
+introInpEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); introSend(); } });
+introInpEl.addEventListener('input', () => { introInpEl.style.height = 'auto'; introInpEl.style.height = Math.min(introInpEl.scrollHeight, 60) + 'px'; });
+
+// ── Dev reset (tap avatar 5× to wipe state and restart) ───────────────────
+let devTaps = 0, devTimer = null;
+function devReset() {
+  devTaps++;
+  clearTimeout(devTimer);
+  devTimer = setTimeout(() => { devTaps = 0; }, 1500);
+  if (devTaps >= 5) {
+    devTaps = 0;
+    const av = document.getElementById('av');
+    av.textContent = '✓';
+    av.style.background = 'var(--mgrn)';
+    setTimeout(() => { localStorage.clear(); location.reload(); }, 600);
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+if (localStorage.getItem('welli_seen_welcome')) {
+  document.getElementById('intro-screen').style.display = 'none';
+  if (!localStorage.getItem('welli_company')) { showSetup(); showIntroBar(); }
+  else showChat();
+} else {
+  // First-time user: welcome kit visible by default — show intro bar
+  showIntroBar();
+}
+</script>
+</body>
+</html>
