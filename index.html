@@ -285,7 +285,39 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .eng-btn:hover{background:var(--dm);}.eng-btn:active{transform:scale(.97);}
 
 /* ── Teaser Builder ── */
-#teaser-screen{background:#f5f2eb;display:none;flex-direction:column;}
+#teaser-screen{background:#f5f2eb;display:none;flex-direction:column;overflow:hidden;}
+/* ── Teaser tabs ── */
+.ts-tabs{display:flex;background:#fff;border-bottom:.5px solid var(--ow2);flex-shrink:0;}
+.ts-tab{flex:1;padding:10px 4px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:#bbb;border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;}
+.ts-tab.active{color:var(--dp);border-bottom-color:var(--mg);}
+/* ── Build pane (scrollable internally) ── */
+#ts-build-pane{display:flex;flex-direction:column;flex:1;overflow-y:auto;}
+#ts-build-pane::-webkit-scrollbar{width:3px;}
+#ts-build-pane::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
+/* ── Library pane ── */
+#ts-lib-pane{flex:1;overflow-y:auto;padding:12px 14px;}
+#ts-lib-pane::-webkit-scrollbar{width:3px;}
+#ts-lib-pane::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
+.ts-library{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ts-lcard{background:#fff;border-radius:12px;overflow:hidden;border:.5px solid var(--ow2);display:flex;flex-direction:column;transition:box-shadow .15s;}
+.ts-lcard:hover{box-shadow:0 4px 16px rgba(27,19,64,.12);}
+.ts-lpreview{height:88px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;padding:10px;position:relative;overflow:hidden;flex-shrink:0;}
+.ts-lpwm{font-size:7px;font-weight:700;letter-spacing:-.2px;position:absolute;top:7px;left:9px;}
+.ts-lpfmt{font-size:7.5px;font-weight:700;letter-spacing:.05em;padding:2px 6px;border-radius:20px;position:absolute;top:7px;right:8px;}
+.ts-lpfmt.png{background:rgba(12,128,70,.15);color:var(--mgrn);}
+.ts-lpfmt.pdf{background:rgba(242,73,107,.12);color:#c0284c;}
+.ts-lpfmt.pptx{background:rgba(255,100,0,.12);color:#c05000;}
+.ts-lpfmt.gif{background:rgba(168,128,255,.15);color:var(--mp);}
+.ts-lpfmt.docx{background:rgba(27,19,64,.1);color:var(--dp);}
+.ts-lpheadline{font-size:10.5px;font-weight:800;text-align:center;line-height:1.2;letter-spacing:-.2px;margin-top:10px;}
+.ts-lpsub{font-size:8px;text-align:center;opacity:.65;letter-spacing:.04em;text-transform:uppercase;}
+/* Blob decoration for deck slides */
+.ts-blob{position:absolute;border-radius:50%;pointer-events:none;}
+.ts-lcard-info{padding:8px 10px 4px;}
+.ts-lcard-name{font-size:11px;font-weight:700;color:var(--dp);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ts-lcard-usage{font-size:9px;color:#bbb;margin-bottom:6px;}
+.ts-lcard-btn{display:block;text-align:center;background:var(--dp);color:#fff;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:7px 8px;margin:0 8px 9px;border-radius:8px;text-decoration:none;transition:background .2s;}
+.ts-lcard-btn:hover{background:var(--mg);}
 .ts-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .ts-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);cursor:pointer;padding:0;display:flex;align-items:center;gap:3px;}
 .ts-hdr-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;}
@@ -709,31 +741,43 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
       </button>
       <span class="ts-hdr-title">Teaser Builder</span>
     </div>
-    <div class="ts-picker" id="ts-picker"></div>
-    <div class="ts-preview-wrap">
-      <div id="ts-preview" class="ts-preview"></div>
+    <!-- Tab bar -->
+    <div class="ts-tabs">
+      <button class="ts-tab active" id="ts-tab-build" onclick="switchTsTab('build')">🎨 Create your own</button>
+      <button class="ts-tab" id="ts-tab-lib" onclick="switchTsTab('lib')">📁 Brand Library</button>
     </div>
-    <div class="ts-controls">
-      <div class="ts-field">
-        <label>Headline</label>
-        <input id="ts-h" oninput="renderTeaser()" placeholder="Wellhub is coming to Acme">
+    <!-- Build pane -->
+    <div id="ts-build-pane">
+      <div class="ts-picker" id="ts-picker"></div>
+      <div class="ts-preview-wrap">
+        <div id="ts-preview" class="ts-preview"></div>
       </div>
-      <div class="ts-field">
-        <label>Subline</label>
-        <input id="ts-s" oninput="renderTeaser()" value="Your new employee wellness benefit">
+      <div class="ts-controls">
+        <div class="ts-field">
+          <label>Headline</label>
+          <input id="ts-h" oninput="renderTeaser()" placeholder="Wellhub is coming to Acme">
+        </div>
+        <div class="ts-field">
+          <label>Subline</label>
+          <input id="ts-s" oninput="renderTeaser()" value="Your new employee wellness benefit">
+        </div>
+        <div class="ts-field">
+          <label>Badge</label>
+          <input id="ts-b" oninput="renderTeaser()" value="COMING SOON">
+        </div>
+        <div class="ts-logo-row">
+          <button class="ts-logo-btn" onclick="document.getElementById('ts-logo-inp').click()">📎 Upload your logo</button>
+          <button class="ts-logo-clear" id="ts-logo-clear" onclick="clearTsLogo()">✕ Remove</button>
+          <input type="file" id="ts-logo-inp" accept="image/*" style="display:none" onchange="handleTsLogo(this)">
+        </div>
       </div>
-      <div class="ts-field">
-        <label>Badge</label>
-        <input id="ts-b" oninput="renderTeaser()" value="COMING SOON">
-      </div>
-      <div class="ts-logo-row">
-        <button class="ts-logo-btn" onclick="document.getElementById('ts-logo-inp').click()">📎 Upload your logo</button>
-        <button class="ts-logo-clear" id="ts-logo-clear" onclick="clearTsLogo()">✕ Remove</button>
-        <input type="file" id="ts-logo-inp" accept="image/*" style="display:none" onchange="handleTsLogo(this)">
+      <div class="ts-dl-wrap">
+        <button class="ts-dl-btn" id="ts-dl-btn" onclick="downloadTeaser()">Download PNG →</button>
       </div>
     </div>
-    <div class="ts-dl-wrap">
-      <button class="ts-dl-btn" id="ts-dl-btn" onclick="downloadTeaser()">Download PNG →</button>
+    <!-- Brand Library pane -->
+    <div id="ts-lib-pane" style="display:none;">
+      <div class="ts-library" id="ts-library"></div>
     </div>
   </div>
 
@@ -1102,10 +1146,73 @@ function clearTsLogo() {
   renderTeaser();
 }
 
+// ── Teaser Brand Library ────────────────────────────────────────────────────
+const BYNDER_BASE = 'https://wellhub.bynder.com/web/bb60526df7f1d80d/english-teaser-toolkit/?viewType=grid&mediaId=';
+const TS_LIBRARY = [
+  { id:'A2D8762C-E7B2-4C0F-A0FEC65538CE0D71', name:'Teaser Tile 3',   format:'PNG',  usage:'Social Media',  bg:'linear-gradient(150deg,#d6caff,#9b7fe8)', textColor:'#3B2490', wm:'#3B2490',
+    headline:'From crossfit to yoga', sub:'COMING SOON' },
+  { id:'B1C7842D-2F9C-44FB-9E73FB8049353178', name:'Teaser Tile 1',   format:'PNG',  usage:'Social Media',  bg:'#FBF8EC', textColor:'#1B1340', wm:'#1B1340',
+    headline:'Access thousands of gyms', sub:'wellhub ✦' },
+  { id:'FE9A97BB-79CB-41C0-A25ECE6BA10516A5', name:'Teaser Tile 2',   format:'PNG',  usage:'Social Media',  bg:'#D4F55A', textColor:'#1B1340', wm:'#1B1340',
+    headline:'HIIT · Boxing · Pilates · Yoga', sub:'COMING SOON' },
+  { id:'958B7044-9F84-44B1-90900892708FA03F', name:'Teaser Banner',   format:'PDF',  usage:'TV / Banner',   bg:'#F2496B', textColor:'#fff', wm:'#fff',
+    headline:'Wellhub coming soon!', sub:'Your new benefit' },
+  { id:'BED14A66-981A-4B05-8DDFD1746B5DCEC2', name:'Teaser Post',     format:'PDF',  usage:'Social Media',  bg:'linear-gradient(160deg,#F2496B,#c43060)', textColor:'#fff', wm:'#fff',
+    headline:'Our new benefit: Wellhub', sub:'Let\'s discover new habits' },
+  { id:'52309183-1AD9-47E4-AD02DE1169FCDDFC', name:'Deck Slides',     format:'PPTX', usage:'Presentation',  bg:'linear-gradient(135deg,#F2496B,#590931)', textColor:'#fff', wm:'#fff',
+    headline:'Wellhub is coming soon!', sub:'', blob:true },
+  { id:'90D3BCA2-7E2D-4F37-9D0218602D593EB1', name:'One Pager',       format:'PDF',  usage:'Flyer',         bg:'#FBF8EC', textColor:'#1B1340', wm:'#1B1340',
+    headline:'Will soon be your wellbeing partner!', sub:'wellhub ✦' },
+  { id:'3EA56C98-C536-497E-85DD0A70D7FFEC03', name:'GIF Square',      format:'GIF',  usage:'Animated 1:1',  bg:'#F5F0E0', textColor:'rgba(27,19,64,.5)', wm:'rgba(27,19,64,.4)',
+    headline:'▶ Animated', sub:'2000 × 2000 px' },
+  { id:'7EDE62B6-3C5F-49F5-8703274F32C97735', name:'GIF Landscape',   format:'GIF',  usage:'Animated 5:4',  bg:'#F5F0E0', textColor:'rgba(27,19,64,.5)', wm:'rgba(27,19,64,.4)',
+    headline:'▶ Animated', sub:'2500 × 2000 px' },
+  { id:'1F62E62A-53AB-4ED1-95952CEF7F57933B', name:'GIF Portrait',    format:'GIF',  usage:'Animated 4:5',  bg:'#F5F0E0', textColor:'rgba(27,19,64,.5)', wm:'rgba(27,19,64,.4)',
+    headline:'▶ Animated', sub:'2000 × 2500 px' },
+  { id:'00A7A6B8-CEDE-4A87-9C618DF560697F29', name:'Email Copy',      format:'DOCX', usage:'Email',         bg:'#fff', textColor:'#1B1340', wm:'rgba(27,19,64,.3)',
+    headline:'✉ Teaser email copy', sub:'Ready-to-send text' },
+  { id:'4A340C2D-BF1B-44D1-9A3115877B560253', name:'Announce. Copy',  format:'DOCX', usage:'Email',         bg:'#fff', textColor:'#1B1340', wm:'rgba(27,19,64,.3)',
+    headline:'✉ Announcement copy', sub:'Leadership message' },
+];
+
+function buildLibrary() {
+  const grid = document.getElementById('ts-library');
+  grid.innerHTML = '';
+  TS_LIBRARY.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'ts-lcard';
+    const fmtClass = a.format.toLowerCase();
+    const blob = a.blob ? `<div class="ts-blob" style="width:90px;height:90px;background:rgba(89,9,49,.55);top:-20px;right:-20px;border-radius:50%;"></div>` : '';
+    card.innerHTML = `
+      <div class="ts-lpreview" style="background:${a.bg};">
+        ${blob}
+        <div class="ts-lpwm" style="color:${a.wm}">wellhub✦</div>
+        <div class="ts-lpfmt ${fmtClass}">${a.format}</div>
+        <div class="ts-lpheadline" style="color:${a.textColor}">${a.headline}</div>
+        ${a.sub ? `<div class="ts-lpsub" style="color:${a.textColor}">${a.sub}</div>` : ''}
+      </div>
+      <div class="ts-lcard-info">
+        <div class="ts-lcard-name">${a.name}</div>
+        <div class="ts-lcard-usage">${a.usage}</div>
+      </div>
+      <a class="ts-lcard-btn" href="${BYNDER_BASE}${a.id}" target="_blank" rel="noopener">Open in Bynder ↗</a>`;
+    grid.appendChild(card);
+  });
+}
+
+function switchTsTab(tab) {
+  document.getElementById('ts-tab-build').classList.toggle('active', tab === 'build');
+  document.getElementById('ts-tab-lib').classList.toggle('active', tab === 'lib');
+  document.getElementById('ts-build-pane').style.display = tab === 'build' ? 'flex' : 'none';
+  document.getElementById('ts-lib-pane').style.display  = tab === 'lib'   ? 'block' : 'none';
+}
+
 function showTeaserScreen() {
   document.getElementById('chat-content').style.display = 'none';
   const ts = document.getElementById('teaser-screen');
   ts.style.display = 'flex';
+  // Always open on the build tab
+  switchTsTab('build');
   // Pre-fill headline with company name if set
   const co = localStorage.getItem('welli_company');
   const hInput = document.getElementById('ts-h');
@@ -1114,6 +1221,7 @@ function showTeaserScreen() {
   document.getElementById('ts-logo-clear').style.display = tsLogoSrc ? 'inline-flex' : 'none';
   buildThumbs();
   renderTeaser();
+  buildLibrary();
   // Lazy-load html2canvas
   if (!window.html2canvas) {
     const s = document.createElement('script');
