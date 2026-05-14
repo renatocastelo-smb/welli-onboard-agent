@@ -1341,7 +1341,20 @@ function renderChips() {
     box.appendChild(rb);
   }
 
-  // Pinned "next step" smart chip — always first
+  // Detect next pending GP step
+  const nextGpStep = GP_STEPS.find(s => !gpState[s.id]);
+  const teaserIsNext = faseAtual === 2 && nextGpStep && nextGpStep.id === 'teaser';
+
+  // Teaser chip — promoted to FIRST when it's the active GP step
+  if (teaserIsNext) {
+    const tb = document.createElement('button');
+    tb.className = 'chip chip-teaser';
+    tb.textContent = '🎨 Create a teaser';
+    tb.onclick = showTeaserScreen;
+    box.appendChild(tb);
+  }
+
+  // Pinned "next step" smart chip
   const nb = document.createElement('button');
   nb.className = 'chip chip-next';
   nb.textContent = '→ What\'s my next step?';
@@ -1355,8 +1368,8 @@ function renderChips() {
     box.appendChild(b);
   });
 
-  // Teaser builder chip — Stage 2 only
-  if (faseAtual === 2) {
+  // Teaser chip — at end when it's NOT the active step
+  if (faseAtual === 2 && !teaserIsNext) {
     const tb = document.createElement('button');
     tb.className = 'chip chip-teaser';
     tb.textContent = '🎨 Create a teaser';
