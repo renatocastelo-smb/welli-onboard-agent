@@ -1,219 +1,236 @@
-# Contributing to Welli
+# Getting Started with Welli — Complete Beginner Guide
 
-Step-by-step guide to get set up and start contributing.
-
----
-
-## Part 1 — Renato does this once (repo + Vercel setup)
-
-> Skip to Part 2 if the repo already exists on GitHub.
-
-### 1. Create the GitHub repo
-
-1. Go to https://github.com/new
-2. Name it `welli` (or `welli-onboarding`)
-3. Set it to **Private**
-4. Do NOT initialise with README, .gitignore, or licence (we have our own)
-5. Click **Create repository**
-
-### 2. Push the local project to GitHub
-
-Open a terminal in the `welli/` folder and run:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit — Welli onboarding assistant"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/welli.git
-git push -u origin main
-```
-
-### 3. Connect Vercel to GitHub
-
-1. Go to https://vercel.com/dashboard
-2. Open the `welli` project → **Settings** → **Git**
-3. Click **Connect Git Repository** → select the GitHub repo you just created
-4. Set **Production Branch** to `main`
-5. From now on, every push to `main` auto-deploys to production
-
-### 4. Add the API key to Vercel (so production keeps working)
-
-1. Vercel dashboard → welli project → **Settings** → **Environment Variables**
-2. Add: `ANTHROPIC_API_KEY` = (your key from `.env.local`)
-3. Scope: **Production + Preview + Development**
-4. Save
-
-### 5. Invite collaborators to GitHub
-
-1. GitHub repo → **Settings** → **Collaborators** → **Add people**
-2. Add each contributor by their GitHub username
-3. They'll receive an email invite
-
-### 6. Share the API key privately
-
-Send each contributor the `ANTHROPIC_API_KEY` value via a secure channel
-(Slack DM, 1Password, etc.). They need it locally. They must **never** commit it.
+No experience needed. Follow every step in order and you'll be up and running in about 20 minutes.
 
 ---
 
-## Part 2 — Each contributor does this once
+## Step 1 — Create a GitHub account
 
-### Prerequisites
+GitHub is where the code lives. You need a free account.
 
-Make sure you have these installed:
+1. Go to https://github.com
+2. Click **Sign up**
+3. Enter your email, create a password, choose a username
+4. Verify your email when they send you a confirmation
 
-```bash
-node --version   # needs v18+
-git --version    # any recent version
-```
+Then **send your GitHub username to Renato** so he can give you access to the project.
+Wait for him to confirm before continuing.
 
-Install the Vercel CLI if you don't have it:
+---
+
+## Step 2 — Create a Vercel account
+
+Vercel runs the app locally on your computer for testing.
+
+1. Go to https://vercel.com
+2. Click **Sign up**
+3. Choose **Continue with GitHub** — this links both accounts automatically
+
+---
+
+## Step 3 — Install Node.js
+
+Node.js is what runs JavaScript on your computer. You need it for everything else.
+
+1. Go to https://nodejs.org
+2. Click the big **LTS** button (the recommended version)
+3. Open the downloaded file and follow the installer — just keep clicking Next/Continue
+4. When it's done, **restart your computer**
+
+---
+
+## Step 4 — Open the Terminal
+
+The terminal is how you'll run commands. Don't worry — you'll only use a handful of them.
+
+**On Mac:**
+1. Press **Command (⌘) + Space** to open Spotlight
+2. Type `Terminal`
+3. Press Enter
+
+**On Windows:**
+1. Press the **Windows key**
+2. Type `PowerShell`
+3. Click **Windows PowerShell**
+
+---
+
+## Step 5 — Install the tools you need
+
+Copy and paste each line below into the terminal, one at a time. Press Enter after each one.
+Wait for it to finish before pasting the next.
 
 ```bash
 npm install -g vercel
 ```
 
-Install Claude Code if you don't have it:
-
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-### 1. Accept the GitHub invite
+If you see a long list of text scrolling by — that's normal, it's installing.
+If you see `added X packages` at the end — it worked.
 
-Check your email for the collaborator invite from GitHub and accept it.
+---
 
-### 2. Clone the repo
+## Step 6 — Accept the GitHub invite
+
+Renato will send you a collaborator invite to your GitHub email.
+
+1. Check your email for a message from GitHub
+2. Click **Accept invitation**
+
+---
+
+## Step 7 — Download the project
+
+This copies the project from GitHub onto your computer.
+
+In the terminal, paste this and press Enter:
 
 ```bash
-git clone https://github.com/RENATOS_USERNAME/welli.git
-cd welli
+git clone https://github.com/renatocastelo-smb/welli-onboard-agent.git
 ```
 
-### 3. Create your `.env.local` file
+Then navigate into the project folder:
 
-Create a file called `.env.local` in the root of the project:
-
-```
-ANTHROPIC_API_KEY=sk-ant-api03-...
+```bash
+cd welli-onboard-agent
 ```
 
-Paste the key Renato shared with you. This file is gitignored — it will never be committed.
+Your terminal is now "inside" the project. All future commands go from here.
 
-### 4. Link to the Vercel project (one-time)
+---
+
+## Step 8 — Add the API key
+
+The API key is the password that lets the app talk to Claude AI.
+Renato will send this to you privately via Google Chat.
+
+You need to create a file called `.env.local` in the project folder.
+
+**On Mac**, paste this into the terminal (replace `PASTE_KEY_HERE` with the key Renato sent you):
+
+```bash
+echo "ANTHROPIC_API_KEY=PASTE_KEY_HERE" > .env.local
+```
+
+**On Windows**, paste this instead:
+
+```bash
+echo ANTHROPIC_API_KEY=PASTE_KEY_HERE > .env.local
+```
+
+> ⚠️ Never share this key publicly or commit it to GitHub. It's like a password.
+
+---
+
+## Step 9 — Link to the Vercel project
+
+This connects your local copy to the live Vercel project so you can run it.
+
+Paste this and press Enter:
 
 ```bash
 vercel link
 ```
 
-Follow the prompts — select Renato's team/account and the `welli` project.
-This lets you run the project locally with the same serverless function setup.
+It will ask you a few questions. Answer them like this:
 
-### 5. Run locally
+- **Set up "welli-onboard-agent"?** → press `Y` then Enter
+- **Which scope?** → select Renato's account (use arrow keys, then Enter)
+- **Link to existing project?** → press `Y` then Enter
+- **What's the name of your existing project?** → type `welli` and press Enter
+
+---
+
+## Step 10 — Run the app locally
 
 ```bash
 vercel dev
 ```
 
-Open http://localhost:3000. You should see Welli running with the full intro flow.
+Wait a few seconds. When you see something like `Ready! Available at http://localhost:3000`, open your browser and go to:
 
-**Dev tip:** Tap the **W avatar 5 times** to wipe localStorage and restart the intro flow from scratch.
+**http://localhost:3000**
+
+You should see Welli running. 🎉
+
+> **Dev tip:** Tap the **W avatar in the top-left corner 5 times quickly** to reset the app
+> and see the full intro flow from the beginning.
 
 ---
 
-## Part 3 — Day-to-day workflow
+## You're set up. Now how do you actually contribute?
 
-### Before starting any work
-
-Pull the latest changes from main:
+### Before starting any work — always pull the latest version first:
 
 ```bash
 git pull origin main
 ```
 
-### Create a feature branch
+This makes sure you have the most recent code before you start changing anything.
 
-Never commit directly to `main`. Always work on a branch:
+### Create a branch for your work:
+
+Think of a branch as your own personal copy to work on without affecting anyone else.
 
 ```bash
-git checkout -b feature/your-feature-name
-# examples:
-# feature/url-prefill
-# feature/content-generation
-# fix/chips-not-showing
+git checkout -b feature/what-youre-building
 ```
 
-### Make your changes with Claude Code
+For example:
+```bash
+git checkout -b feature/new-intro-slide
+```
 
-Open Claude Code in the project folder:
+### Open Claude Code and make your changes:
 
 ```bash
 claude
 ```
 
-Claude Code will read `CLAUDE.md` automatically — it has all the project context,
-conventions, and architecture notes. You don't need to re-explain the project each session.
+Claude Code will read the project's `CLAUDE.md` file automatically — it tells Claude everything
+about how the project works, so you don't need to explain it each time.
 
-### Test before pushing
+### Save and submit your work:
 
-- Run `vercel dev` and click through the relevant screens
-- Tap the avatar 5× to reset and test the full intro flow if you changed intro screens
-- Test on a narrow viewport (the shell is 420px wide — use browser DevTools device mode)
-
-### Commit and push your branch
+When you're happy with your changes:
 
 ```bash
-git add index.html api/chat.js   # be specific — don't use git add .
-git commit -m "Short description of what and why"
-git push origin feature/your-feature-name
+git add index.html api/chat.js
+git commit -m "Brief description of what you changed and why"
+git push origin feature/what-youre-building
 ```
 
-### Open a Pull Request
-
-1. Go to the GitHub repo
-2. Click **Compare & pull request** (GitHub will prompt you)
-3. Write a short description of what changed and why
-4. Assign Renato as reviewer
-5. Wait for approval before merging
-
-### After your PR is merged
-
-Vercel will automatically deploy to production within ~30 seconds.
-Pull the latest main to keep your local copy up to date:
-
-```bash
-git checkout main
-git pull origin main
-```
+Then go to https://github.com/renatocastelo-smb/welli-onboard-agent in your browser.
+GitHub will show a yellow banner saying your branch was recently pushed — click **Compare & pull request**.
+Write a short description and submit. Renato will review and merge it.
 
 ---
 
-## Project structure (quick reference)
+## Quick reference — commands you'll use every day
 
-```
-welli/
-├── index.html        ← Entire frontend (CSS + HTML + JS, all inline)
-├── api/
-│   └── chat.js       ← AI backend (Vercel serverless function)
-├── .env.local        ← Your local API key (never commit)
-├── .gitignore
-├── CLAUDE.md         ← Architecture + conventions (read before coding)
-├── CONTRIBUTING.md   ← This file
-└── feedback.md       ← User feedback log
-```
-
-Read `CLAUDE.md` before making any changes — it explains the architecture,
-naming conventions, and things that must stay in sync across files.
+| What you want to do | Command |
+|---|---|
+| Start the app locally | `vercel dev` |
+| Get the latest code | `git pull origin main` |
+| Create a new branch | `git checkout -b feature/name` |
+| Open Claude Code | `claude` |
+| Save your changes | `git add index.html api/chat.js` |
+| Write a commit message | `git commit -m "description"` |
+| Upload your branch | `git push origin feature/name` |
 
 ---
 
-## Rules
+## Something went wrong?
 
-| Rule | Why |
-|------|-----|
-| Never commit `.env.local` | Contains the API key — exposure = $$$ charges |
-| Never push directly to `main` | All changes go through PRs so nothing breaks production |
-| Always read `CLAUDE.md` first | Keeps everyone aligned on conventions |
-| Test locally before opening a PR | `vercel dev` takes 5 seconds |
-| Keep `index.html` self-contained | No external JS/CSS libs without discussion |
+**"command not found: vercel"** — Node.js didn't install correctly. Restart your computer and try Step 3 again.
+
+**"Permission denied"** — On Mac, add `sudo` before the command and enter your Mac password.
+
+**"fatal: not a git repository"** — You're not in the project folder. Run `cd welli-onboard-agent` first.
+
+**The app loads but AI doesn't respond** — Your `.env.local` file is missing or the key is wrong. Check Step 8.
+
+Still stuck? Message Renato.
