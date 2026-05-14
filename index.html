@@ -284,6 +284,43 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .eng-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;width:100%;}
 .eng-btn:hover{background:var(--dm);}.eng-btn:active{transform:scale(.97);}
 
+/* ── Teaser Builder ── */
+#teaser-screen{background:#f5f2eb;display:none;flex-direction:column;}
+.ts-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.ts-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);cursor:pointer;padding:0;display:flex;align-items:center;gap:3px;}
+.ts-hdr-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;}
+.ts-picker{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:#fff;border-bottom:.5px solid var(--ow2);}
+.ts-picker::-webkit-scrollbar{display:none;}
+.ts-thumb{width:72px;height:42px;border-radius:8px;flex-shrink:0;cursor:pointer;border:2.5px solid transparent;transition:all .15s;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;}
+.ts-thumb.active{border-color:var(--mg);transform:scale(1.06);}
+.ts-thumb-label{font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
+.ts-preview-wrap{padding:16px 16px 8px;flex-shrink:0;}
+.ts-preview{width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;box-shadow:0 4px 24px rgba(0,0,0,.18);}
+.ts-preview-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.ts-wm{font-size:13px;font-weight:700;letter-spacing:-.3px;line-height:1;}
+.ts-wm-dot{display:inline-block;width:4px;height:4px;border-radius:50%;margin-left:1px;vertical-align:middle;}
+.ts-badge{font-size:7.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;}
+.ts-preview-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:8px;padding:6px 0;}
+.ts-logo-box{max-height:48px;max-width:130px;display:flex;align-items:center;justify-content:center;border-radius:8px;padding:5px 10px;background:rgba(255,255,255,.14);}
+.ts-logo-box img{max-height:100%;max-width:100%;object-fit:contain;}
+.ts-logo-ph{font-size:8.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border:1.5px dashed currentColor;border-radius:8px;padding:7px 14px;opacity:.3;}
+.ts-headline-preview{font-size:14px;font-weight:800;line-height:1.2;letter-spacing:-.3px;text-align:center;}
+.ts-subline-preview{font-size:9.5px;line-height:1.5;opacity:.65;text-align:center;}
+.ts-controls{background:#fff;border-top:.5px solid var(--ow2);padding:14px 16px;display:flex;flex-direction:column;gap:11px;}
+.ts-field label{font-size:10px;font-weight:700;color:rgba(27,19,64,.38);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px;}
+.ts-field input{width:100%;border:.5px solid var(--ow2);border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--blk);background:var(--ow);outline:none;transition:border-color .15s;}
+.ts-field input:focus{border-color:var(--mg);background:#fff;}
+.ts-logo-row{display:flex;gap:8px;}
+.ts-logo-btn{background:var(--ow);border:.5px solid var(--ow2);border-radius:8px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--dp);cursor:pointer;transition:all .15s;flex:1;text-align:center;}
+.ts-logo-btn:hover{background:var(--xlmg);border-color:var(--lmg);}
+.ts-logo-clear{background:none;border:.5px solid var(--ow2);border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:12px;color:#bbb;cursor:pointer;display:none;transition:all .15s;}
+.ts-logo-clear:hover{border-color:#F2496B;color:#F2496B;}
+.ts-dl-wrap{padding:12px 16px 16px;background:#fff;border-top:.5px solid var(--ow2);}
+.ts-dl-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.ts-dl-btn:hover{background:var(--mg);}.ts-dl-btn:disabled{background:var(--lmg);cursor:not-allowed;}
+.chip-teaser{background:rgba(168,128,255,.1);border-color:rgba(168,128,255,.3);color:var(--mp);}
+.chip-teaser:hover{background:rgba(168,128,255,.2);border-color:var(--mp);}
+
 /* ── Persistent intro chat bar ── */
 #intro-bar{background:#fff;border-top:.5px solid var(--ow2);padding:8px 14px;display:none;gap:8px;align-items:center;}
 #intro-bar .hint{font-size:10px;color:#ccc;white-space:nowrap;letter-spacing:.01em;}
@@ -663,6 +700,43 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     </button>
   </div>
   </div><!-- /chat-content -->
+  <!-- ══ TEASER BUILDER ══ -->
+  <div id="teaser-screen">
+    <div class="ts-hdr">
+      <button class="ts-back" onclick="hideTeaserScreen()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to chat
+      </button>
+      <span class="ts-hdr-title">Teaser Builder</span>
+    </div>
+    <div class="ts-picker" id="ts-picker"></div>
+    <div class="ts-preview-wrap">
+      <div id="ts-preview" class="ts-preview"></div>
+    </div>
+    <div class="ts-controls">
+      <div class="ts-field">
+        <label>Headline</label>
+        <input id="ts-h" oninput="renderTeaser()" placeholder="Wellhub is coming to Acme">
+      </div>
+      <div class="ts-field">
+        <label>Subline</label>
+        <input id="ts-s" oninput="renderTeaser()" value="Your new employee wellness benefit">
+      </div>
+      <div class="ts-field">
+        <label>Badge</label>
+        <input id="ts-b" oninput="renderTeaser()" value="COMING SOON">
+      </div>
+      <div class="ts-logo-row">
+        <button class="ts-logo-btn" onclick="document.getElementById('ts-logo-inp').click()">📎 Upload your logo</button>
+        <button class="ts-logo-clear" id="ts-logo-clear" onclick="clearTsLogo()">✕ Remove</button>
+        <input type="file" id="ts-logo-inp" accept="image/*" style="display:none" onchange="handleTsLogo(this)">
+      </div>
+    </div>
+    <div class="ts-dl-wrap">
+      <button class="ts-dl-btn" id="ts-dl-btn" onclick="downloadTeaser()">Download PNG →</button>
+    </div>
+  </div>
+
   <div class="brand"><span>Powered by</span><span class="pill">Wellhub AI</span></div>
 </div>
 
@@ -956,6 +1030,127 @@ function resumeSetup() {
   showPathScreen();
 }
 
+// ── Teaser Builder ─────────────────────────────────────────────────────────
+const TS_TEMPLATES = [
+  { id: 1, label: 'Dark',     bg: 'linear-gradient(135deg,#1B1340,#2d1b69)', badgeBg: '#DCFF79', badgeColor: '#1B1340', textColor: '#fff',    subColor: 'rgba(255,255,255,.5)',  wmColor: '#fff',    dotColor: '#DCFF79', thumbBg: 'linear-gradient(135deg,#1B1340,#2d1b69)', thumbText: '#fff' },
+  { id: 2, label: 'Light',    bg: '#FBF8EC',                                  badgeBg: '#F2496B', badgeColor: '#fff',   textColor: '#1B1340', subColor: 'rgba(27,19,64,.45)',   wmColor: '#1B1340', dotColor: '#F2496B', thumbBg: '#FBF8EC',                              thumbText: '#1B1340' },
+  { id: 3, label: 'Pink',     bg: '#F2496B',                                  badgeBg: '#fff',    badgeColor: '#F2496B',textColor: '#fff',    subColor: 'rgba(255,255,255,.7)', wmColor: '#fff',    dotColor: '#fff',    thumbBg: '#F2496B',                              thumbText: '#fff' },
+  { id: 4, label: 'Gradient', bg: 'linear-gradient(135deg,#F2496B,#A880FF)', badgeBg: 'rgba(255,255,255,.22)', badgeColor: '#fff', textColor: '#fff', subColor: 'rgba(255,255,255,.65)', wmColor: '#fff', dotColor: 'rgba(255,255,255,.8)', thumbBg: 'linear-gradient(135deg,#F2496B,#A880FF)', thumbText: '#fff' },
+  { id: 5, label: 'Green',    bg: '#1B1340',                                  badgeBg: '#DCFF79', badgeColor: '#1B1340',textColor: '#fff',    subColor: 'rgba(220,255,121,.5)', wmColor: '#DCFF79', dotColor: '#DCFF79', thumbBg: '#1B1340',                              thumbText: '#DCFF79' }
+];
+let tsCurrent = 1;
+let tsLogoSrc  = null;
+
+function buildThumbs() {
+  const picker = document.getElementById('ts-picker');
+  picker.innerHTML = '';
+  TS_TEMPLATES.forEach(t => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ts-thumb' + (t.id === tsCurrent ? ' active' : '');
+    wrap.style.background = t.thumbBg;
+    wrap.onclick = () => { tsCurrent = t.id; buildThumbs(); renderTeaser(); };
+    const lbl = document.createElement('div');
+    lbl.className = 'ts-thumb-label';
+    lbl.style.color = t.thumbText;
+    lbl.textContent = t.label;
+    wrap.appendChild(lbl);
+    picker.appendChild(wrap);
+  });
+}
+
+function renderTeaser() {
+  const t   = TS_TEMPLATES.find(x => x.id === tsCurrent);
+  const hdl = document.getElementById('ts-h').value || 'Wellhub is coming to your company';
+  const sub = document.getElementById('ts-s').value || 'Your new employee wellness benefit';
+  const bdg = document.getElementById('ts-b').value || 'COMING SOON';
+  const prev = document.getElementById('ts-preview');
+
+  const logoHtml = tsLogoSrc
+    ? `<img src="${tsLogoSrc}" style="max-height:32px;max-width:120px;object-fit:contain;" alt="logo">`
+    : `<div class="ts-logo-ph">YOUR LOGO</div>`;
+
+  prev.innerHTML = `
+    <div class="ts-preview-top">
+      <div class="ts-wm" style="color:${t.wmColor}">
+        wellhub<span class="ts-wm-dot" style="background:${t.dotColor}"></span>
+      </div>
+      <div class="ts-badge" style="background:${t.badgeBg};color:${t.badgeColor}">${bdg}</div>
+    </div>
+    <div class="ts-preview-mid">
+      <div class="ts-logo-box">${logoHtml}</div>
+      <div class="ts-headline-preview" style="color:${t.textColor}">${hdl}</div>
+      <div class="ts-subline-preview" style="color:${t.subColor}">${sub}</div>
+    </div>`;
+  prev.style.background = t.bg;
+}
+
+function handleTsLogo(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    tsLogoSrc = e.target.result;
+    document.getElementById('ts-logo-clear').style.display = 'inline-flex';
+    renderTeaser();
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function clearTsLogo() {
+  tsLogoSrc = null;
+  document.getElementById('ts-logo-inp').value = '';
+  document.getElementById('ts-logo-clear').style.display = 'none';
+  renderTeaser();
+}
+
+function showTeaserScreen() {
+  document.getElementById('chat-content').style.display = 'none';
+  const ts = document.getElementById('teaser-screen');
+  ts.style.display = 'flex';
+  // Pre-fill headline with company name if set
+  const co = localStorage.getItem('welli_company');
+  const hInput = document.getElementById('ts-h');
+  if (!hInput.value && co) hInput.value = `Wellhub is coming to ${co}`;
+  // Hide logo clear button initially if no logo
+  document.getElementById('ts-logo-clear').style.display = tsLogoSrc ? 'inline-flex' : 'none';
+  buildThumbs();
+  renderTeaser();
+  // Lazy-load html2canvas
+  if (!window.html2canvas) {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+    document.head.appendChild(s);
+  }
+}
+
+function hideTeaserScreen() {
+  document.getElementById('teaser-screen').style.display = 'none';
+  document.getElementById('chat-content').style.display = '';
+}
+
+function downloadTeaser() {
+  const btn = document.getElementById('ts-dl-btn');
+  const prev = document.getElementById('ts-preview');
+  if (!window.html2canvas) {
+    btn.textContent = 'Loading…';
+    const check = setInterval(() => {
+      if (window.html2canvas) { clearInterval(check); downloadTeaser(); }
+    }, 200);
+    return;
+  }
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
+  html2canvas(prev, { scale: 4, useCORS: true, allowTaint: true, backgroundColor: null })
+    .then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'wellhub-teaser.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      btn.textContent = '✓ Downloaded!';
+      setTimeout(() => { btn.textContent = 'Download PNG →'; btn.disabled = false; }, 2000);
+    })
+    .catch(() => { btn.textContent = 'Download PNG →'; btn.disabled = false; });
+}
+
 // ── Phase state ────────────────────────────────────────────────────────────
 let faseAtual = 1;
 
@@ -1159,6 +1354,15 @@ function renderChips() {
     b.onclick = () => { document.getElementById('inp').value = txt; send(); };
     box.appendChild(b);
   });
+
+  // Teaser builder chip — Stage 2 only
+  if (faseAtual === 2) {
+    const tb = document.createElement('button');
+    tb.className = 'chip chip-teaser';
+    tb.textContent = '🎨 Create a teaser';
+    tb.onclick = showTeaserScreen;
+    box.appendChild(tb);
+  }
 }
 
 // ── Markdown renderer (bot messages only) ────────────────────────────────
