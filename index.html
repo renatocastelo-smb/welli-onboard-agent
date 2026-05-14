@@ -318,6 +318,36 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .ts-lcard-usage{font-size:9px;color:#bbb;margin-bottom:6px;}
 .ts-lcard-btn{display:block;text-align:center;background:var(--dp);color:#fff;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:7px 8px;margin:0 8px 9px;border-radius:8px;text-decoration:none;transition:background .2s;}
 .ts-lcard-btn:hover{background:var(--mg);}
+
+/* ── Leadership Announcement Builder ── */
+#announce-screen{background:#f5f2eb;display:none;flex-direction:column;overflow:hidden;}
+.an-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.an-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);cursor:pointer;padding:0;display:flex;align-items:center;gap:3px;}
+.an-hdr-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;}
+.an-seg-row{background:#fff;border-bottom:.5px solid var(--ow2);padding:9px 14px;display:flex;gap:6px;flex-shrink:0;}
+.an-seg{flex:1;border:1.5px solid var(--ow2);border-radius:20px;padding:6px 10px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:#aaa;background:none;cursor:pointer;transition:all .15s;text-align:center;}
+.an-seg.active{background:var(--dp);border-color:var(--dp);color:#fff;}
+.an-len-row{background:#fff;border-bottom:.5px solid var(--ow2);padding:7px 14px;display:flex;gap:5px;flex-shrink:0;}
+.an-len{flex:1;border:1.5px solid var(--ow2);border-radius:20px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#aaa;background:none;cursor:pointer;transition:all .15s;text-align:center;}
+.an-len.active{background:var(--mg);border-color:var(--mg);color:#fff;}
+.an-fields{background:#fff;border-bottom:.5px solid var(--ow2);padding:10px 14px;display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
+.an-frow{display:flex;align-items:center;gap:8px;}
+.an-flabel{font-size:9.5px;font-weight:700;color:rgba(27,19,64,.35);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;width:46px;}
+.an-finput{flex:1;border:.5px solid var(--ow2);border-radius:8px;padding:7px 10px;font-family:'Inter',sans-serif;font-size:12.5px;color:var(--blk);background:var(--ow);outline:none;transition:border-color .15s;}
+.an-finput:focus{border-color:var(--mg);background:#fff;}
+.an-preview-wrap{flex:1;overflow-y:auto;padding:12px 14px 4px;}
+.an-preview-wrap::-webkit-scrollbar{width:3px;}
+.an-preview-wrap::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
+.an-preview{background:#fff;border-radius:12px;padding:14px 16px;border:.5px solid var(--ow2);}
+.an-subject-label{font-size:9px;font-weight:700;color:#ccc;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.an-subject{font-size:13px;font-weight:700;color:var(--dp);margin-bottom:12px;padding-bottom:12px;border-bottom:.5px solid var(--ow2);line-height:1.4;}
+.an-body{font-size:12.5px;line-height:1.8;color:var(--blk);white-space:pre-wrap;font-family:'Inter',sans-serif;}
+.an-dl-wrap{padding:10px 14px 14px;background:#fff;border-top:.5px solid var(--ow2);flex-shrink:0;}
+.an-copy-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.an-copy-btn:hover{background:var(--mg);}
+.chip-announce{background:rgba(27,19,64,.07);border-color:rgba(27,19,64,.2);color:var(--dp);}
+.chip-announce:hover{background:rgba(27,19,64,.13);border-color:var(--dp);}
+
 .ts-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .ts-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);cursor:pointer;padding:0;display:flex;align-items:center;gap:3px;}
 .ts-hdr-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;}
@@ -778,6 +808,47 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     <!-- Brand Library pane -->
     <div id="ts-lib-pane" style="display:none;">
       <div class="ts-library" id="ts-library"></div>
+    </div>
+  </div>
+
+  <!-- ══ LEADERSHIP ANNOUNCEMENT BUILDER ══ -->
+  <div id="announce-screen">
+    <div class="an-hdr">
+      <button class="an-back" onclick="hideAnnounceScreen()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to chat
+      </button>
+      <span class="an-hdr-title">Announcement Builder</span>
+    </div>
+    <!-- Channel selector -->
+    <div class="an-seg-row">
+      <button class="an-seg active" id="an-seg-email" onclick="setAnChannel('email')">✉️ Email</button>
+      <button class="an-seg" id="an-seg-slack" onclick="setAnChannel('slack')">💬 Chat / Slack</button>
+    </div>
+    <!-- Length selector -->
+    <div class="an-len-row">
+      <button class="an-len active" id="an-len-short"  onclick="setAnLength('short')">Short</button>
+      <button class="an-len"        id="an-len-medium" onclick="setAnLength('medium')">Medium</button>
+      <button class="an-len"        id="an-len-long"   onclick="setAnLength('long')">Long</button>
+    </div>
+    <!-- Customization fields -->
+    <div class="an-fields">
+      <div class="an-frow">
+        <span class="an-flabel">Sender</span>
+        <input class="an-finput" id="an-sender" placeholder="e.g. Sarah" oninput="renderAnnounce()">
+      </div>
+      <div class="an-frow">
+        <span class="an-flabel">Title</span>
+        <input class="an-finput" id="an-title" placeholder="e.g. Chief People Officer" oninput="renderAnnounce()">
+      </div>
+    </div>
+    <!-- Preview -->
+    <div class="an-preview-wrap">
+      <div class="an-preview" id="an-preview"></div>
+    </div>
+    <!-- Copy button -->
+    <div class="an-dl-wrap">
+      <button class="an-copy-btn" id="an-copy-btn" onclick="copyAnnounce()">Copy to clipboard →</button>
     </div>
   </div>
 
@@ -1259,6 +1330,221 @@ function downloadTeaser() {
     .catch(() => { btn.textContent = 'Download PNG →'; btn.disabled = false; });
 }
 
+// ── Leadership Announcement Builder ────────────────────────────────────────
+let anChannel = 'email';
+let anLength  = 'short';
+
+const AN = {
+  email: {
+    short: {
+      subject: `A new benefit for your wellbeing is on its way`,
+      body: `Hi {{company}} team,
+
+I'm excited to share that starting {{date}}, Wellhub will be joining our employee benefits.
+
+With one membership, you'll have access to thousands of gyms, studios, and wellness apps — so you can take care of your health in whatever way works best for you.
+
+Keep an eye out for your personal invitation. More details coming soon!
+
+{{sender}}
+{{title}}`
+    },
+    medium: {
+      subject: `Wellhub is coming to {{company}} — a benefit built around you`,
+      body: `Dear {{company}} team,
+
+Your wellbeing matters deeply to us, and I'm thrilled to announce that starting {{date}}, Wellhub will be available as part of your employee benefits.
+
+With Wellhub, you'll have access to:
+• Thousands of gyms and fitness studios near you
+• On-demand workout classes and live sessions
+• Wellness apps covering meditation, nutrition, sleep, and mental health
+• Personal coaching and virtual training sessions
+
+No matter your fitness goals or schedule, Wellhub adapts to you — whether that's an early gym session, a lunchtime yoga class, or a mindfulness session before bed.
+
+Look out for a personal invitation in your inbox on {{date}} with everything you need to get started. No credit card required.
+
+Investing in your health is one of the best investments we can make — and we're proud to do it together.
+
+{{sender}}
+{{title}}, {{company}}`
+    },
+    long: {
+      subject: `{{company}} is investing in your wellbeing — Wellhub launches {{date}}`,
+      body: `Dear {{company}} team,
+
+A healthy, energised team is the foundation of everything we achieve together. That's why I'm proud to announce that starting {{date}}, {{company}} will be offering Wellhub as part of your employee benefits — at no additional cost to you.
+
+Wellhub is the world's largest corporate wellness platform. With a single membership, you gain access to a full range of options to support your physical and mental health:
+
+🏋️  Gyms & Studios — Thousands of locations, from major fitness chains to local boutique studios, wherever you live or work.
+
+🧘  Wellness Apps — 50+ digital partners covering meditation, sleep, nutrition, and mental health — including Headspace, Calm, Noom, and more.
+
+💪  Live & On-Demand Classes — Yoga, HIIT, cycling, pilates, dance — available anywhere, anytime, on any device.
+
+👩‍⚕️  Personal Coaching — Certified coaches for fitness, nutrition, and overall wellbeing, at your own pace.
+
+Here's what happens next:
+1. On {{date}}, check your work email for a personal invitation
+2. Click the Magic Link to activate your account — free, no credit card needed
+3. Start exploring gyms, classes, and apps right away
+
+We'll also be hosting a Welcome Webinar shortly after launch where you can learn how to get the most out of Wellhub and ask any questions you may have.
+
+This is our commitment to your wellbeing, and I'm genuinely excited about it. I hope you'll take full advantage — your health is worth it.
+
+See you at the gym (or the meditation app)! 🌿
+
+{{sender}}
+{{title}}, {{company}}`
+    }
+  },
+  slack: {
+    short: {
+      subject: '',
+      body: `🎉 *Big news!* Wellhub is joining our benefits on *{{date}}*!
+
+One membership = access to thousands of gyms, studios, and wellness apps. Your personal invite lands in your inbox on {{date}}.
+
+More details coming soon — stay tuned! 💪
+
+— {{sender}}, {{title}}`
+    },
+    medium: {
+      subject: '',
+      body: `📣 *Wellhub is coming to {{company}}!*
+
+Starting *{{date}}*, you'll have access to:
+🏋️ Thousands of gyms & boutique studios
+🧘 Wellness apps — meditation, sleep, nutrition, mental health
+💻 Live & on-demand workout classes
+🤸 Personal coaching sessions
+
+One membership. Your rules.
+
+Look out for your personal invite on *{{date}}* — just click the link to activate, no credit card needed.
+
+Drop any questions below. We're excited to make this available to the whole team! 🙌
+
+— *{{sender}}*, {{title}}`
+    },
+    long: {
+      subject: '',
+      body: `📣 *Big news from leadership — Wellhub is coming to {{company}}*
+
+I'm excited to share that starting *{{date}}*, {{company}} will be offering Wellhub as part of our employee benefits.
+
+*What is Wellhub?*
+Wellhub is the world's largest corporate wellness platform. With one membership you get:
+
+🏋️ *Gyms & Studios* — Thousands of locations near you, from major fitness chains to boutique studios
+🧘 *Wellness Apps* — 50+ apps for meditation, sleep, nutrition & mental health (Headspace, Calm, Noom, and more)
+💪 *Live & On-Demand Classes* — Yoga, HIIT, cycling, pilates — streamed anywhere, anytime
+👩‍⚕️ *Personal Coaching* — Fitness, nutrition, and wellbeing coaches at your own pace
+
+*How to get started on {{date}}:*
+1️⃣ Check your work email for a personal invitation
+2️⃣ Click the Magic Link to activate — completely free, no credit card
+3️⃣ Start exploring right away
+
+We'll also be hosting a *Welcome Webinar* shortly after launch — details to follow.
+
+This is our investment in your wellbeing, and I couldn't be more excited about it. Any questions? Drop them below! 👇
+
+— *{{sender}}*, {{title}}`
+    }
+  }
+};
+
+function anFillPlaceholders(text) {
+  const co     = localStorage.getItem('welli_company') || 'your company';
+  const rawDate = localStorage.getItem('welli_launch_date');
+  let dateStr = 'your launch date';
+  if (rawDate) {
+    try {
+      dateStr = new Date(rawDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    } catch(e) {}
+  }
+  const sender = document.getElementById('an-sender').value.trim() || 'Leadership';
+  const title  = document.getElementById('an-title').value.trim()  || 'People & Culture';
+  return text
+    .replace(/\{\{company\}\}/g, co)
+    .replace(/\{\{date\}\}/g,    dateStr)
+    .replace(/\{\{sender\}\}/g,  sender)
+    .replace(/\{\{title\}\}/g,   title);
+}
+
+function renderAnnounce() {
+  const tpl    = AN[anChannel][anLength];
+  const prev   = document.getElementById('an-preview');
+  const subject = anFillPlaceholders(tpl.subject);
+  const body    = anFillPlaceholders(tpl.body);
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let html = '';
+  if (anChannel === 'email') {
+    html += `<div class="an-subject-label">Subject</div><div class="an-subject">${esc(subject)}</div>`;
+  }
+  html += `<div class="an-body">${esc(body)}</div>`;
+  prev.innerHTML = html;
+}
+
+function setAnChannel(ch) {
+  anChannel = ch;
+  document.getElementById('an-seg-email').classList.toggle('active', ch === 'email');
+  document.getElementById('an-seg-slack').classList.toggle('active', ch === 'slack');
+  renderAnnounce();
+}
+
+function setAnLength(len) {
+  anLength = len;
+  ['short','medium','long'].forEach(l => {
+    document.getElementById('an-len-' + l).classList.toggle('active', l === len);
+  });
+  renderAnnounce();
+}
+
+function copyAnnounce() {
+  const tpl   = AN[anChannel][anLength];
+  const subject = anFillPlaceholders(tpl.subject);
+  const body    = anFillPlaceholders(tpl.body);
+  const full    = anChannel === 'email' ? `Subject: ${subject}\n\n${body}` : body;
+  navigator.clipboard.writeText(full).then(() => {
+    const btn = document.getElementById('an-copy-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy to clipboard →'; }, 2000);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = full; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('an-copy-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = 'Copy to clipboard →'; }, 2000);
+  });
+}
+
+function showAnnounceScreen() {
+  document.getElementById('chat-content').style.display = 'none';
+  document.getElementById('announce-screen').style.display = 'flex';
+  // Reset to defaults
+  anChannel = 'email'; anLength = 'short';
+  document.getElementById('an-seg-email').classList.add('active');
+  document.getElementById('an-seg-slack').classList.remove('active');
+  ['short','medium','long'].forEach(l => {
+    document.getElementById('an-len-' + l).classList.toggle('active', l === 'short');
+  });
+  renderAnnounce();
+}
+
+function hideAnnounceScreen() {
+  document.getElementById('announce-screen').style.display = 'none';
+  document.getElementById('chat-content').style.display = '';
+}
+
 // ── Phase state ────────────────────────────────────────────────────────────
 let faseAtual = 1;
 
@@ -1451,15 +1737,24 @@ function renderChips() {
 
   // Detect next pending GP step
   const nextGpStep = GP_STEPS.find(s => !gpState[s.id]);
-  const teaserIsNext = faseAtual === 2 && nextGpStep && nextGpStep.id === 'teaser';
+  const nextId = nextGpStep ? nextGpStep.id : null;
+  const teaserIsNext   = faseAtual === 2 && nextId === 'teaser';
+  const announceIsNext = faseAtual === 2 && nextId === 'leadership';
 
-  // Teaser chip — promoted to FIRST when it's the active GP step
+  // Action chips promoted to FIRST when they match the active GP step
   if (teaserIsNext) {
     const tb = document.createElement('button');
     tb.className = 'chip chip-teaser';
     tb.textContent = '🎨 Create a teaser';
     tb.onclick = showTeaserScreen;
     box.appendChild(tb);
+  }
+  if (announceIsNext) {
+    const ab = document.createElement('button');
+    ab.className = 'chip chip-announce';
+    ab.textContent = '📢 Write announcement';
+    ab.onclick = showAnnounceScreen;
+    box.appendChild(ab);
   }
 
   // Pinned "next step" smart chip
@@ -1476,13 +1771,20 @@ function renderChips() {
     box.appendChild(b);
   });
 
-  // Teaser chip — at end when it's NOT the active step
+  // Action chips at end when NOT the active step
   if (faseAtual === 2 && !teaserIsNext) {
     const tb = document.createElement('button');
     tb.className = 'chip chip-teaser';
     tb.textContent = '🎨 Create a teaser';
     tb.onclick = showTeaserScreen;
     box.appendChild(tb);
+  }
+  if (faseAtual === 2 && !announceIsNext) {
+    const ab = document.createElement('button');
+    ab.className = 'chip chip-announce';
+    ab.textContent = '📢 Write announcement';
+    ab.onclick = showAnnounceScreen;
+    box.appendChild(ab);
   }
 }
 
