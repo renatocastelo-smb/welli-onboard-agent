@@ -828,7 +828,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     <!-- Length selector -->
     <div class="an-len-row">
       <button class="an-len active" id="an-len-short"  onclick="setAnLength('short')">Short</button>
-      <button class="an-len"        id="an-len-medium" onclick="setAnLength('medium')">Medium</button>
+      <button class="an-len"        id="an-len-medium" onclick="setAnLength('medium')">Medium ★</button>
       <button class="an-len"        id="an-len-long"   onclick="setAnLength('long')">Long</button>
     </div>
     <!-- Customization fields -->
@@ -1337,65 +1337,55 @@ let anLength  = 'short';
 const AN = {
   email: {
     short: {
-      subject: `A new benefit for your wellbeing is on its way`,
-      body: `Hi {{company}} team,
+      subject: `A new wellness benefit is coming to {{company}}`,
+      body: `You asked, we delivered!
 
-I'm excited to share that starting {{date}}, Wellhub will be joining our employee benefits.
+At {{company}}, your health and wellbeing always come first. We're excited to announce that starting {{date}}, Wellhub will be available as a new employee benefit — giving you access to gyms, studios, wellness apps, and more, all with ONE Wellhub membership.
 
-With one membership, you'll have access to thousands of gyms, studios, and wellness apps — so you can take care of your health in whatever way works best for you.
-
-Keep an eye out for your personal invitation. More details coming soon!
+Stay tuned for more information!
 
 {{sender}}
 {{title}}`
     },
     medium: {
-      subject: `Wellhub is coming to {{company}} — a benefit built around you`,
-      body: `Dear {{company}} team,
+      subject: `Introducing Wellhub — your new wellness benefit at {{company}}`,
+      body: `You asked, we delivered!
 
-Your wellbeing matters deeply to us, and I'm thrilled to announce that starting {{date}}, Wellhub will be available as part of your employee benefits.
+At {{company}}, we believe that prioritizing your health and wellbeing should always come first. We are thrilled to announce our new partnership with Wellhub! Starting {{date}}, all employees can take advantage of this benefit!
 
-With Wellhub, you'll have access to:
-• Thousands of gyms and fitness studios near you
-• On-demand workout classes and live sessions
-• Wellness apps covering meditation, nutrition, sleep, and mental health
-• Personal coaching and virtual training sessions
+Through our new wellness partnership, you will have access to the following, all with ONE Wellhub membership:
+• A diverse network of gyms and studios near you
+• Premium access to a library of wellbeing apps focused on topics like meditation, nutrition, healthy habits, and fitness
+• 1:1 virtual personal training or wellness coach sessions
+• Live and on-demand fitness classes
 
-No matter your fitness goals or schedule, Wellhub adapts to you — whether that's an early gym session, a lunchtime yoga class, or a mindfulness session before bed.
-
-Look out for a personal invitation in your inbox on {{date}} with everything you need to get started. No credit card required.
-
-Investing in your health is one of the best investments we can make — and we're proud to do it together.
+Stay tuned for more information!
 
 {{sender}}
 {{title}}, {{company}}`
     },
     long: {
-      subject: `{{company}} is investing in your wellbeing — Wellhub launches {{date}}`,
-      body: `Dear {{company}} team,
+      subject: `{{company}} + Wellhub: your complete wellbeing benefit, launching {{date}}`,
+      body: `You asked, we delivered!
 
-A healthy, energised team is the foundation of everything we achieve together. That's why I'm proud to announce that starting {{date}}, {{company}} will be offering Wellhub as part of your employee benefits — at no additional cost to you.
+At {{company}}, we believe that prioritizing your health and wellbeing should always come first. That's why we are thrilled to announce our new partnership with Wellhub — the world's largest corporate wellness platform. Starting {{date}}, all employees can take advantage of this benefit at no additional cost!
 
-Wellhub is the world's largest corporate wellness platform. With a single membership, you gain access to a full range of options to support your physical and mental health:
-
-🏋️  Gyms & Studios — Thousands of locations, from major fitness chains to local boutique studios, wherever you live or work.
-
-🧘  Wellness Apps — 50+ digital partners covering meditation, sleep, nutrition, and mental health — including Headspace, Calm, Noom, and more.
-
-💪  Live & On-Demand Classes — Yoga, HIIT, cycling, pilates, dance — available anywhere, anytime, on any device.
-
-👩‍⚕️  Personal Coaching — Certified coaches for fitness, nutrition, and overall wellbeing, at your own pace.
+Through our new wellness partnership, you will have access to the following, all with ONE Wellhub membership:
+• A diverse network of gyms and studios near you — from major chains to boutique fitness studios, wherever you live or work
+• Premium access to a library of wellbeing apps focused on topics like meditation, nutrition, healthy habits, and fitness — including Headspace, Calm, Noom, and more
+• 1:1 virtual personal training or wellness coach sessions with certified professionals
+• Live and on-demand fitness classes — yoga, HIIT, pilates, cycling, and more
 
 Here's what happens next:
-1. On {{date}}, check your work email for a personal invitation
-2. Click the Magic Link to activate your account — free, no credit card needed
-3. Start exploring gyms, classes, and apps right away
+1. On {{date}}, you'll receive a personal invitation to your work email
+2. Click the Magic Link to activate your account — no credit card needed
+3. Start exploring your benefit right away
 
-We'll also be hosting a Welcome Webinar shortly after launch where you can learn how to get the most out of Wellhub and ask any questions you may have.
+We'll also be hosting a Welcome Webinar shortly after launch where you can ask questions and learn how to make the most of your membership.
 
-This is our commitment to your wellbeing, and I'm genuinely excited about it. I hope you'll take full advantage — your health is worth it.
+We're proud to invest in your wellbeing and excited to see how you'll use it.
 
-See you at the gym (or the meditation app)! 🌿
+Stay tuned for more information!
 
 {{sender}}
 {{title}}, {{company}}`
@@ -1483,6 +1473,9 @@ function renderAnnounce() {
   const body    = anFillPlaceholders(tpl.body);
   const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   let html = '';
+  if (anChannel === 'email' && anLength === 'medium') {
+    html += `<div style="font-size:10px;font-weight:600;color:var(--mgrn);background:rgba(12,128,70,.08);border-radius:8px;padding:5px 10px;margin-bottom:10px;display:inline-block;">★ Official Wellhub template</div>`;
+  }
   if (anChannel === 'email') {
     html += `<div class="an-subject-label">Subject</div><div class="an-subject">${esc(subject)}</div>`;
   }
