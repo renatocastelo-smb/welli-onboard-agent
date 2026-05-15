@@ -22,7 +22,9 @@ Do not end your reply with a question.
 If asked about payroll deductions or third-party integrations: say "That's handled directly by your CS rep — reach out to them."
 Only refer to contacting CS for: billing disputes, cancellation requests, legal questions, serious platform errors.
 Never invent portal paths, features, or statistics not present in the knowledge section.
-GP STEP SIGNAL: If your answer fully explains how to complete one specific Golden Path step, append <<<GP:STEP_ID>>> at the very end of your response (nothing after it). Valid IDs: upload, invites, teaser, leadership, i2s, webinar, comms. Only append if the answer IS the complete how-to for that exact step — not for general questions.`;
+GP STEP SIGNAL: If your answer fully explains how to complete one specific Golden Path step, append <<<GP:STEP_ID>>> at the very end of your response (nothing after it). Valid IDs: upload, invites, teaser, leadership, i2s, webinar, comms. Only append if the answer IS the complete how-to for that exact step — not for general questions.
+ESCALATION SIGNAL: For billing disputes, cancellation requests, legal questions, or serious unresolvable platform errors ONLY — append <<<ESCALAR_CS>>> at the very end (after your explanation of why you're escalating). Do not escalate general how-to questions.
+MILESTONE SIGNAL: If the user mentions they've completed all 7 Golden Path steps, hit a significant enrollment milestone (e.g. 20%+, 30%+), or achieved a major launch success — append <<<MARCO>>> at the very end of your celebratory response.`;
 
 // ── Knowledge bases ───────────────────────────────────────────────────────
 const KB = {
@@ -68,12 +70,14 @@ SUPPORT: clients.gympass.com | support.wellhub.com | Live chat Mon–Fri 9:00–
 `,
 
   LAUNCH_READINESS: `
-THE GOLDEN PATH (5 mandatory steps — must not be removed or reordered):
-Step 1 — TEASER (1–2 weeks before launch): Post early awareness on internal channels — email, Slack, intranet, posters, digital screens. Goal: employees see Wellhub before the invitation arrives.
-Step 2 — LEADERSHIP ANNOUNCEMENT (launch day or day before): A message from a leader using Wellhub-supplied copy confirming the benefit is real and supported. This builds trust and is the single highest-impact action.
-Step 3 — I2S — INVITATION TO SIGN UP (launch day): The Kick-off email sends automatically from the portal with a Magic Link. Employees click and sign up in minutes.
-Step 4 — WELCOME WEBINAR (~1 week after launch): Free 30-min live session hosted by Wellhub. HR picks a date, shares the link. Wellhub runs it. Covers the product and answers employee questions. Can be hosted on the client's platform or via Wellhub Zoom.
-Step 5 — COMMUNICATION ASSETS (Month 2 onward): Wellhub sends monthly ready-made emails automatically. HR forwards them. Also: share flyers, videos, digital assets from the portal.
+THE GOLDEN PATH (7 steps — IDs in parentheses are used in the system):
+Step 1 — UPLOAD YOUR EMPLOYEE LIST (id: upload, Portal Setup): Employees > Update employees > Import from a spreadsheet > Add employees > download template > fill name/email/NIN > upload > Confirm. Must be done before any invitations can be sent.
+Step 2 — CONFIGURE SMART INVITES (id: invites, Portal Setup): Settings > Communication > Invite your employees > Smart Invites (recommended) — auto-invites new eligibles and re-invites non-subscribers every 60 days. Optionally add a sender name on the same page.
+Step 3 — TEASER (id: teaser, Pre-Launch, 1–2 weeks before launch): Post early awareness on internal channels — email, Slack, intranet, posters, digital screens. Goal: employees see Wellhub before the invitation arrives.
+Step 4 — LEADERSHIP ANNOUNCEMENT (id: leadership, Pre-Launch, launch day or day before): A message from a leader using Wellhub-supplied copy confirming the benefit is real and supported. This builds trust and is the single highest-impact action.
+Step 5 — I2S — INVITATION TO SIGN UP (id: i2s, Launch Day): The Kick-off email sends automatically from the portal with a Magic Link. Employees click and sign up in minutes.
+Step 6 — WELCOME WEBINAR (id: webinar, Week 1 Post-Launch, ~1 week after launch): Free 30-min live session hosted by Wellhub. HR picks a date, shares the link. Wellhub runs it. Covers the product and answers employee questions.
+Step 7 — COMMUNICATION ASSETS (id: comms, Ongoing, Month 2+): Wellhub sends monthly ready-made emails automatically. HR forwards them. Also: share flyers, videos, digital assets from the portal.
 
 ENGAGEMENT IMPACT DATA (use these exact figures): With Wellhub+, engaged clients reach 27.4% enrollment at Month 1, 35.1% at Month 3, 41.3% at Month 6 — vs. 5.4%, 7.5%, 10.2% for non-engaged. Without Wellhub+, engaged clients reach 9.7% at Month 1, 13.2% at Month 3, 21.7% at Month 6 — vs. 1.1%, 1.0%, 1.4% for non-engaged.
 
@@ -274,7 +278,7 @@ module.exports = async function handler(req, res) {
 
     const answer = await anthropic.messages.create({
       model: AGENT_MODEL,
-      max_tokens: 600,
+      max_tokens: 900,
       system: systemPrompt,
       messages
     });
