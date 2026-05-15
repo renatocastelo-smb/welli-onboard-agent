@@ -1085,7 +1085,7 @@ let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
 function renderIntroStep() {
   showPanel('overview');
   const inner = document.getElementById('cov-inner');
-  const TOTAL = 4;
+  const TOTAL = 3;
   const s = introStep;
   const navDots = Array.from({length: TOTAL}, (_, i) =>
     `<div class="intro-nav-dot${i === s ? ' active' : i < s ? ' done' : ''}"></div>`
@@ -1172,34 +1172,7 @@ function renderIntroStep() {
   } else if (s === 2) {
     const today = new Date();
     const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
-    const savedCo   = localStorage.getItem('welli_company') || '';
     const savedDate = localStorage.getItem('welli_launch_date') || '';
-    inner.innerHTML = `
-      <div style="margin-bottom:18px;">
-        <div class="w4c-tag" style="display:inline-block;margin-bottom:12px;">Setup</div>
-        <div class="wk-headline" style="margin-bottom:6px;">Now let's set<br>you up.</div>
-        <div style="font-size:12px;color:rgba(27,19,64,.45);line-height:1.6;">Tell us about your company so Welli can personalise your experience and checklist.</div>
-      </div>
-      <div class="intro-setup-field">
-        <div class="intro-setup-label">YOUR COMPANY NAME</div>
-        <input class="intro-setup-input" id="intro-company" type="text" placeholder="e.g. Acme Corp" autocomplete="organization" value="${escH(savedCo)}">
-      </div>
-      <div class="intro-setup-field">
-        <div class="intro-setup-label">PLANNED LAUNCH DATE <span style="font-weight:400;color:#ccc;">(optional)</span></div>
-        <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}">
-      </div>
-      <button class="wk-cta" onclick="introSaveSetup()">Save & continue →</button>
-      <button class="intro-skip-link" onclick="introSkipSetup()">Skip for now</button>
-      ${nav(true)}`;
-    setTimeout(() => {
-      const inp = document.getElementById('intro-company');
-      if (inp && !inp.value) inp.focus();
-      ['intro-company','intro-date'].forEach(id => {
-        document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') introSaveSetup(); });
-      });
-    }, 80);
-
-  } else if (s === 3) {
     inner.innerHTML = `
       <div style="margin:-14px -16px 16px;background:var(--dp);padding:20px 20px 18px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:-50px;right:-50px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.2) 0%,transparent 70%);pointer-events:none;"></div>
@@ -1207,11 +1180,20 @@ function renderIntroStep() {
         <div class="path-title" style="color:#fff;margin-top:6px;">Your Path to Success</div>
         <div class="path-sub" style="color:rgba(255,255,255,.5);">The first 60 days set the tone. Let's make them count.</div>
       </div>
+      <div class="intro-setup-field" style="margin-bottom:14px;">
+        <div class="intro-setup-label">PLANNED LAUNCH DATE <span style="font-weight:400;color:#bbb;">(optional — helps personalise your timeline)</span></div>
+        <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}">
+      </div>
       <div class="path-steps" id="path-steps" style="flex:none;overflow:visible;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
         <div class="path-dots" id="path-dots"></div>
         <button class="path-nbtn" id="path-nbtn" onclick="pathNext()">Reveal →</button>
       </div>`;
+    setTimeout(() => {
+      document.getElementById('intro-date')?.addEventListener('change', e => {
+        if (e.target.value) localStorage.setItem('welli_launch_date', e.target.value);
+      });
+    }, 80);
     buildPathSteps();
     setTimeout(pathNext, 350);
   }
@@ -1220,7 +1202,7 @@ function renderIntroStep() {
 }
 
 function introNext() {
-  introStep = Math.min(introStep + 1, 3);
+  introStep = Math.min(introStep + 1, 2);
   renderPanelOverview();
 }
 function introPrev() {
