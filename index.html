@@ -497,6 +497,13 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-builder-btn{background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:11px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--dp);cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.3;}
 .cov-builder-btn:hover{background:var(--xlmg);border-color:var(--lmg);}
 .cov-btn-icon{font-size:19px;}
+/* Launch countdown card */
+.cov-launch{background:linear-gradient(135deg,var(--dp) 0%,#2d1b69 100%);border-radius:12px;padding:11px 14px;display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.cov-launch-icon{font-size:20px;flex-shrink:0;}
+.cov-launch-num{font-size:26px;font-weight:800;color:var(--grn);letter-spacing:-.5px;line-height:1;flex-shrink:0;}
+.cov-launch-label{font-size:11px;color:rgba(255,255,255,.45);font-weight:500;line-height:1.4;}
+.cov-launch-label strong{color:rgba(255,255,255,.8);display:block;font-size:12px;}
+
 /* Stage nav pills inside content overview */
 .cov-stage-nav{display:flex;gap:5px;margin-bottom:12px;}
 .cov-snav{flex:1;padding:6px 4px;border:1.5px solid var(--ow2);border-radius:20px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#bbb;background:none;cursor:pointer;transition:all .15s;text-align:center;}
@@ -1709,11 +1716,13 @@ function renderPanelOverview() {
     </div>`;
 
   if (faseAtual === 1) {
+    const d1 = daysUntilLaunch();
+    const launchSub = d1 !== null ? ` · Launch in ${d1 > 0 ? d1 + ' days' : d1 === 0 ? 'today!' : Math.abs(d1) + 'd ago'}` : '';
     inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 1</div>
         <div class="cov-title">Get to Know Wellhub</div>
-        <div class="cov-sub">Days 1–3 · Explore what's included</div>
+        <div class="cov-sub">Days 1–3 · Explore what's included${launchSub}</div>
       </div>
       <div class="cov-bcard">
         <div class="cov-bcard-icon">🏋️</div>
@@ -1777,12 +1786,24 @@ function renderPanelOverview() {
       }).join('');
     }
 
+    const days = daysUntilLaunch();
+    let launchCard = '';
+    if (days !== null) {
+      const abs  = Math.abs(days);
+      const lbl  = days > 1  ? `<strong>${abs} days to launch</strong>Finish the Golden Path before then.`
+                 : days === 1 ? `<strong>Launch is tomorrow!</strong>Last chance to complete your steps.`
+                 : days === 0 ? `<strong>🎉 Launch day!</strong>Share the invitation link with your team.`
+                 :              `<strong>Launched ${abs} day${abs!==1?'s':''} ago</strong>Keep the momentum going.`;
+      launchCard = `<div class="cov-launch"><div class="cov-launch-icon">${days<=0?'🎉':'🚀'}</div><div class="cov-launch-num">${days>0?abs:abs}</div><div class="cov-launch-label">${lbl}</div></div>`;
+    }
+
     inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
         <div class="cov-title">Get Ready to Launch</div>
         <div class="cov-sub">Golden Path — ${done} of ${total} steps complete</div>
       </div>
+      ${launchCard}
       <div class="cov-prog-row">
         <div class="cov-prog-bar"><div class="cov-prog-fill" style="width:${pct}%"></div></div>
         <span class="cov-prog-count">${done}/${total}</span>
