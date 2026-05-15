@@ -26,20 +26,15 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .wm{z-index:1;font-size:15px;font-weight:700;color:#fff;letter-spacing:-.5px;}
 .wm-dot{display:inline-block;width:5px;height:5px;background:var(--mg);border-radius:50%;margin-left:1px;vertical-align:middle;}
 
-/* ── Phase bar ── */
-.phase-bar{background:#fff;border-bottom:.5px solid var(--ow2);padding:9px 16px;display:flex;flex-direction:column;gap:5px;}
-.phase-meta{display:flex;justify-content:space-between;align-items:center;}
-.phase-name{font-size:10px;font-weight:700;color:var(--dm);text-transform:uppercase;letter-spacing:.05em;}
-.phase-period{font-size:10px;color:#bbb;}
-.phase-track{display:flex;gap:4px;}
-.ps{flex:1;height:4px;border-radius:4px;background:var(--ow2);cursor:pointer;transition:background .15s;}
-.ps:hover{background:var(--lmg);}
-.ps.done{background:var(--mgrn);}.ps.active{background:var(--mg);}
-
-/* ── Status bar ── */
-.sb{background:var(--xlmg);padding:5px 16px;display:flex;align-items:center;gap:6px;}
-.sd{width:6px;height:6px;background:var(--mgrn);border-radius:50%;flex-shrink:0;}
-.sb p{font-size:11px;color:var(--dm);font-weight:500;}
+/* ── Progress Strip (top bar — stage pills + GP progress + launch date) ── */
+.progress-strip{background:#fff;border-bottom:.5px solid var(--ow2);padding:0 14px;height:46px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.pst-stages{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.pst-stages .ps{display:inline-flex;align-items:center;padding:5px 11px;border:none;border-radius:20px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--ow2);color:rgba(27,19,64,.4);}
+.pst-stages .ps:hover{background:var(--lmg);color:var(--dm);}
+.pst-stages .ps.active{background:var(--mg);color:#fff;}
+.pst-stages .ps.done{background:rgba(12,128,70,.12);color:var(--mgrn);}
+.pst-sep{width:1px;height:12px;background:var(--ow2);flex-shrink:0;}
+.pst-date{font-size:10.5px;font-weight:600;color:#bbb;white-space:nowrap;flex-shrink:0;margin-left:auto;}
 
 /* ── Messages ── */
 .msgs{overflow-y:auto;padding:14px 14px 4px;display:flex;flex-direction:column;gap:11px;flex:1;min-height:0;scroll-behavior:smooth;}
@@ -88,6 +83,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .milestone-card{background:linear-gradient(135deg,var(--dp) 0%,#2A1960 100%);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;max-width:92%;animation:fu .28s ease;border:.5px solid rgba(168,128,255,.3);}
 .milestone-card .mc-title{font-size:13px;font-weight:600;color:#fff;}
 .milestone-card .mc-desc{font-size:12px;color:var(--mp);}
+.mc-stage3-btn{margin-top:6px;background:none;border:1.5px solid rgba(168,128,255,.6);border-radius:10px;padding:7px 14px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;color:var(--mp);cursor:pointer;width:100%;transition:background .15s,color .15s,border-color .15s;}
+.mc-stage3-btn:hover{background:var(--mg);color:#fff;border-color:var(--mg);}
 
 /* ── Typing ── */
 .twrap{display:flex;flex-direction:column;gap:2px;align-items:flex-start;}
@@ -396,6 +393,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .chip-teaser:hover{background:rgba(168,128,255,.2);border-color:var(--mp);}
 .chip-portal{background:rgba(12,128,70,.08);border-color:rgba(12,128,70,.3);color:var(--mgrn);}
 .chip-portal:hover{background:rgba(12,128,70,.16);border-color:var(--mgrn);}
+.chip-feedback{background:none;border-color:var(--ow2);color:#bbb;font-size:10.5px;}
+.chip-feedback:hover{border-color:rgba(27,19,64,.25);color:rgba(27,19,64,.5);}
 
 /* ── Persistent intro chat bar ── */
 #intro-bar{background:#fff;border-top:.5px solid var(--ow2);padding:8px 14px;display:none;gap:8px;align-items:center;}
@@ -411,8 +410,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .brand span{font-size:10px;font-weight:500;color:#5B4191;letter-spacing:.05em;text-transform:uppercase;}
 .pill{background:var(--dp);color:var(--grn);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:2px 7px;}
 
-/* ── Golden Path row trigger ── */
-.gp-row{background:#fff;border-bottom:.5px solid var(--ow2);padding:7px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;user-select:none;}
+/* ── Golden Path row trigger (lives inside .progress-strip) ── */
+.gp-row{display:none;align-items:center;gap:8px;cursor:pointer;flex:1;min-width:0;padding:4px 8px;border-radius:8px;transition:background .15s;user-select:none;}
 .gp-row:hover{background:var(--xlmg);}
 .gp-mini-bar{height:4px;border-radius:4px;background:var(--ow2);overflow:hidden;flex:1;}
 .gp-mini-fill{height:100%;background:var(--mgrn);border-radius:4px;transition:width .4s ease;width:0%;}
@@ -443,8 +442,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 /* App main wrapper */
 #app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
 
-/* Mobile tab bar */
-.mobile-tabs{display:flex;background:#fff;border-bottom:.5px solid var(--ow2);flex-shrink:0;}
+/* Mobile tab bar — sits at the BOTTOM of app-main */
+.mobile-tabs{display:flex;background:#fff;border-top:.5px solid var(--ow2);flex-shrink:0;}
 .mt-tab{flex:1;padding:10px 4px;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#bbb;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;position:relative;}
 .mt-tab.active{color:var(--dp);border-bottom-color:var(--mg);}
 .mt-badge{display:none;position:absolute;top:8px;right:calc(50% - 32px);width:7px;height:7px;border-radius:50%;background:var(--mg);pointer-events:none;}
@@ -462,8 +461,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
   .mp-hidden{display:none!important;}
 }
 @media(min-width:720px){
-  .content-panel{flex:0 0 55%;border-right:.5px solid var(--ow2);}
-  .chat-panel{flex:1;}
+  .content-panel{flex:0 0 50%;border-right:.5px solid var(--ow2);}
+  .chat-panel{flex:0 0 50%;}
 }
 
 /* Content panel views */
@@ -522,19 +521,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-launch-label{font-size:11px;color:rgba(255,255,255,.45);font-weight:500;line-height:1.4;}
 .cov-launch-label strong{color:rgba(255,255,255,.8);display:block;font-size:12px;}
 
-/* Fixed stage pill strip (never scrolls, sits above cov-scroll) */
-#cov-stage-strip{background:var(--ow);border-bottom:.5px solid var(--ow2);padding:9px 14px;flex-shrink:0;}
-#cov-stage-strip .cov-stage-nav{margin-bottom:0;}
-
 /* Bottom fade gradient on overview panel — hints at more content below */
 #cp-overview{position:relative;}
 #cp-overview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,var(--ow));pointer-events:none;z-index:2;}
-
-/* Stage nav pills inside content overview */
-.cov-stage-nav{display:flex;gap:5px;margin-bottom:12px;}
-.cov-snav{flex:1;padding:6px 4px;border:1.5px solid var(--ow2);border-radius:20px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#bbb;background:none;cursor:pointer;transition:all .15s;text-align:center;}
-.cov-snav.active{background:var(--dp);border-color:var(--dp);color:#fff;}
-.cov-snav:hover:not(.active){background:var(--xlmg);border-color:var(--lmg);color:var(--dp);}
 
 /* Stage 3 action cards */
 .cov-action{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border-radius:12px;margin-bottom:7px;border:.5px solid var(--ow2);cursor:pointer;transition:background .15s;}
@@ -544,6 +533,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-action-desc{font-size:11px;color:rgba(27,19,64,.5);line-height:1.4;}
 .cov-action-tag{font-size:9px;font-weight:700;color:var(--mg);background:var(--xlmg);padding:2px 6px;border-radius:8px;display:inline-block;margin-top:3px;}
 .cov-action-tag.warn{color:#c05000;background:rgba(255,100,0,.1);}
+.cov-action-tag.neutral{color:rgba(27,19,64,.45);background:var(--ow2);}
 
 /* Next-step highlight on GP checklist */
 .cov-step.next-up{border-color:rgba(242,73,107,.35);background:linear-gradient(135deg,var(--xlmg),#fff);border-left:3px solid var(--mg);}
@@ -584,6 +574,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 /* Stage 1 ask-welli CTA in content panel */
 .cov-cta{background:var(--dp);border:none;border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;width:100%;text-align:center;transition:background .2s;margin-top:6px;}
 .cov-cta:hover{background:var(--mg);}
+.cov-cta-secondary{background:none;border:1.5px solid var(--mg);border-radius:12px;padding:10px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--mg);cursor:pointer;width:100%;text-align:center;transition:background .2s,color .2s;margin-top:6px;}
+.cov-cta-secondary:hover{background:var(--mg);color:#fff;}
 .gpp-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .gpp-back{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);display:flex;align-items:center;gap:4px;padding:0;transition:color .15s;}
 .gpp-back:hover{color:var(--dm);}
@@ -708,7 +700,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
           <div class="vid-sub" id="vid-sub-lbl">Watch the platform walkthrough →</div>
         </div>
       </div>
-      <a class="help-link" href="https://helpcenter.gympass.com/pt-br/articles/guia-do-wellhub-para-empresas-o-que-e-e-como-usar-a-plataforma-de-gestao-do-beneficio" target="_blank">
+      <a class="help-link" href="https://helpcenter.gympass.com" target="_blank">
         <div class="help-link-icon">📚</div>
         <div class="help-link-text">Want to know more? Visit our <strong>Help Center</strong> for the full platform guide.</div>
       </a>
@@ -891,11 +883,26 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
   <!-- ══ APP MAIN — post-intro split panel ══ -->
   <div id="app-main" style="display:none;">
-    <!-- Mobile tab bar (hidden on desktop ≥720px) -->
-    <div class="mobile-tabs">
-      <button class="mt-tab" id="mt-content" onclick="switchMobileTab('content')">📄 Content</button>
-      <button class="mt-tab active" id="mt-chat" onclick="switchMobileTab('chat')">💬 Chat<span class="mt-badge" id="mt-badge"></span></button>
+
+    <!-- ▌ PROGRESS STRIP ▌ -->
+    <div class="progress-strip">
+      <div class="pst-stages">
+        <button class="ps active" id="ps1" onclick="mudarFase(1)">1 · Explore</button>
+        <div class="pst-sep"></div>
+        <button class="ps" id="ps2" onclick="mudarFase(2)">2 · Launch</button>
+        <div class="pst-sep"></div>
+        <button class="ps" id="ps3" onclick="mudarFase(3)">3 · Engage</button>
+      </div>
+      <!-- GP progress bar (Stage 2 only) -->
+      <div class="gp-row" id="gp-row" onclick="toggleGP()">
+        <div class="gp-mini-bar"><div class="gp-mini-fill" id="gp-fill"></div></div>
+        <span id="gp-label">Golden Path · 0/7</span>
+        <span class="gp-arr">›</span>
+      </div>
+      <!-- Launch date / stage period -->
+      <div class="pst-date" id="fase-periodo">Days 1–3</div>
     </div>
+
     <!-- Split: content panel (left) + chat panel (right) -->
     <div class="app-split">
 
@@ -904,7 +911,6 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
         <!-- View: Overview (default) -->
         <div class="cp-view cp-active" id="cp-overview">
-          <div id="cov-stage-strip"></div><!-- fixed stage pill nav (never scrolls) -->
           <div class="cov-scroll" id="cov-inner"></div>
         </div>
 
@@ -995,23 +1001,6 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
       <!-- ▌ CHAT PANEL ▌ -->
       <div class="chat-panel" id="chat-panel">
-        <div class="phase-bar">
-          <div class="phase-meta">
-            <div class="phase-name" id="fase-nome">Stage 1 — Get to Know Wellhub</div>
-            <div class="phase-period" id="fase-periodo">Days 1–3</div>
-          </div>
-          <div class="phase-track">
-            <div class="ps" id="ps1" onclick="mudarFase(1)" title="Get to Know Wellhub for Companies"></div>
-            <div class="ps" id="ps2" onclick="mudarFase(2)" title="Get Ready to Launch Wellhub"></div>
-            <div class="ps" id="ps3" onclick="mudarFase(3)" title="Life After Launch"></div>
-          </div>
-        </div>
-        <div class="gp-row" id="gp-row" onclick="toggleGP()">
-          <div class="gp-mini-bar"><div class="gp-mini-fill" id="gp-fill"></div></div>
-          <span id="gp-label">Golden Path · 0 of 7 steps</span>
-          <span class="gp-arr">›</span>
-        </div>
-        <div class="sb"><div class="sd"></div><p>Online · Wellhub Onboarding Assistant</p></div>
         <div id="msgs-area">
           <div class="msgs" id="msgs"></div>
           <div class="chips" id="chips"></div>
@@ -1040,12 +1029,22 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
       </div><!-- /chat-panel -->
 
     </div><!-- /app-split -->
+
+    <!-- Mobile tab bar — bottom, hidden on desktop ≥720px -->
+    <div class="mobile-tabs">
+      <button class="mt-tab" id="mt-content" onclick="switchMobileTab('content')">📄 Content</button>
+      <button class="mt-tab active" id="mt-chat" onclick="switchMobileTab('chat')">💬 Chat<span class="mt-badge" id="mt-badge"></span></button>
+    </div>
+
   </div><!-- /app-main -->
 
   <div class="brand"><span>Powered by</span><span class="pill">Wellhub AI</span></div>
 </div>
 
 <script>
+// ── Shared HTML escape helper ──────────────────────────────────────────────
+const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
 // ── W4C Intro slides ───────────────────────────────────────────────────────
 let w4cSlide = 0;
 const W4C_TOTAL = 4;
@@ -1101,7 +1100,7 @@ function completeW4C() {
   s.style.opacity = '0';
   setTimeout(() => {
     s.style.display = 'none';
-    if (!localStorage.getItem('welli_company')) showSetup();
+    if (localStorage.getItem('welli_company') === null) showSetup();
     else showChat();
   }, 350);
 }
@@ -1112,10 +1111,11 @@ function showSetup() {
   s.style.opacity = '0';
   s.style.transition = 'opacity .35s ease';
   requestAnimationFrame(() => { s.style.opacity = '1'; });
-  // Set today as min date, and default to ~2 weeks from now as a hint
+  // Set today as min date using local date (avoid UTC off-by-one at night)
   const inp = document.getElementById('setup-date');
   const today = new Date();
-  inp.min = today.toISOString().split('T')[0];
+  const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
+  inp.min = localToday;
   // Focus company field
   setTimeout(() => document.getElementById('setup-company').focus(), 350);
   // Enter key on either field submits
@@ -1199,7 +1199,10 @@ const PATH_STEPS = [
 function pathDate(offset) {
   const ld = localStorage.getItem('welli_launch_date');
   if (ld) {
-    const d = new Date(ld); d.setDate(d.getDate() + offset);
+    // Parse as local date to avoid UTC midnight timezone day-off bug
+    const p = ld.split('-').map(Number);
+    const d = new Date(p[0], p[1] - 1, p[2]);
+    d.setDate(d.getDate() + offset);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
   if (offset < 0)  return Math.abs(offset) + ' days before launch';
@@ -1387,12 +1390,12 @@ function renderTeaser() {
       <div class="ts-wm" style="color:${t.wmColor}">
         wellhub<span class="ts-wm-dot" style="background:${t.dotColor}"></span>
       </div>
-      <div class="ts-badge" style="background:${t.badgeBg};color:${t.badgeColor}">${bdg}</div>
+      <div class="ts-badge" style="background:${t.badgeBg};color:${t.badgeColor}">${escH(bdg)}</div>
     </div>
     <div class="ts-preview-mid">
       <div class="ts-logo-box">${logoHtml}</div>
-      <div class="ts-headline-preview" style="color:${t.textColor}">${hdl}</div>
-      <div class="ts-subline-preview" style="color:${t.subColor}">${sub}</div>
+      <div class="ts-headline-preview" style="color:${t.textColor}">${escH(hdl)}</div>
+      <div class="ts-subline-preview" style="color:${t.subColor}">${escH(sub)}</div>
     </div>`;
   prev.style.background = t.bg;
 }
@@ -1654,7 +1657,9 @@ function anFillPlaceholders(text) {
   let dateStr = 'your launch date';
   if (rawDate) {
     try {
-      dateStr = new Date(rawDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      // Parse as local date (YYYY-MM-DD) — parts constructor avoids UTC midnight off-by-one
+      const p = rawDate.split('-').map(Number);
+      dateStr = new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     } catch(e) {}
   }
   const sender = document.getElementById('an-sender').value.trim() || 'Leadership';
@@ -1671,15 +1676,21 @@ function renderAnnounce() {
   const prev   = document.getElementById('an-preview');
   const subject = anFillPlaceholders(tpl.subject);
   const body    = anFillPlaceholders(tpl.body);
-  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let bodyHtml = escH(body);
   let html = '';
-  if (anChannel === 'email' && anLength === 'medium') {
-    html += `<div style="font-size:10px;font-weight:600;color:var(--mgrn);background:rgba(12,128,70,.08);border-radius:8px;padding:5px 10px;margin-bottom:10px;display:inline-block;">★ Official Wellhub template</div>`;
+  if (anChannel === 'slack') {
+    // Slack preview: render *bold* and _italic_ so it looks like real Slack
+    bodyHtml = bodyHtml
+      .replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>')
+      .replace(/_([^_\n]+)_/g, '<em style="font-style:italic">$1</em>');
+    html += `<div style="font-size:10px;font-weight:600;color:#4A154B;background:rgba(74,21,75,.07);border-radius:8px;padding:5px 10px;margin-bottom:10px;display:inline-block;">💬 Slack preview</div>`;
+  } else {
+    if (anLength === 'medium') {
+      html += `<div style="font-size:10px;font-weight:600;color:var(--mgrn);background:rgba(12,128,70,.08);border-radius:8px;padding:5px 10px;margin-bottom:10px;display:inline-block;">★ Official Wellhub template</div>`;
+    }
+    html += `<div class="an-subject-label">Subject</div><div class="an-subject">${escH(subject)}</div>`;
   }
-  if (anChannel === 'email') {
-    html += `<div class="an-subject-label">Subject</div><div class="an-subject">${esc(subject)}</div>`;
-  }
-  html += `<div class="an-body">${esc(body)}</div>`;
+  html += `<div class="an-body">${bodyHtml}</div>`;
   prev.innerHTML = html;
 }
 
@@ -1721,16 +1732,27 @@ function copyAnnounce() {
 }
 
 function downloadAnnounce() {
-  const tpl     = AN[anChannel][anLength];
-  const subject = anFillPlaceholders(tpl.subject);
-  const body    = anFillPlaceholders(tpl.body);
-  const full    = anChannel === 'email' ? `Subject: ${subject}\n\n${body}` : body;
-  const co      = (localStorage.getItem('welli_company') || 'announcement').replace(/\s+/g, '-').toLowerCase();
-  const fname   = `wellhub-${co}-${anChannel}-${anLength}.txt`;
-  const blob    = new Blob([full], { type: 'text/plain' });
-  const a       = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
-  URL.revokeObjectURL(a.href);
+  try {
+    const tpl     = AN[anChannel][anLength];
+    const subject = anFillPlaceholders(tpl.subject);
+    const body    = anFillPlaceholders(tpl.body);
+    const full    = anChannel === 'email' ? `Subject: ${subject}\n\n${body}` : body;
+    const co      = (localStorage.getItem('welli_company') || 'announcement').replace(/\s+/g, '-').toLowerCase();
+    const fname   = `wellhub-${co}-${anChannel}-${anLength}.txt`;
+    const blob    = new Blob([full], { type: 'text/plain' });
+    const a       = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+    URL.revokeObjectURL(a.href);
+    // Visual confirmation
+    const btn = document.querySelector('.an-dl-txt');
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '✓ Saved!';
+      btn.style.borderColor = 'var(--mgrn)';
+      btn.style.color = 'var(--mgrn)';
+      setTimeout(() => { btn.textContent = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+    }
+  } catch(e) { console.error('Download error:', e); }
 }
 
 function showAnnounceScreen() {
@@ -1788,22 +1810,13 @@ function renderPanelOverview() {
 
   const co = localStorage.getItem('welli_company') || '';
 
-  // Render stage pills into the fixed strip (doesn't scroll)
-  const strip = document.getElementById('cov-stage-strip');
-  if (strip) strip.innerHTML = `
-    <div class="cov-stage-nav">
-      <button class="cov-snav${faseAtual===1?' active':''}" onclick="mudarFase(1)">1 · Explore</button>
-      <button class="cov-snav${faseAtual===2?' active':''}" onclick="mudarFase(2)">2 · Launch</button>
-      <button class="cov-snav${faseAtual===3?' active':''}" onclick="mudarFase(3)">3 · Engage</button>
-    </div>`;
-
   if (faseAtual === 1) {
     const d1 = daysUntilLaunch();
     // Build a compact launch countdown card when date is known,
     // or a "set your date" prompt when it isn't
     let s1LaunchCard = '';
     if (d1 === null) {
-      const todayIso = new Date().toISOString().split('T')[0];
+      const _td = new Date(); const todayIso = [_td.getFullYear(), String(_td.getMonth()+1).padStart(2,'0'), String(_td.getDate()).padStart(2,'0')].join('-');
       s1LaunchCard = `
         <div style="display:flex;align-items:center;gap:10px;background:rgba(168,128,255,.1);border:.5px solid rgba(168,128,255,.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;">
           <div style="font-size:18px;flex-shrink:0;">📅</div>
@@ -1826,7 +1839,7 @@ function renderPanelOverview() {
     inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 1</div>
-        <div class="cov-title">${co ? co + ' × Wellhub' : 'Get to Know Wellhub'}</div>
+        <div class="cov-title">${co ? escH(co) + ' × Wellhub' : 'Get to Know Wellhub'}</div>
         <div class="cov-sub">Days 1–3 · Explore the platform and benefits</div>
       </div>
       ${s1LaunchCard}
@@ -1855,6 +1868,11 @@ function renderPanelOverview() {
         <div style="flex:1;"><div class="cov-bcard-title">Challenges &amp; Raffles</div><div class="cov-bcard-desc">Run step contests and raffles — free tool, +35% enrollment lift.</div></div>
         <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
+      <div class="cov-bcard" onclick="covAskWelli('What are the differences between Wellhub plan tiers — Basic, Silver, Gold, and Platinum? What does each tier include, and what is the free Digital Plan?')">
+        <div class="cov-bcard-icon">⭐</div>
+        <div style="flex:1;"><div class="cov-bcard-title">Plan Tiers</div><div class="cov-bcard-desc">Basic, Silver, Gold, Platinum, and Digital — what each includes.</div></div>
+        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
+      </div>
       <div class="cov-section">Resources</div>
       <a class="cov-vid" href="https://drive.google.com/file/d/1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze/view" target="_blank" rel="noopener">
         <div class="cov-vid-play"></div>
@@ -1868,7 +1886,7 @@ function renderPanelOverview() {
         <div class="cov-link-icon">📚</div>
         <div class="cov-link-text">Visit the <strong>Help Center</strong> for guides, FAQs, and platform documentation.</div>
       </a>
-      <button class="cov-cta" onclick="covAskWelli('Walk me through setting up my Wellhub portal for the first time.')">Ask Welli to walk me through setup →</button>`;
+      <button class="cov-cta" onclick="covAskWelli('Give me a quick overview of what I need to do to launch Wellhub successfully for my team.')">Ask Welli what to expect →</button>`;
 
   } else if (faseAtual === 2) {
     const total   = GP_STEPS.length;
@@ -1884,12 +1902,18 @@ function renderPanelOverview() {
           <div class="cov-celebrate-title">Golden Path complete!</div>
           <div class="cov-celebrate-sub">All 7 steps done. You've set your team up for a great Wellhub launch.</div>
         </div>
-        <button class="cov-cta" style="margin-top:0;" onclick="covAskWelli('I\'ve completed all 7 Golden Path steps! What should I focus on to maximize employee enrollment now?')">Ask Welli what's next after launch →</button>`;
+        <button class="cov-cta" style="margin-top:0;" onclick="covAskWelli('I\'ve completed all 7 Golden Path steps! What should I focus on to maximize employee enrollment now?')">Ask Welli what's next after launch →</button>
+        <button class="cov-cta-secondary" onclick="mudarFase(3)">Move to Stage 3: Engage →</button>`;
     } else {
-      // Builder actions for steps that have a dedicated tool
+      // Actions for each GP step when it's next-up (all 7 steps covered)
       const STEP_ACTION = {
+        upload:     () => `<button class="cov-next-open" onclick="window.open('https://clients.gympass.com','_blank');event.stopPropagation()">Open portal →</button>`,
+        invites:    () => `<button class="cov-next-open" onclick="window.open('https://clients.gympass.com','_blank');event.stopPropagation()">Open portal →</button>`,
+        i2s:        () => `<button class="cov-next-open" onclick="window.open('https://clients.gympass.com','_blank');event.stopPropagation()">Open portal →</button>`,
         teaser:     () => `<button class="cov-next-open" onclick="showTeaserScreen();event.stopPropagation()">Open builder →</button>`,
         leadership: () => `<button class="cov-next-open" onclick="showAnnounceScreen();event.stopPropagation()">Open builder →</button>`,
+        webinar:    () => `<button class="cov-next-open" onclick="covAskWelli('How do I book the Welcome Webinar? Who do I contact?');event.stopPropagation()">Ask Welli how →</button>`,
+        comms:      () => `<button class="cov-next-open" onclick="window.open('https://wellhub.bynder.com','_blank');event.stopPropagation()">Open Brand Library →</button>`,
       };
       // Precompute per-group progress for section header badges
       const groupStats = {};
@@ -1928,7 +1952,7 @@ function renderPanelOverview() {
     const days = daysUntilLaunch();
     let launchCard = '';
     if (days === null) {
-      const todayIso = new Date().toISOString().split('T')[0];
+      const _td = new Date(); const todayIso = [_td.getFullYear(), String(_td.getMonth()+1).padStart(2,'0'), String(_td.getDate()).padStart(2,'0')].join('-');
       launchCard = `
         <div style="display:flex;align-items:center;gap:10px;background:rgba(168,128,255,.1);border:.5px solid rgba(168,128,255,.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;">
           <div style="font-size:18px;flex-shrink:0;">📅</div>
@@ -1938,7 +1962,7 @@ function renderPanelOverview() {
           </div>
           <input type="date" id="cov-date-set2" min="${todayIso}" style="border:.5px solid rgba(168,128,255,.4);border-radius:8px;padding:5px 8px;font-family:Inter,sans-serif;font-size:11px;color:var(--dp);background:rgba(255,255,255,.7);outline:none;cursor:pointer;" onchange="setCovLaunchDate(this.value)">
         </div>`;
-    } else if (days !== null) {
+    } else {
       const abs = Math.abs(days);
       if (days === 0) {
         launchCard = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🎉</div><div style="flex:1;"><div style="font-size:14px;font-weight:800;color:var(--grn);margin-bottom:2px;">It's Launch Day!</div><div class="cov-launch-label">Share the invitation link with your entire team now.</div></div></div>`;
@@ -1961,8 +1985,8 @@ function renderPanelOverview() {
     inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
-        <div class="cov-title">${co ? co + '\'s Launch Checklist' : 'Get Ready to Launch'}</div>
-        <div class="cov-sub">Golden Path — ${done} of ${total} steps complete${(() => { const ld = localStorage.getItem('welli_launch_date'); if (!ld) return ''; try { return ' · ' + new Date(ld + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' launch'; } catch(e) { return ''; } })()}</div>
+        <div class="cov-title">${co ? escH(co) + '\'s Launch Checklist' : 'Get Ready to Launch'}</div>
+        <div class="cov-sub">Golden Path — ${done} of ${total} steps complete${(() => { const ld = localStorage.getItem('welli_launch_date'); if (!ld) return ''; try { const p = ld.split('-').map(Number); return ' · ' + new Date(p[0], p[1]-1, p[2]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' launch'; } catch(e) { return ''; } })()}</div>
       </div>
       ${launchCard}
       <div class="cov-prog-row">
@@ -1975,6 +1999,19 @@ function renderPanelOverview() {
         <button class="cov-builder-btn" onclick="showTeaserScreen()"><span class="cov-btn-icon">🎨</span>Teaser Builder</button>
         <button class="cov-builder-btn" onclick="showAnnounceScreen()"><span class="cov-btn-icon">📢</span>Announcement Builder</button>
       </div>
+      <div class="cov-section">Resources</div>
+      <a class="cov-link" href="https://clients.gympass.com" target="_blank" rel="noopener">
+        <div class="cov-link-icon">🏢</div>
+        <div class="cov-link-text"><strong>Wellhub for Companies</strong> — upload employees, configure invites, and schedule your Kick-off email.</div>
+      </a>
+      <a class="cov-link" href="https://wellhub.bynder.com" target="_blank" rel="noopener">
+        <div class="cov-link-icon">🎨</div>
+        <div class="cov-link-text"><strong>Brand Library (Bynder)</strong> — official teaser posters, videos, and communication templates.</div>
+      </a>
+      <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
+        <div class="cov-link-icon">📚</div>
+        <div class="cov-link-text"><strong>Help Center</strong> — guides for upload, invite setup, and portal navigation.</div>
+      </a>
       ${done < total ? `<button class="cov-cta" onclick="covAskWelli('What is my most important next step to prepare for a successful launch?')">Ask Welli what to prioritize →</button>` : ''}`;
 
   } else {
@@ -1982,18 +2019,35 @@ function renderPanelOverview() {
     let s3Card = '';
     if (days3 !== null) {
       const abs3 = Math.abs(days3);
-      if (days3 <= 0) {
+      if (days3 > 0) {
+        // User manually moved to Stage 3 before launch date
+        s3Card = `<div class="cov-launch cov-launch-sm"><div class="cov-launch-icon">🚀</div><div class="cov-launch-num">${abs3}</div><div class="cov-launch-label"><strong>${abs3 === 1 ? 'day to launch' : 'days to launch'}</strong>Your team gets access soon — prepare your first outreach.</div></div>`;
+      } else if (days3 === 0) {
+        s3Card = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🎉</div><div style="flex:1;"><div style="font-size:13px;font-weight:800;color:var(--grn);margin-bottom:2px;">It's Launch Day!</div><div class="cov-launch-label">Share the invitation link now and invite your whole team.</div></div></div>`;
+      } else {
         const months = Math.floor(abs3 / 30);
+        // Surface the relevant post-launch checkpoint based on days elapsed
+        const checkpointMsg = abs3 >= 5 && abs3 <= 10
+          ? 'D7 First Value — confirm at least one employee has signed in and checked in.'
+          : abs3 >= 13 && abs3 <= 18
+          ? 'D15 Health Checkpoint — review your enrollment number in the portal now.'
+          : abs3 >= 28 && abs3 <= 36
+          ? 'D30 Growth Checkpoint — check your enrollment rate and plan your next action.'
+          : abs3 >= 58 && abs3 <= 66
+          ? 'D60 Growth Checkpoint — plan your next challenge, raffle, or comms push.'
+          : months >= 1
+          ? 'Keep the engagement momentum going.'
+          : 'Great start — keep communicating with your team.';
         const lbl3 = months >= 1
-          ? `<strong>${months} month${months !== 1 ? 's' : ''} since launch</strong>Keep the engagement momentum going.`
-          : `<strong>${abs3} day${abs3 !== 1 ? 's' : ''} since launch</strong>Great start — keep communicating with your team.`;
+          ? `<strong>${months} month${months !== 1 ? 's' : ''} since launch</strong>${checkpointMsg}`
+          : `<strong>${abs3} day${abs3 !== 1 ? 's' : ''} since launch</strong>${checkpointMsg}`;
         s3Card = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🌱</div><div class="cov-launch-num" style="font-size:${months>=10?'18':'26'}px">${months>=1?months+'mo':abs3+'d'}</div><div class="cov-launch-label">${lbl3}</div></div>`;
       }
     }
     inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 3</div>
-        <div class="cov-title">${co ? co + ' · Engagement' : 'Life After Launch'}</div>
+        <div class="cov-title">${co ? escH(co) + ' · Engagement' : 'Life After Launch'}</div>
         <div class="cov-sub">Month 1+ · Drive ongoing enrollment</div>
       </div>
       ${s3Card}
@@ -2008,14 +2062,19 @@ function renderPanelOverview() {
         <div style="flex:1;"><div class="cov-action-title">Share communication assets</div><div class="cov-action-desc">Forward Wellhub's ready-made emails and social posts to boost awareness.</div><span class="cov-action-tag">Monthly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
+      <div class="cov-action" onclick="covAskWelli('How do I re-invite employees who haven\'t signed up yet? Does Smart Invites do this automatically?')">
+        <div class="cov-action-icon">📩</div>
+        <div style="flex:1;"><div class="cov-action-title">Re-invite non-subscribers</div><div class="cov-action-desc">Smart Invites auto-resends every 60 days — or send manually to specific employees now.</div><span class="cov-action-tag neutral">As needed</span></div>
+        <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
+      </div>
       <div class="cov-action" onclick="covAskWelli('How do I run a Wellhub Challenge or Raffle to re-engage my team?')">
         <div class="cov-action-icon">🏆</div>
         <div style="flex:1;"><div class="cov-action-title">Run a Challenge or Raffle</div><div class="cov-action-desc">Wellhub Challenges drive check-ins and re-engage inactive members.</div><span class="cov-action-tag">Quarterly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
-      <div class="cov-action" onclick="covAskWelli('What is the EEP report and how do I read it?')">
+      <div class="cov-action" onclick="covAskWelli('What reports are available in the Wellhub portal and how do I read them? I want to understand subscriber count, check-ins, and engagement trends.')">
         <div class="cov-action-icon">📈</div>
-        <div style="flex:1;"><div class="cov-action-title">Review the EEP report</div><div class="cov-action-desc">Employee Engagement Performance shows ROI and engagement trends.</div><span class="cov-action-tag">Monthly</span></div>
+        <div style="flex:1;"><div class="cov-action-title">Review your portal reports</div><div class="cov-action-desc">Engagement Report, Subscribers Report, Check-in Details — all in the portal dashboard.</div><span class="cov-action-tag">Monthly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
       <div class="cov-section">Troubleshooting</div>
@@ -2029,14 +2088,29 @@ function renderPanelOverview() {
         <div class="cov-link-icon">🏢</div>
         <div class="cov-link-text"><strong>Wellhub for Companies</strong> — check enrollment numbers and run engagement reports.</div>
       </a>
+      <a class="cov-link" href="https://digital.gympass.com/momentum-program/us/" target="_blank" rel="noopener">
+        <div class="cov-link-icon">🚀</div>
+        <div class="cov-link-text"><strong>Momentum Program</strong> — free HR toolkit with engagement templates, challenge guides, monthly webinars, and the HR Insider briefing.</div>
+      </a>
       <a class="cov-link" href="https://wellhub.bynder.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">🎨</div>
         <div class="cov-link-text"><strong>Brand Library (Bynder)</strong> — monthly assets, posters, challenges, email templates.</div>
       </a>
       <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">📚</div>
-        <div class="cov-link-text"><strong>Help Center</strong> — engagement guides, challenge setup, EEP reports.</div>
-      </a>`;
+        <div class="cov-link-text"><strong>Help Center</strong> — engagement guides, challenge setup, and portal navigation.</div>
+      </a>
+      ${(() => {
+        const d3 = daysUntilLaunch();
+        if (d3 !== null && d3 < 0) {
+          const abs3 = Math.abs(d3);
+          if (abs3 >= 5 && abs3 <= 10)  return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D7 First Value window — how do I confirm employees are signing in and checking in? What should I look for in the portal?')">→ D7 checkpoint: confirm first value</button>`;
+          if (abs3 >= 13 && abs3 <= 18) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D15 Health Checkpoint — how do I review my enrollment numbers and what should I do if they\\'re lower than expected?')">→ D15 checkpoint: review enrollment</button>`;
+          if (abs3 >= 28 && abs3 <= 36) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D30 Growth Checkpoint — what should I check in the portal and what\\'s the single most effective action to boost enrollment now?')">→ D30 checkpoint: plan your next action</button>`;
+          if (abs3 >= 58 && abs3 <= 66) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D60 Growth Checkpoint — what engagement tactics should I run this month to keep enrollment growing?')">→ D60 checkpoint: plan next initiative</button>`;
+        }
+        return `<button class="cov-cta" onclick="covAskWelli('I\\'m in Stage 3 — what should I focus on this month to improve my enrollment and keep employees engaged?')">Ask Welli what to focus on this month →</button>`;
+      })()}`;
   }
 
   // Always scroll back to top
@@ -2061,12 +2135,18 @@ function toggleCovStep(id) {
     // Progress bar flash
     const fill = document.querySelector('#cov-inner .cov-prog-fill');
     if (fill) { fill.classList.remove('flash'); void fill.offsetWidth; fill.classList.add('flash'); }
-    // Scroll to new next-up step
-    const nextEl = document.querySelector('#cov-inner .cov-step.next-up');
-    if (nextEl) {
-      nextEl.classList.add('just-revealed');
-      setTimeout(() => nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
-      setTimeout(() => nextEl.classList.remove('just-revealed'), 800);
+    // Scroll to new next-up step (only if not all done — celebrate card replaces checklist)
+    const allDone = GP_STEPS.every(s => gpState[s.id]);
+    if (!allDone) {
+      const nextEl = document.querySelector('#cov-inner .cov-step.next-up');
+      if (nextEl) {
+        nextEl.classList.add('just-revealed');
+        setTimeout(() => nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+        setTimeout(() => nextEl.classList.remove('just-revealed'), 800);
+      }
+    } else {
+      // All 7 steps done — show milestone card in the chat panel
+      renderMilestone();
     }
   }
 }
@@ -2120,6 +2200,8 @@ function toggleGP() {
     if (gpStepTicked) {
       renderChips();         // surface "next step" chip after completing a step
       renderPanelOverview(); // sync content panel with GP slide-in changes
+      // Celebrate if all steps were just completed inside the panel
+      if (GP_STEPS.every(s => gpState[s.id])) renderMilestone();
     }
   }
 }
@@ -2198,7 +2280,7 @@ let busy = false;
 const FASES = {
   1: {
     nome: 'Stage 1 — Get to Know Wellhub', periodo: 'Days 1–3',
-    chips: ['How do I upload my employee list?', 'How do I set up Smart Invites?', 'How do I add an admin?', 'What is Wellhub+?', 'How do I run a Wellhub Challenge?']
+    chips: ['What can employees do with Wellhub?', 'How do plan tiers work?', 'What is Wellhub+?', 'How do I add an admin?', 'How do I upload my employee list?']
   },
   2: {
     nome: 'Stage 2 — Get Ready to Launch', periodo: 'Pre-launch',
@@ -2206,7 +2288,7 @@ const FASES = {
   },
   3: {
     nome: 'Stage 3 — Life After Launch', periodo: 'Month 1+',
-    chips: ['How do I check my enrollment rate?', 'My enrollment is low — what do I do?', 'How do I run a Wellhub Challenge?', 'What is the EEP report?']
+    chips: ['How do I check my enrollment rate?', 'My enrollment is low — what do I do?', 'How do I run a Wellhub Challenge?', 'What is the Momentum Program?']
   }
 };
 
@@ -2227,7 +2309,10 @@ function launchLine() {
   if (days > 1)  return ` You have ${days} days until launch.`;
   if (days === 1) return ' Launch is tomorrow!';
   if (days === 0) return ' Today is launch day!';
-  return ` You launched ${Math.abs(days)} day${Math.abs(days) !== 1 ? 's' : ''} ago.`;
+  const abs = Math.abs(days);
+  const months = Math.floor(abs / 30);
+  if (months >= 1) return ` You launched ${months} month${months !== 1 ? 's' : ''} ago.`;
+  return ` You launched ${abs} day${abs !== 1 ? 's' : ''} ago.`;
 }
 
 function launchPeriod() {
@@ -2236,13 +2321,16 @@ function launchPeriod() {
   if (days > 1)  return `${days} days to launch`;
   if (days === 1) return 'Tomorrow!';
   if (days === 0) return 'Launch day!';
-  return `Launched ${Math.abs(days)}d ago`;
+  const abs = Math.abs(days);
+  const months = Math.floor(abs / 30);
+  if (months >= 1) return `Launched ${months}mo ago`;
+  return `Launched ${abs}d ago`;
 }
 
 // ── Welcome message (GP + company + launch aware) ─────────────────────────
 const PHASE_BODY = {
-  1: "You're in Stage 1 — let's get your portal set up. Your first step is uploading your employee list so your team can access Wellhub. Want me to walk you through it?",
-  2: "You're in Stage 2 — time to prepare your launch. The Golden Path has 7 steps that determine whether your rollout succeeds. Want to start with the most important one?",
+  1: "You're in Stage 1 — time to explore what Wellhub offers your team. I can walk you through the platform, explain the plan tiers, or show you how the admin portal works. What would you like to start with?",
+  2: "You're in Stage 2 — time to prepare your launch. The Golden Path has 7 steps that drive employee enrollment.\n\nStart with Step 1: upload your employee list. Without it, no invitations can go out.\n\nWant me to walk you through it?",
   3: "You're in Stage 3 — your Wellhub is live. Now it's about keeping enrollment growing and employees engaged. Want to start with how to read your enrollment numbers?"
 };
 
@@ -2257,8 +2345,7 @@ function buildWelcomeText() {
   // Stage 3: focus on post-launch engagement, not GP checklist
   if (faseAtual === 3) {
     const allDone = done.length === GP_STEPS.length;
-    const ll3 = ll || (allDone ? '' : '');
-    return `${hi}${ll3}\n\nYour Wellhub is live — now it's time to grow enrollment and keep employees engaged.\n\n${allDone ? 'You completed the full Golden Path before launch. ' : ''}Want to start with how to check your enrollment rate, or do you have a specific question?`;
+    return `${hi}${ll}\n\nYour Wellhub is live — now it's time to grow enrollment and keep employees engaged.${allDone ? '\n\nYou completed the full Golden Path before launch — great setup.' : ''}\n\nKey resources available to you:\n→ Portal reports (Dashboard & Reports) — track subscription rate and check-ins\n→ Momentum Program — free HR toolkit with monthly assets and webinars\n→ Challenges — average +35% enrollment lift\n\nWhat would you like to focus on first?`;
   }
 
   if (done.length === 0) {
@@ -2272,24 +2359,14 @@ function buildWelcomeText() {
 }
 
 // ── Phase UI ───────────────────────────────────────────────────────────────
-const SB_CONTEXT = {
-  1: 'Stage 1 · Get to Know Wellhub',
-  2: 'Stage 2 · Launch prep',
-  3: 'Stage 3 · Life after launch',
-};
-
 function atualizarFaseUI() {
   const f = faseAtual;
-  document.getElementById('fase-nome').textContent    = FASES[f].nome;
   document.getElementById('fase-periodo').textContent = launchPeriod() || FASES[f].periodo;
   for (let i = 1; i <= 3; i++) {
     document.getElementById('ps' + i).className = 'ps' + (i < f ? ' done' : i === f ? ' active' : '');
   }
   // Golden Path row only visible in Stage 2
   document.getElementById('gp-row').style.display = f === 2 ? 'flex' : 'none';
-  // Status bar context
-  const sbP = document.querySelector('.sb p');
-  if (sbP) sbP.textContent = 'Online · ' + SB_CONTEXT[f];
 }
 
 function mudarFase(f) {
@@ -2298,6 +2375,7 @@ function mudarFase(f) {
   try { localStorage.setItem('welli_stage', f); } catch(e) {}
   hist = [];
   atualizarFaseUI();
+  updateGPProgress();
   renderChips();
   renderPanelOverview();
   showPanel('overview'); // always return to overview when switching stage
@@ -2340,6 +2418,16 @@ function renderChips() {
   if (uploadIsNext)  box.appendChild(makePortalChip('🏢 Open portal to upload →'));
   if (invitesIsNext) box.appendChild(makePortalChip('⚡ Configure Smart Invites →'));
   if (i2sIsNext)     box.appendChild(makePortalChip('🚀 Schedule kick-off email →'));
+  // Stage 3: always show a portal chip for enrollment checks
+  if (faseAtual === 3) box.appendChild(makePortalChip('📊 Check enrollment in portal →'));
+  // Stage 2 with all steps done: show transition chip
+  if (faseAtual === 2 && GP_STEPS.every(s => gpState[s.id])) {
+    const s3btn = document.createElement('button');
+    s3btn.className = 'chip chip-next';
+    s3btn.textContent = '🏆 Move to Stage 3';
+    s3btn.onclick = () => mudarFase(3);
+    box.appendChild(s3btn);
+  }
 
   // Action chips promoted to FIRST when they match the active GP step
   if (teaserIsNext) {
@@ -2386,6 +2474,18 @@ function renderChips() {
     ab.onclick = showAnnounceScreen;
     box.appendChild(ab);
   }
+
+  // Persistent feedback chip — always last, subtle styling
+  const fb = document.createElement('button');
+  fb.className = 'chip chip-feedback';
+  fb.textContent = '✉ Feedback';
+  fb.onclick = () => {
+    const inp = document.getElementById('inp');
+    inp.value = '#feedback ';
+    inp.focus();
+    inp.setSelectionRange(inp.value.length, inp.value.length);
+  };
+  box.appendChild(fb);
 }
 
 // ── Markdown renderer (bot messages only) ────────────────────────────────
@@ -2453,6 +2553,13 @@ function addMsg(role, text, agentName, agentColor) {
   const w = document.createElement('div'); w.className = 'msg ' + (role === 'b' ? 'b' : 'u');
   const l = document.createElement('div'); l.className = 'lbl';
   l.textContent = role === 'b' ? 'Welli' : 'You';
+  if (role === 'b' && agentName) {
+    const badge = document.createElement('span');
+    badge.className = 'agent-badge';
+    badge.textContent = agentName;
+    if (agentColor) badge.style.color = agentColor;
+    l.appendChild(badge);
+  }
   const b = document.createElement('div'); b.className = 'bbl';
   if (role === 'b') {
     b.innerHTML = renderMarkdown(text);
@@ -2460,10 +2567,20 @@ function addMsg(role, text, agentName, agentColor) {
     const cp = document.createElement('button');
     cp.className = 'bbl-copy'; cp.title = 'Copy'; cp.textContent = '⎘';
     cp.onclick = () => {
-      navigator.clipboard.writeText(text).then(() => {
+      const confirm = () => {
         cp.textContent = '✓'; cp.classList.add('copied');
         setTimeout(() => { cp.textContent = '⎘'; cp.classList.remove('copied'); }, 1800);
-      });
+      };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(confirm).catch(() => {});
+      } else {
+        // Fallback for non-HTTPS or older browsers
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); confirm(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
     };
     b.appendChild(cp);
   } else {
@@ -2520,7 +2637,7 @@ function renderEscalation() {
 function renderMilestone() {
   const done  = GP_STEPS.filter(s => gpState[s.id]).length;
   const total = GP_STEPS.length;
-  const stageEmoji = { 1: '🌟', 2: '🚀', 3: '🏆' };
+  const stageEmoji = { 1: '🌟', 2: done === total ? '🏆' : '🚀', 3: '📈' };
   const emoji = stageEmoji[faseAtual] || '🎉';
   const titles = {
     1: 'Great start!',
@@ -2536,18 +2653,24 @@ function renderMilestone() {
   const wrap = document.createElement('div'); wrap.className = 'msg b';
   const lbl  = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = 'var(--mg)'; lbl.textContent = 'Welli';
   const card = document.createElement('div'); card.className = 'milestone-card';
-  card.innerHTML = `<div style="font-size:22px">${emoji}</div><div class="mc-title">${titles[faseAtual]||'Milestone reached!'}</div><div class="mc-desc">${descs[faseAtual]||'Great progress — keep it up!'}</div>`;
+  const s3Btn = (faseAtual === 2 && done === total)
+    ? `<button class="mc-stage3-btn" onclick="mudarFase(3)">Move to Stage 3: Engage →</button>`
+    : '';
+  card.innerHTML = `<div style="font-size:22px">${emoji}</div><div class="mc-title">${titles[faseAtual]||'Milestone reached!'}</div><div class="mc-desc">${descs[faseAtual]||'Great progress — keep it up!'}</div>${s3Btn}`;
   wrap.append(lbl, card); c.append(wrap); c.scrollTop = c.scrollHeight;
 }
 
 // ── Feedback confirm bubble ────────────────────────────────────────────────
 function renderFeedbackConfirm(original) {
-  const text = original.replace(/^#feedback\s*/i, '').trim() || '(no text)';
+  const raw  = original.replace(/^#feedback\s*/i, '').trim() || '(no text)';
   const c = document.getElementById('msgs');
   const wrap = document.createElement('div'); wrap.className = 'msg b';
   const lbl  = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = 'var(--mp)'; lbl.textContent = 'Feedback saved';
   const bubble = document.createElement('div'); bubble.className = 'feedback-bubble';
-  bubble.innerHTML = `<div class="feedback-icon">📝</div><div class="feedback-text">"${text}"</div>`;
+  // Use textContent for the user-provided text to prevent XSS
+  const icon = document.createElement('div'); icon.className = 'feedback-icon'; icon.textContent = '📝';
+  const txtEl = document.createElement('div'); txtEl.className = 'feedback-text'; txtEl.textContent = '“' + raw + '”';
+  bubble.append(icon, txtEl);
   wrap.append(lbl, bubble); c.append(wrap); c.scrollTop = c.scrollHeight;
 }
 
@@ -2613,7 +2736,13 @@ function renderGPAction(id) {
     btn.className = 'gp-action-btn done';
     btn.innerHTML = '✓ Marked as done';
     btn.disabled = true;
-    askNextStep(); // automatically surface the next step inline
+    // If this was the last step, celebrate + prompt Stage 3 transition
+    const allDone = GP_STEPS.every(s => gpState[s.id]);
+    if (allDone) {
+      sendDirect("I've completed all 7 Golden Path steps!", "I've just completed all 7 Golden Path steps — employee list uploaded, Smart Invites configured, teaser posted, leadership announcement sent, Kick-off email scheduled, Welcome Webinar booked, monthly comms set up. Briefly acknowledge this milestone and tell me the single most impactful thing to do right now to maximize enrollment in my first month post-launch.");
+    } else {
+      askNextStep(); // automatically surface the next step inline
+    }
   };
   row.appendChild(btn);
   c.appendChild(row);
@@ -2627,7 +2756,7 @@ async function callWelli(userMsg) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       message:        userMsg,
-      history:        hist.slice(-6),
+      history:        hist.slice(-8),
       phase:          faseAtual,
       goldenPath:     gpContext(),
       company:        localStorage.getItem('welli_company') || null,
@@ -2730,7 +2859,7 @@ if (window.innerWidth >= 720) {
 
 if (localStorage.getItem('welli_seen_welcome')) {
   document.getElementById('intro-screen').style.display = 'none';
-  if (!localStorage.getItem('welli_company')) { showSetup(); showIntroBar(); }
+  if (localStorage.getItem('welli_company') === null) { showSetup(); showIntroBar(); }
   else showChat();
 } else {
   // First-time user: welcome kit visible by default — show intro bar

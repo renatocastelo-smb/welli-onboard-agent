@@ -97,13 +97,15 @@ On mobile (< 720px): full-screen shell with a tab bar ("Content" | "Chat").
 - `renderChips()` — rebuilds the quick-reply chip row
 - `askNextStep()` — builds a rich internal prompt for the "next step" smart chip
 - `sendDirect(displayText, internalMsg)` — sends with a different visible label vs internal prompt
-- `renderGPAction(id)` — renders inline "Mark as done" button after a GP step answer
+- `renderGPAction(id)` — renders inline "Mark as done" button; detects all-done and fires celebration prompt
 - `renderGPList()` — re-renders the GP slide-in panel list with group badges
 - `showSendError(retryFn)` — shows error message with "↩ Try again" button
-- `downloadAnnounce()` — downloads announcement as .txt file with company-named filename
+- `downloadAnnounce()` — downloads announcement as .txt with company-named filename, shows "✓ Saved!" confirmation
 - `daysUntilLaunch()` — returns days to/from launch date, parsed as local date (no UTC bug)
+- `pathDate(offset)` — returns launch-relative date string, also uses local-date parsing (no UTC bug)
 - `gpContext()` — builds GP context object with doneSteps[], pendingSteps[] arrays for API
 - `setCovLaunchDate(val)` — saves launch date from inline date picker and re-renders
+- `toggleCovStep(id)` — checks/unchecks a GP step; fires `renderMilestone()` when last step is completed
 - `devReset()` — tap avatar 5× to wipe localStorage and restart (dev only)
 
 **localStorage keys:**
@@ -205,3 +207,17 @@ Or: push to `main` on GitHub (if Vercel is connected to the repo — see CONTRIB
 - The `devReset()` function — keep it, it's intentional
 - The `GP_STEPS` array structure — `id` values must match the backend KB
 - The `switchMobileTab()` no-op guard (`if (window.innerWidth >= 720) return`) — removing it breaks desktop layout
+- Date parsing: always use the parts-based constructor `new Date(p[0], p[1]-1, p[2])` for YYYY-MM-DD strings from localStorage — `new Date('YYYY-MM-DD')` parses as UTC midnight, which is the wrong local date in US timezones
+- Conversation history: frontend sends `hist.slice(-8)`, backend uses `history.slice(-8)` — keep these in sync
+
+## Coding Conventions (additions)
+
+- `.cov-cta-secondary` — outline button variant (border only, no fill). Use for secondary actions next to a primary `.cov-cta`.
+- `.chip-feedback` — muted chip at the end of every chip rail; pre-fills `#feedback ` in the input
+- `.chip-portal` — green chip for direct portal actions (opens clients.gympass.com)
+- `.mc-stage3-btn` — "Move to Stage 3" button inside the `.milestone-card`
+- `.cov-action-tag.neutral` — muted grey tag for "As needed" cadence (distinct from pink "Monthly")
+- `mudarFase(f)` always calls `updateGPProgress()` — keep this in the function
+- `STEP_ACTION` map inside `renderPanelOverview` covers all 7 GP steps — every step must have an entry
+- Stage 2 header `cov-sub` date also uses parts-based constructor — keep consistent with all other date renders
+- Post-launch D7/D15/D30/D60 checkpoint labels in Stage 3 `s3Card` — window ranges are ±5 days around each checkpoint
