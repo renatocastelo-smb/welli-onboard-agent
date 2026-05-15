@@ -1,7 +1,7 @@
 // GET /api/faq-top
 // Returns FAQ question IDs sorted by click count, per category.
-// Falls back to default order if KV is unavailable.
-const { kv } = require('@vercel/kv');
+// Falls back to default order if Redis is unavailable.
+const { Redis } = require('@upstash/redis');
 
 const HR_IDS  = ['hr-eligibility','hr-billing','hr-add-remove','hr-multicountry','hr-reports','hr-wellhubplus'];
 const EMP_IDS = ['emp-free','emp-home','emp-family','emp-signup','emp-included','emp-cancel'];
@@ -13,8 +13,9 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
 
   try {
+    const redis  = Redis.fromEnv();
     const keys   = ALL_IDS.map(id => `faq_clicks:${id}`);
-    const counts = await kv.mget(...keys);
+    const counts = await redis.mget(...keys);
 
     const scored = ALL_IDS.map((id, i) => ({ id, count: Number(counts[i] || 0) }));
 
