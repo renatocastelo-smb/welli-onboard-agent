@@ -98,6 +98,12 @@ On mobile (< 720px): full-screen shell with a tab bar ("Content" | "Chat").
 - `askNextStep()` — builds a rich internal prompt for the "next step" smart chip
 - `sendDirect(displayText, internalMsg)` — sends with a different visible label vs internal prompt
 - `renderGPAction(id)` — renders inline "Mark as done" button after a GP step answer
+- `renderGPList()` — re-renders the GP slide-in panel list with group badges
+- `showSendError(retryFn)` — shows error message with "↩ Try again" button
+- `downloadAnnounce()` — downloads announcement as .txt file with company-named filename
+- `daysUntilLaunch()` — returns days to/from launch date, parsed as local date (no UTC bug)
+- `gpContext()` — builds GP context object with doneSteps[], pendingSteps[] arrays for API
+- `setCovLaunchDate(val)` — saves launch date from inline date picker and re-renders
 - `devReset()` — tap avatar 5× to wipe localStorage and restart (dev only)
 
 **localStorage keys:**
@@ -106,25 +112,26 @@ On mobile (< 720px): full-screen shell with a tab bar ("Content" | "Chat").
 | `welli_seen_welcome` | `'1'` when intro flow completed |
 | `welli_company` | Company name string |
 | `welli_launch_date` | ISO date string (YYYY-MM-DD) |
+| `welli_stage` | `'1'` | `'2'` | `'3'` — last stage viewed (persists across sessions) |
 | `welli_gp` | JSON object `{ upload: true, invites: false, ... }` |
 
 ### Backend (`api/chat.js`)
 Vercel serverless function. Called by `fetch('/api/chat', ...)` from the frontend.
 
 **Two-step orchestration:**
-1. **Haiku classifier** — reads the message + stage, returns intent key:
-   `ONBOARDING` | `ESCALATE` | `FEEDBACK` | `MILESTONE`
+1. **Haiku classifier** — reads the message + stage, routes to 5 specialist agents:
+   `PRODUCT_FAQ` | `PLATFORM_SUPPORT` | `LAUNCH_READINESS` | `ENROLLMENT_SPRINT` | `ENGAGEMENT_RETENTION`
 2. **Sonnet responder** — uses the KB, client context, and conversation history to answer
 
 **Inline signals** — Sonnet appends special tokens the frontend strips and acts on:
 - `<<<GP:step_id>>>` → shows "Mark as done" button for that GP step
 - `<<<ESCALAR_CS>>>` → shows escalation card with CS contact link
-- `<<<MARCO>>>` → shows milestone celebration card
+- `<<<MARCO>>>` → shows milestone celebration card (stage-aware)
 
 **Client context injected into every prompt:**
 - Company name
-- Days until/since launch
-- Golden Path progress (X of 7 complete, next pending step)
+- Days until/since launch (urgency-flagged at ≤7 and ≤1 days)
+- Golden Path progress: count, completed step names, next pending step, remaining steps
 - Current stage (1/2/3)
 
 ---
