@@ -2218,8 +2218,15 @@ function buildWelcomeText() {
   const done    = GP_STEPS.filter(s => gpState[s.id]);
   const pending = GP_STEPS.filter(s => !gpState[s.id]);
 
-  const hi      = company ? `Hi ${company}!` : "Hi! I'm Welli, your Wellhub onboarding assistant.";
-  const ll      = launchLine();
+  const hi = company ? `Hi ${company}!` : "Hi! I'm Welli, your Wellhub onboarding assistant.";
+  const ll = launchLine();
+
+  // Stage 3: focus on post-launch engagement, not GP checklist
+  if (faseAtual === 3) {
+    const allDone = done.length === GP_STEPS.length;
+    const ll3 = ll || (allDone ? '' : '');
+    return `${hi}${ll3}\n\nYour Wellhub is live — now it's time to grow enrollment and keep employees engaged.\n\n${allDone ? 'You completed the full Golden Path before launch. ' : ''}Want to start with how to check your enrollment rate, or do you have a specific question?`;
+  }
 
   if (done.length === 0) {
     return `${hi}${ll}\n\n${PHASE_BODY[faseAtual]}`;
@@ -2353,6 +2360,8 @@ function renderMarkdown(raw) {
   let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Bold: **text**
   s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Inline code: `code`
+  s = s.replace(/`([^`]+)`/g, '<code style="background:rgba(27,19,64,.07);border-radius:4px;padding:1px 5px;font-family:monospace;font-size:11.5px;color:var(--dp);">$1</code>');
   // Auto-link URLs (after HTML escaping so & is already &amp; etc.)
   s = s.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--mg);text-decoration:underline;word-break:break-all;">$1</a>');
 
