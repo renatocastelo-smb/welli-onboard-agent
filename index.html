@@ -1090,12 +1090,15 @@ function renderIntroStep() {
   const navDots = Array.from({length: TOTAL}, (_, i) =>
     `<div class="intro-nav-dot${i === s ? ' active' : i < s ? ' done' : ''}"></div>`
   ).join('');
-  const nav = (showBack) => `
+  const nav = (showBack, showNext = true) => `
     <div class="intro-nav">
       ${showBack
         ? `<button class="intro-nav-back" onclick="introPrev()">← Back</button>`
         : `<div></div>`}
       <div class="intro-nav-dots">${navDots}</div>
+      ${showNext
+        ? `<button class="intro-nav-back" onclick="introNext()" style="color:var(--mg);">Next →</button>`
+        : `<div></div>`}
     </div>`;
 
   if (s === 0) {
@@ -1164,7 +1167,6 @@ function renderIntroStep() {
         <div class="vid-play" style="width:32px;height:32px;flex-shrink:0;"></div>
         <div><div class="vid-title" style="font-size:12px;">Watch the platform walkthrough</div><div class="vid-sub" id="vid-sub-lbl" style="font-size:10px;">See the portal in action — 3 min →</div></div>
       </div>
-      <button class="wk-cta" style="margin-top:12px;" onclick="introNext()">Next →</button>
       ${nav(true)}`;
 
   } else if (s === 2) {
