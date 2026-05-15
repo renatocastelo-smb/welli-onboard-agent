@@ -1346,6 +1346,29 @@ function renderIntroStep() {
           </div>`;
         }).join('')}
       </div>
+      <!-- Email reminders (shown after date is set) -->
+      <div id="intro-reminder-section" style="display:${hasDate ? 'block' : 'none'};margin-top:14px;border-top:.5px solid var(--ow2);padding-top:14px;">
+        <div id="intro-reminder-form">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:15px;">📬</span>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:var(--dp);">Get a reminder for each step</div>
+              <div style="font-size:11px;color:rgba(27,19,64,.45);line-height:1.4;">We'll email you when each Golden Path action is due.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <input id="intro-reminder-email" type="email" placeholder="your@email.com"
+                   style="flex:1;background:#fff;border:.5px solid var(--ow2);border-radius:8px;padding:8px 10px;font-family:Inter,sans-serif;font-size:12px;color:var(--dp);outline:none;"
+                   onfocus="this.style.borderColor='var(--mg)'" onblur="this.style.borderColor='var(--ow2)'"
+                   value="${escH(localStorage.getItem('welli_reminder_email') || '')}">
+            <button onclick="submitReminderEmail()" style="background:var(--dp);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">Set reminders</button>
+          </div>
+        </div>
+        <div id="intro-reminder-confirmed" style="display:none;display:flex;align-items:center;gap:8px;background:rgba(12,128,70,.08);border-radius:8px;padding:10px 12px;">
+          <span style="font-size:16px;">✅</span>
+          <div style="font-size:12px;color:var(--mgrn);font-weight:600;">Reminders set — we'll email you before each step is due.</div>
+        </div>
+      </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
         <button class="intro-nav-back" onclick="introPrev()">← Back</button>
         <button class="path-nbtn" id="path-nbtn" onclick="completeIntro()" style="${hasDate ? '' : 'display:none;'}">Let's go →</button>
@@ -1368,8 +1391,9 @@ function renderIntroStep() {
         const suffix = diff > 0 ? ' · ' + diff + ' days away' : diff < 0 ? ' · ' + Math.abs(diff) + ' days ago' : ' · Today';
         document.getElementById('intro-date-badge-text').textContent = label + suffix;
         document.getElementById('intro-date-badge').style.display = 'flex';
-        // Show GP list and Let's go button
+        // Show GP list, reminder section, and Let's go button
         document.getElementById('intro-gp-list').style.display = 'block';
+        document.getElementById('intro-reminder-section').style.display = 'block';
         document.getElementById('path-nbtn').style.display = '';
         inner.parentElement.scrollTop = 0;
       });
@@ -1441,6 +1465,28 @@ function completeIntro() {
   updateGPProgress();
   renderPanelOverview();
   renderChips();
+}
+
+// Submit email reminder registration
+function submitReminderEmail() {
+  const inp = document.getElementById('intro-reminder-email');
+  const email = inp?.value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    inp.style.borderColor = 'var(--mg)';
+    inp.focus();
+    return;
+  }
+  try { localStorage.setItem('welli_reminder_email', email); } catch(e) {}
+  const launchDate = localStorage.getItem('welli_launch_date') || '';
+  const company    = localStorage.getItem('welli_company') || '';
+  // Fire and forget — show confirmation immediately, don't block on response
+  fetch('/api/register-reminders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, company, launchDate })
+  }).catch(() => {});
+  document.getElementById('intro-reminder-form').style.display = 'none';
+  document.getElementById('intro-reminder-confirmed').style.display = 'flex';
 }
 
 // Toggle the dark builder hint panel under a builder GP card
