@@ -504,6 +504,10 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-launch-label{font-size:11px;color:rgba(255,255,255,.45);font-weight:500;line-height:1.4;}
 .cov-launch-label strong{color:rgba(255,255,255,.8);display:block;font-size:12px;}
 
+/* Fixed stage pill strip (never scrolls, sits above cov-scroll) */
+#cov-stage-strip{background:var(--ow);border-bottom:.5px solid var(--ow2);padding:9px 14px;flex-shrink:0;}
+#cov-stage-strip .cov-stage-nav{margin-bottom:0;}
+
 /* Stage nav pills inside content overview */
 .cov-stage-nav{display:flex;gap:5px;margin-bottom:12px;}
 .cov-snav{flex:1;padding:6px 4px;border:1.5px solid var(--ow2);border-radius:20px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#bbb;background:none;cursor:pointer;transition:all .15s;text-align:center;}
@@ -869,6 +873,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
         <!-- View: Overview (default) -->
         <div class="cp-view cp-active" id="cp-overview">
+          <div id="cov-stage-strip"></div><!-- fixed stage pill nav (never scrolls) -->
           <div class="cov-scroll" id="cov-inner"></div>
         </div>
 
@@ -1723,7 +1728,10 @@ function renderPanelOverview() {
   if (!inner) return;
 
   const co = localStorage.getItem('welli_company') || '';
-  const stageNav = `
+
+  // Render stage pills into the fixed strip (doesn't scroll)
+  const strip = document.getElementById('cov-stage-strip');
+  if (strip) strip.innerHTML = `
     <div class="cov-stage-nav">
       <button class="cov-snav${faseAtual===1?' active':''}" onclick="mudarFase(1)">Stage 1</button>
       <button class="cov-snav${faseAtual===2?' active':''}" onclick="mudarFase(2)">Stage 2</button>
@@ -1756,7 +1764,7 @@ function renderPanelOverview() {
         s1LaunchCard = `<div class="cov-launch"><div class="cov-launch-icon">✅</div><div class="cov-launch-num">${abs1}</div><div class="cov-launch-label"><strong>Launched ${abs1}d ago</strong>Great start!</div></div>`;
       }
     }
-    inner.innerHTML = stageNav + `
+    inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 1</div>
         <div class="cov-title">${co ? co + ' × Wellhub' : 'Get to Know Wellhub'}</div>
@@ -1853,7 +1861,7 @@ function renderPanelOverview() {
       }
     }
 
-    inner.innerHTML = stageNav + `
+    inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
         <div class="cov-title">${co ? co + '\'s Launch Checklist' : 'Get Ready to Launch'}</div>
@@ -1885,7 +1893,7 @@ function renderPanelOverview() {
         s3Card = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🌱</div><div class="cov-launch-num" style="font-size:${months>=10?'18':'26'}px">${months>=1?months+'mo':abs3+'d'}</div><div class="cov-launch-label">${lbl3}</div></div>`;
       }
     }
-    inner.innerHTML = stageNav + `
+    inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 3</div>
         <div class="cov-title">${co ? co + ' · Engagement' : 'Life After Launch'}</div>
