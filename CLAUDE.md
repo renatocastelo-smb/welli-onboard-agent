@@ -39,10 +39,46 @@ Single-file app. No build step, no framework, no package.json dependencies.
 **Screen flow (first-time user):**
 ```
 Welcome Kit overview → W4C Slides (4 slides) → Setup screen →
-Engagement chart → Path to Success → Chat
+Engagement chart → Path to Success → Chat (split-panel layout)
 ```
 
 **Returning user:** skips directly to Chat (controlled by `welli_seen_welcome` in localStorage).
+
+---
+
+### Split-Panel Layout (post-intro)
+
+After the intro flow, the shell expands to 960px and shows a two-column layout:
+
+```
+┌──────────────────────────────────┬───────────────────────┐
+│  Content Panel (55%)             │  Chat Panel (45%)     │
+│  ─────────────────               │  ─────────────────    │
+│  Stage nav pills (1 / 2 / 3)    │  Phase bar            │
+│  Context cards (benefits,        │  GP progress row      │
+│    GP checklist, actions)        │  Status bar           │
+│  Builder views (teaser,          │  Messages             │
+│    announcement)                 │  Quick-reply chips    │
+│                                  │  Input footer         │
+└──────────────────────────────────┴───────────────────────┘
+```
+
+On mobile (< 720px): full-screen shell with a tab bar ("Content" | "Chat").
+
+**Content panel key classes:**
+- `.content-panel` — left column (55% on desktop, full-screen on mobile)
+- `.chat-panel` — right column (45% on desktop)
+- `.cp-view` / `.cp-view.cp-active` — view switching inside content panel
+- `.mp-hidden` — hides a panel on mobile only (no effect on desktop ≥720px)
+- `.shell-wide` — expands shell from 420px to 960px after intro completes
+- `.mobile-tabs` — hidden on desktop; shows Content/Chat tab bar on mobile
+
+**Content panel views:**
+- `#cp-overview` — stage-specific cards (default view)
+- `#cp-teaser` — Teaser Builder
+- `#cp-announce` — Announcement Builder
+
+---
 
 **Key JS globals:**
 - `faseAtual` — current stage (1, 2, or 3)
@@ -52,7 +88,12 @@ Engagement chart → Path to Success → Chat
 - `jumpedFromIntro` — true when user skips intro via the persistent input bar
 
 **Key functions:**
-- `showChat()` — initialises chat for the first time
+- `showChat()` — initialises chat, expands shell, calls `renderPanelOverview()`
+- `renderPanelOverview()` — generates content panel HTML for current stage
+- `showPanel(view)` — switches content panel view ('overview'|'teaser'|'announce')
+- `switchMobileTab(tab)` — switches mobile tab ('content'|'chat'); no-op on desktop
+- `toggleCovStep(id)` — checks/unchecks a GP step from the content panel
+- `covAskWelli(question)` — pre-fills chat input with a question and sends it
 - `renderChips()` — rebuilds the quick-reply chip row
 - `askNextStep()` — builds a rich internal prompt for the "next step" smart chip
 - `sendDirect(displayText, internalMsg)` — sends with a different visible label vs internal prompt
@@ -95,11 +136,16 @@ Vercel serverless function. Called by `fetch('/api/chat', ...)` from the fronten
 - **CSS variables** for all brand colours — use `var(--dp)`, `var(--mg)`, etc.
   Never hardcode hex values that match existing variables.
 - **Naming**: screens are `#kebab-screen`, JS functions are `camelCase`,
-  CSS classes are `kebab-case` with a short prefix per component (`.wk-`, `.w4c-`, `.eng-`, `.path-`).
-- **Screen height**: intro screens are `490px`. Chat content is auto-height.
+  CSS classes are `kebab-case` with a short prefix per component:
+  `.wk-` (welcome kit), `.w4c-` (W4C slides), `.eng-` (engagement screen),
+  `.path-` (path to success), `.cov-` (content overview panel), `.gpp-` (GP panel).
+- **Screen height**: intro screens are `490px`. The split-panel is `100dvh` on mobile, `calc(100dvh - 32px)` max `780px` on desktop.
+- **Desktop/mobile breakpoint**: `720px`. Use `@media(max-width:719px)` and `@media(min-width:720px)`.
+- **`mp-hidden`**: only adds `display:none` inside `@media(max-width:719px)`. Never check this class on desktop — check `window.innerWidth < 720` instead.
 - **Animations**: use the existing `opacity + transform` pattern. No third-party animation libs.
 - **No markdown headers in bot responses** — SHARED_RULES in `chat.js` prohibit `#` headers.
   The `renderMarkdown()` function in `index.html` handles bold, lists, arrows.
+- **`renderPanelOverview()`** must always call `inner.parentElement.scrollTop = 0` at the end (or scroll to next-up for interactive updates via `toggleCovStep`).
 
 ---
 
@@ -150,3 +196,5 @@ Or: push to `main` on GitHub (if Vercel is connected to the repo — see CONTRIB
 - The `welli_*` localStorage key names (changing them breaks returning users)
 - The `W4C_TOTAL` constant without adding/removing a matching slide in the HTML
 - The `devReset()` function — keep it, it's intentional
+- The `GP_STEPS` array structure — `id` values must match the backend KB
+- The `switchMobileTab()` no-op guard (`if (window.innerWidth >= 720) return`) — removing it breaks desktop layout
