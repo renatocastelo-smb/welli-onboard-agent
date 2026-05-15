@@ -526,6 +526,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-next-open{font-size:10px;font-weight:700;color:#fff;background:var(--mg);border:none;border-radius:8px;padding:3px 9px;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s;}
 .cov-next-open:hover{background:var(--dm);}
 
+/* GP step icon in content panel */
+.cov-step-icon{font-size:14px;flex-shrink:0;margin-top:2px;width:22px;text-align:center;line-height:1;}
+
 /* GP complete celebration */
 .cov-celebrate{text-align:center;padding:24px 16px 16px;}
 .cov-celebrate-icon{font-size:44px;margin-bottom:10px;}
@@ -1803,6 +1806,7 @@ function renderPanelOverview() {
         stepItems.push(`
           <div class="cov-step${gpState[s.id] ? ' done' : isNext ? ' next-up' : ''}" onclick="toggleCovStep('${s.id}')">
             <div class="cov-step-check">✓</div>
+            <div class="cov-step-icon">${s.emoji}</div>
             <div class="cov-step-body">
               <div class="cov-step-title">${s.title}</div>
               <div class="cov-step-sub">${s.sub}</div>
@@ -1820,10 +1824,18 @@ function renderPanelOverview() {
       if (days === 0) {
         launchCard = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🎉</div><div style="flex:1;"><div style="font-size:14px;font-weight:800;color:var(--grn);margin-bottom:2px;">It's Launch Day!</div><div class="cov-launch-label">Share the invitation link with your entire team now.</div></div></div>`;
       } else {
-        const lbl = days > 1  ? `<strong>${abs} days to launch</strong>Finish the Golden Path before then.`
-                   : days === 1 ? `<strong>Launch is tomorrow!</strong>Last chance to complete your steps.`
+        // Urgency tiers: > 7d = default, 3–7d = amber, < 3d = red
+        const urgentStyle = days > 0 && days <= 3 ? 'background:linear-gradient(135deg,#c23030,#8B0000)'
+                          : days > 0 && days <= 7 ? 'background:linear-gradient(135deg,#b05a10,#7a3800)'
+                          : '';
+        const urgentIcon  = days <= 3 && days > 0 ? '🚨' : days <= 7 && days > 0 ? '⚠️' : days > 0 ? '🚀' : '✅';
+        const lbl = days > 7  ? `<strong>${abs} days to launch</strong>Finish the Golden Path before then.`
+                   : days > 3  ? `<strong>⚠️ ${abs} days left!</strong>Complete your remaining steps now.`
+                   : days === 3 ? `<strong>🚨 3 days to launch!</strong>Your team is counting on you.`
+                   : days === 2 ? `<strong>🚨 2 days left!</strong>Finish your checklist today.`
+                   : days === 1 ? `<strong>🚨 Launch is tomorrow!</strong>Last chance to complete your steps.`
                    :              `<strong>Launched ${abs} day${abs!==1?'s':''} ago</strong>Keep the momentum going.`;
-        launchCard = `<div class="cov-launch"><div class="cov-launch-icon">${days > 0 ? '🚀' : '✅'}</div><div class="cov-launch-num">${abs}</div><div class="cov-launch-label">${lbl}</div></div>`;
+        launchCard = `<div class="cov-launch" style="${urgentStyle}"><div class="cov-launch-icon">${urgentIcon}</div><div class="cov-launch-num">${abs}</div><div class="cov-launch-label">${lbl}</div></div>`;
       }
     }
 
@@ -1926,13 +1938,13 @@ let faseAtual = 1;
 
 // ── Golden Path ────────────────────────────────────────────────────────────
 const GP_STEPS = [
-  { id: 'upload',     group: 'Portal Setup',      title: 'Upload your employee list',         sub: 'Add eligible employees via spreadsheet import in the portal.' },
-  { id: 'invites',    group: 'Portal Setup',       title: 'Configure Smart Invites',           sub: 'Turn on auto-invitations so new eligibles get invited automatically.' },
-  { id: 'teaser',     group: 'Pre-Launch',         title: 'Post a teaser on internal channels', sub: 'Build buzz via email, Slack, or intranet 1–2 weeks before launch.' },
-  { id: 'leadership', group: 'Pre-Launch',         title: 'Send the leadership announcement',  sub: 'A CEO or HR Director message — the single highest-impact action.' },
-  { id: 'i2s',        group: 'Launch Day',         title: 'Schedule the Kick-off email (I2S)', sub: 'The invitation with Magic Link goes out automatically on the date you set.' },
-  { id: 'webinar',    group: 'Week 1 Post-Launch', title: 'Host the Welcome Webinar',          sub: 'Free 30-min Wellhub-run session — book the date before you launch.' },
-  { id: 'comms',      group: 'Ongoing',            title: 'Share monthly communication assets', sub: 'Forward Wellhub\'s ready-made emails; run challenges and raffles.' }
+  { id: 'upload',     emoji: '👥', group: 'Portal Setup',      title: 'Upload your employee list',         sub: 'Add eligible employees via spreadsheet import in the portal.' },
+  { id: 'invites',    emoji: '⚡', group: 'Portal Setup',       title: 'Configure Smart Invites',           sub: 'Turn on auto-invitations so new eligibles get invited automatically.' },
+  { id: 'teaser',     emoji: '📣', group: 'Pre-Launch',         title: 'Post a teaser on internal channels', sub: 'Build buzz via email, Slack, or intranet 1–2 weeks before launch.' },
+  { id: 'leadership', emoji: '✉️', group: 'Pre-Launch',         title: 'Send the leadership announcement',  sub: 'A CEO or HR Director message — the single highest-impact action.' },
+  { id: 'i2s',        emoji: '🚀', group: 'Launch Day',         title: 'Schedule the Kick-off email (I2S)', sub: 'The invitation with Magic Link goes out automatically on the date you set.' },
+  { id: 'webinar',    emoji: '🎙️', group: 'Week 1 Post-Launch', title: 'Host the Welcome Webinar',          sub: 'Free 30-min Wellhub-run session — book the date before you launch.' },
+  { id: 'comms',      emoji: '📋', group: 'Ongoing',            title: 'Share monthly communication assets', sub: 'Forward Wellhub\'s ready-made emails; run challenges and raffles.' }
 ];
 
 let gpState = {};
@@ -1968,7 +1980,7 @@ function renderGPList() {
     const item = document.createElement('div');
     item.className = 'gpp-item' + (done ? ' done' : '');
     item.onclick = () => toggleStep(step.id);
-    item.innerHTML = `<div class="gpp-check"></div><div class="gpp-item-text"><div class="gpp-item-title">${step.title}</div><div class="gpp-item-sub">${step.sub}</div></div>`;
+    item.innerHTML = `<div class="gpp-check"></div><div style="font-size:14px;flex-shrink:0;width:20px;text-align:center;margin-top:2px;line-height:1;">${step.emoji}</div><div class="gpp-item-text"><div class="gpp-item-title">${step.title}</div><div class="gpp-item-sub">${step.sub}</div></div>`;
     list.appendChild(item);
   });
   updateGPProgress();
