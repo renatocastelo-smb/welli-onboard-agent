@@ -299,6 +299,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 #ts-lib-pane::-webkit-scrollbar{width:3px;}
 #ts-lib-pane::-webkit-scrollbar-thumb{background:var(--ow2);border-radius:4px;}
 .ts-library{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(min-width:720px){.ts-library{grid-template-columns:1fr 1fr 1fr;}}
 .ts-lcard{background:#fff;border-radius:12px;overflow:hidden;border:.5px solid var(--ow2);display:flex;flex-direction:column;transition:box-shadow .15s;}
 .ts-lcard:hover{box-shadow:0 4px 16px rgba(27,19,64,.12);}
 .ts-lpreview{height:88px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;padding:10px;position:relative;overflow:hidden;flex-shrink:0;}
@@ -527,7 +528,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-action-tag{font-size:9px;font-weight:700;color:var(--mg);background:var(--xlmg);padding:2px 6px;border-radius:8px;display:inline-block;margin-top:3px;}
 
 /* Next-step highlight on GP checklist */
-.cov-step.next-up{border-color:rgba(242,73,107,.35);background:linear-gradient(135deg,var(--xlmg),#fff);}
+.cov-step.next-up{border-color:rgba(242,73,107,.35);background:linear-gradient(135deg,var(--xlmg),#fff);border-left:3px solid var(--mg);}
 .cov-step.next-up .cov-step-check{border-color:var(--mg);}
 .cov-step.next-up .cov-step-title{font-weight:700;color:var(--dp);}
 .cov-next-row{display:flex;align-items:center;justify-content:space-between;margin-top:5px;}
@@ -537,6 +538,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
 /* GP step icon in content panel */
 .cov-step-icon{font-size:14px;flex-shrink:0;margin-top:2px;width:22px;text-align:center;line-height:1;}
+.cov-step.done .cov-step-icon{opacity:.35;}
 
 /* GP complete celebration */
 .cov-celebrate{text-align:center;padding:24px 16px 16px;}
@@ -1693,6 +1695,9 @@ function showAnnounceScreen() {
   ['short','medium','long'].forEach(l => {
     document.getElementById('an-len-' + l).classList.toggle('active', l === 'medium');
   });
+  // Pre-fill title field if empty
+  const titleEl = document.getElementById('an-title');
+  if (titleEl && !titleEl.value) titleEl.value = 'HR Director / People & Culture';
   renderAnnounce();
 }
 
