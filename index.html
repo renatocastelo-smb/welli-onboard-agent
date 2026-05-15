@@ -1872,7 +1872,7 @@ function renderPanelOverview() {
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
         <div class="cov-title">${co ? co + '\'s Launch Checklist' : 'Get Ready to Launch'}</div>
-        <div class="cov-sub">Golden Path — ${done} of ${total} steps complete</div>
+        <div class="cov-sub">Golden Path — ${done} of ${total} steps complete${(() => { const ld = localStorage.getItem('welli_launch_date'); if (!ld) return ''; try { return ' · ' + new Date(ld + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' launch'; } catch(e) { return ''; } })()}</div>
       </div>
       ${launchCard}
       <div class="cov-prog-row">
@@ -2064,7 +2064,7 @@ function updateGPProgress() {
   const fillEl  = document.getElementById('gpp-fill');
   const countEl = document.getElementById('gpp-count');
   if (fillEl)  fillEl.style.width  = pct + '%';
-  if (countEl) countEl.textContent = done + ' of ' + total + ' complete';
+  if (countEl) countEl.textContent = done === total ? 'All ' + total + ' done 🏆' : done + ' of ' + total + ' complete';
 }
 
 function gpContext() {
