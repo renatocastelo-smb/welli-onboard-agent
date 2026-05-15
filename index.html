@@ -471,7 +471,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mg);margin-bottom:4px;}
 .cov-title{font-size:17px;font-weight:800;color:var(--dp);letter-spacing:-.4px;line-height:1.2;margin-bottom:2px;}
 .cov-sub{font-size:11px;color:#bbb;font-weight:500;}
-.cov-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ccc;margin:12px 0 6px;}
+.cov-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ccc;margin:12px 0 6px;display:flex;align-items:center;gap:5px;}
+.cov-grp-count{font-size:8.5px;font-weight:700;color:#bbb;background:var(--ow2);border-radius:6px;padding:1px 5px;letter-spacing:0;}
+.cov-grp-done{font-size:8.5px;font-weight:700;color:var(--mgrn);background:rgba(12,128,70,.1);border-radius:6px;padding:1px 5px;letter-spacing:0;}
 /* Benefit cards (Stage 1) */
 .cov-bcard{background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:.5px solid var(--ow2);cursor:pointer;transition:background .15s;}
 .cov-bcard:hover{background:var(--xlmg);}
@@ -1851,12 +1853,26 @@ function renderPanelOverview() {
         teaser:     () => `<button class="cov-next-open" onclick="showTeaserScreen();event.stopPropagation()">Open builder →</button>`,
         leadership: () => `<button class="cov-next-open" onclick="showAnnounceScreen();event.stopPropagation()">Open builder →</button>`,
       };
+      // Precompute per-group progress for section header badges
+      const groupStats = {};
+      GP_STEPS.forEach(s => {
+        if (!groupStats[s.group]) groupStats[s.group] = { total: 0, done: 0 };
+        groupStats[s.group].total++;
+        if (gpState[s.id]) groupStats[s.group].done++;
+      });
       // Build checklist with group headers
       const stepItems = []; let lastGrp = '';
       GP_STEPS.forEach(s => {
         const isNext = s.id === nextId;
         const actionBtn = isNext && STEP_ACTION[s.id] ? STEP_ACTION[s.id]() : '';
-        if (s.group !== lastGrp) { lastGrp = s.group; stepItems.push(`<div class="cov-section">${s.group}</div>`); }
+        if (s.group !== lastGrp) {
+          lastGrp = s.group;
+          const gs = groupStats[s.group];
+          const badge = gs.done === gs.total
+            ? `<span class="cov-grp-done">✓ done</span>`
+            : gs.total > 1 ? `<span class="cov-grp-count">${gs.done}/${gs.total}</span>` : '';
+          stepItems.push(`<div class="cov-section">${s.group}${badge}</div>`);
+        }
         stepItems.push(`
           <div class="cov-step${gpState[s.id] ? ' done' : isNext ? ' next-up' : ''}" data-step-id="${s.id}" onclick="toggleCovStep('${s.id}')">
             <div class="cov-step-check">✓</div>
