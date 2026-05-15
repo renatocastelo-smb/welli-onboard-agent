@@ -1682,11 +1682,11 @@ function copyAnnounce() {
 
 function showAnnounceScreen() {
   showPanel('announce');
-  anChannel = 'email'; anLength = 'short';
+  anChannel = 'email'; anLength = 'medium'; // default to official Wellhub template
   document.getElementById('an-seg-email').classList.add('active');
   document.getElementById('an-seg-slack').classList.remove('active');
   ['short','medium','long'].forEach(l => {
-    document.getElementById('an-len-' + l).classList.toggle('active', l === 'short');
+    document.getElementById('an-len-' + l).classList.toggle('active', l === 'medium');
   });
   renderAnnounce();
 }
@@ -2058,9 +2058,10 @@ function updateGPProgress() {
   const done  = GP_STEPS.filter(s => gpState[s.id]).length;
   const pct   = total > 0 ? (done / total) * 100 : 0;
   document.getElementById('gp-fill').style.width  = pct + '%';
+  const nextGP = GP_STEPS.find(s => !gpState[s.id]);
   document.getElementById('gp-label').textContent = done === total
     ? 'Golden Path · All ' + total + ' done 🏆'
-    : 'Golden Path · ' + done + ' of ' + total + ' steps';
+    : 'Golden Path · ' + done + '/' + total + (nextGP ? ' · ' + nextGP.emoji : '');
   const fillEl  = document.getElementById('gpp-fill');
   const countEl = document.getElementById('gpp-count');
   if (fillEl)  fillEl.style.width  = pct + '%';
