@@ -191,8 +191,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .vid-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
 .vid-sub{font-size:11px;color:rgba(255,255,255,.5);}
 /* Inline video player */
-.vid-player{border-radius:12px;overflow:hidden;margin-bottom:8px;background:#000;aspect-ratio:16/9;animation:fu .32s ease;position:relative;}
-.vid-player iframe{width:100%;height:100%;border:none;display:block;}
+.vid-player{border-radius:12px;overflow:hidden;margin-bottom:8px;background:#000;aspect-ratio:16/9;animation:fu .32s ease;}
+.vid-player video{width:100%;height:100%;display:block;object-fit:contain;}
 .vid-card.playing{opacity:.55;pointer-events:none;}
 /* Help link */
 .help-link{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(168,128,255,.1);border-radius:14px;border:.5px solid rgba(168,128,255,.25);text-decoration:none;margin-bottom:8px;}
@@ -723,7 +723,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
         <button class="w4c-skip" onclick="completeW4C()">Skip →</button>
       </div>
       <div class="w4c-headline">See everything<br>that's available.</div>
-      <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;">
+      <div class="vid-card" onclick="toggleVidPlayer(this)" style="cursor:pointer;">
         <div class="vid-play"></div>
         <div>
           <div class="vid-title">Wellhub for Companies</div>
@@ -1207,7 +1207,7 @@ function renderIntroStep() {
         <div class="intro-control-item"><span class="intro-ctrl-icon">⚙️</span><div><strong>Settings</strong> — admin users & Smart Invites</div></div>
         <div class="intro-control-item"><span class="intro-ctrl-icon">❓</span><div><strong>Help</strong> — guides, FAQs, and support</div></div>
       </div>
-      <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;margin-top:8px;padding:10px 12px;border-radius:10px;">
+      <div class="vid-card" onclick="toggleVidPlayer(this)" style="cursor:pointer;margin-top:8px;padding:10px 12px;border-radius:10px;">
         <div class="vid-play" style="width:32px;height:32px;flex-shrink:0;"></div>
         <div><div class="vid-title" style="font-size:12px;">Watch the platform walkthrough</div><div class="vid-sub" id="vid-sub-lbl" style="font-size:10px;">See the portal in action — 3 min →</div></div>
       </div>
@@ -1671,21 +1671,24 @@ function completePathScreen() {
 }
 
 // ── Inline video player ────────────────────────────────────────────────────
-function toggleVidPlayer(card, fileId) {
+function toggleVidPlayer(card) {
   const existing = card.nextElementSibling;
   if (existing && existing.classList.contains('vid-player')) {
-    // Toggle off — remove player and restore card
+    // Toggle off — pause, remove player, restore card
+    existing.querySelector('video')?.pause();
     existing.remove();
     card.classList.remove('playing');
-    card.querySelector('.vid-sub') && (card.querySelector('.vid-sub').textContent = 'Watch the platform walkthrough →');
+    const sub = card.querySelector('.vid-sub');
+    if (sub) sub.textContent = 'Watch the platform walkthrough →';
     return;
   }
-  // Toggle on — inject iframe below the card
+  // Toggle on — inject native video below the card
   card.classList.add('playing');
-  card.querySelector('.vid-sub') && (card.querySelector('.vid-sub').textContent = 'Click to close ×');
+  const sub = card.querySelector('.vid-sub');
+  if (sub) sub.textContent = 'Click to close ×';
   const wrap = document.createElement('div');
   wrap.className = 'vid-player';
-  wrap.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay" allowfullscreen></iframe>`;
+  wrap.innerHTML = `<video src="/W4C.mov" controls autoplay playsinline preload="metadata" style="width:100%;height:100%;display:block;object-fit:contain;background:#000;"></video>`;
   card.insertAdjacentElement('afterend', wrap);
 }
 
