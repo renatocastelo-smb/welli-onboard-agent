@@ -118,6 +118,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .sbtn{width:36px;height:36px;border-radius:50%;background:var(--mg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .1s;}
 .sbtn:hover{background:var(--dm);}.sbtn:active{transform:scale(.95);}.sbtn:disabled{background:var(--lmg);cursor:not-allowed;}
 .sbtn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+/* Retry button on error messages */
+.bbl-retry{display:inline-block;margin-top:8px;background:none;border:.5px solid rgba(192,64,64,.3);border-radius:8px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#c04040;cursor:pointer;transition:all .15s;}
+.bbl-retry:hover{background:rgba(192,64,64,.08);border-color:#c04040;}
 
 /* ── Welcome Kit overview (screen 1) ── */
 #intro-screen{background:#EDE8FF;display:flex;flex-direction:column;overflow-y:auto;}
@@ -2456,6 +2459,20 @@ function showTyping() {
 
 function rmTyping() { const e = document.getElementById('typ'); if (e) e.remove(); }
 
+function showSendError(retryFn) {
+  const c = document.getElementById('msgs');
+  const w = document.createElement('div'); w.className = 'msg b';
+  const lbl = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = '#e06060'; lbl.textContent = 'Error';
+  const b = document.createElement('div'); b.className = 'bbl';
+  b.style.cssText = 'background:rgba(192,64,64,.06);border-color:rgba(192,64,64,.2);color:#c04040;';
+  b.textContent = 'Something went wrong — please check your connection.';
+  const retry = document.createElement('button');
+  retry.className = 'bbl-retry'; retry.textContent = '↩ Try again';
+  retry.onclick = () => { w.remove(); retryFn(); };
+  b.appendChild(retry);
+  w.append(lbl, b); c.append(w); c.scrollTop = c.scrollHeight;
+}
+
 function renderEscalation() {
   const c = document.getElementById('msgs');
   const wrap = document.createElement('div'); wrap.className = 'msg b';
@@ -2539,7 +2556,7 @@ async function sendDirect(displayText, internalMsg) {
     renderChips(); // restore quick-reply chips after each response
   } catch (err) {
     rmTyping();
-    addMsg('b', 'Something went wrong: ' + err.message);
+    showSendError(() => sendDirect(displayText, internalMsg));
   }
   busy = false; btn.disabled = false; document.getElementById('inp').focus();
 }
@@ -2636,7 +2653,7 @@ async function send() {
 
   } catch (err) {
     rmTyping();
-    addMsg('b', 'Something went wrong: ' + err.message);
+    showSendError(() => { inp.value = txt; send(); });
   }
 
   busy = false; btn.disabled = false; inp.focus();
