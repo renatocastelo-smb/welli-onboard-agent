@@ -1174,28 +1174,59 @@ function renderIntroStep() {
     const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
     const savedDate = localStorage.getItem('welli_launch_date') || '';
     inner.innerHTML = `
-      <div style="margin:-14px -16px 16px;background:var(--dp);padding:20px 20px 18px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:-50px;right:-50px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.2) 0%,transparent 70%);pointer-events:none;"></div>
-        <div class="path-tag" style="color:#DCFF79;background:rgba(220,255,121,.12);border-color:rgba(220,255,121,.3);">Strategy</div>
-        <div class="path-title" style="color:#fff;margin-top:6px;">Your Path to Success</div>
-        <div class="path-sub" style="color:rgba(255,255,255,.5);">The first 60 days set the tone. Let's make them count.</div>
+      <!-- Engagement chart (dismissable) -->
+      <div id="intro-eng-chart" style="background:linear-gradient(160deg,#1B1340,#2d1b69);border-radius:14px;padding:14px 16px;margin-bottom:14px;position:relative;">
+        <button onclick="document.getElementById('intro-eng-chart').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Hide ×</button>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;">Why this matters</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:10px;">Engaged clients see <span style="color:#DCFF79;">4× more enrollment</span> over time.</div>
+        <svg viewBox="0 0 300 100" style="width:100%;height:auto;display:block;">
+          <defs>
+            <linearGradient id="egF" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity=".15"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+            <linearGradient id="dgF" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A880FF" stop-opacity=".1"/><stop offset="100%" stop-color="#A880FF" stop-opacity="0"/></linearGradient>
+          </defs>
+          <line x1="20" y1="20" x2="280" y2="20" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+          <line x1="20" y1="50" x2="280" y2="50" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+          <line x1="20" y1="80" x2="280" y2="80" stroke="rgba(255,255,255,.1)" stroke-width="1"/>
+          <path d="M 20,80 L 63,40 L 107,32 L 150,26 L 193,21 L 237,17 L 280,13 L 280,80 Z" fill="url(#egF)"/>
+          <path d="M 20,80 L 63,74 L 107,71 L 150,69 L 193,68 L 237,67 L 280,66 L 280,80 Z" fill="url(#dgF)"/>
+          <polyline points="20,80 63,74 107,71 150,69 193,68 237,67 280,66" fill="none" stroke="rgba(168,128,255,.5)" stroke-width="1.5" stroke-linecap="round"/>
+          <polyline points="20,80 63,40 107,32 150,26 193,21 237,17 280,13" fill="none" stroke="#DCFF79" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="20" y="90" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" fill="rgba(255,255,255,.3)">Launch</text>
+          <text x="63" y="90" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" fill="rgba(255,255,255,.3)">M1</text>
+          <text x="150" y="90" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" fill="rgba(255,255,255,.3)">M3</text>
+          <text x="280" y="90" text-anchor="middle" font-family="Inter,sans-serif" font-size="6" fill="rgba(255,255,255,.3)">M6</text>
+          <text x="280" y="9" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" font-weight="700" fill="#DCFF79">41.3%</text>
+          <text x="280" y="62" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="rgba(255,255,255,.4)">10.2%</text>
+        </svg>
+        <div style="display:flex;gap:14px;margin-top:4px;">
+          <span style="font-size:10px;font-weight:600;color:#DCFF79;display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:#DCFF79;border-radius:2px;display:inline-block;"></span>Engaged</span>
+          <span style="font-size:10px;font-weight:600;color:rgba(168,128,255,.7);display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:rgba(168,128,255,.7);border-radius:2px;display:inline-block;"></span>Disengaged</span>
+        </div>
       </div>
-      <div class="intro-setup-field" style="margin-bottom:14px;">
-        <div class="intro-setup-label">PLANNED LAUNCH DATE <span style="font-weight:400;color:#bbb;">(optional — helps personalise your timeline)</span></div>
-        <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}">
+      <!-- Launch date -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:14px;font-weight:700;color:var(--dp);margin-bottom:3px;">Let's get you set up.</div>
+        <div style="font-size:12px;color:rgba(27,19,64,.45);line-height:1.5;margin-bottom:10px;">What's your best estimate for your launch date? This helps us build a plan that works for you.</div>
+        <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}" placeholder="Pick a date">
       </div>
+      <!-- Path to Success -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">Your Path to Success</div>
       <div class="path-steps" id="path-steps" style="flex:none;overflow:visible;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
+        <button class="intro-nav-back" onclick="introPrev()">← Back</button>
         <div class="path-dots" id="path-dots"></div>
         <button class="path-nbtn" id="path-nbtn" onclick="pathNext()">Reveal →</button>
       </div>`;
+    // Save date on change
     setTimeout(() => {
       document.getElementById('intro-date')?.addEventListener('change', e => {
-        if (e.target.value) localStorage.setItem('welli_launch_date', e.target.value);
+        if (e.target.value) { localStorage.setItem('welli_launch_date', e.target.value); updateGPProgress(); }
       });
     }, 80);
+    // Reset and build path steps
+    pathVisible = 0;
     buildPathSteps();
-    setTimeout(pathNext, 350);
+    setTimeout(pathNext, 400);
   }
 
   inner.parentElement.scrollTop = 0;
@@ -1203,7 +1234,17 @@ function renderIntroStep() {
 
 function introNext() {
   introStep = Math.min(introStep + 1, 2);
+  atualizarFaseUI();
   renderPanelOverview();
+  // When reaching the Path to Success step, drop a contextual chat message
+  if (introStep === 2) {
+    const msgs = document.getElementById('msgs');
+    const d = document.createElement('div');
+    d.className = 'msg b';
+    d.innerHTML = `<div class="lbl"><span>Welli</span></div><div class="bbl">${renderMarkdown("Now let's map out your launch 🗓️\n\nReveal each step on the left and set your target launch date — I'll help you with timing, messaging, and anything else along the way.")}</div>`;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
 }
 function introPrev() {
   if (introStep > 0) { introStep--; renderPanelOverview(); }
@@ -2418,13 +2459,14 @@ function buildWelcomeText() {
 
 // ── Phase UI ───────────────────────────────────────────────────────────────
 function atualizarFaseUI() {
-  // During intro: Stage 1 active, others greyed, no GP row
+  // During intro: Stage 1 active for steps 0–1, Stage 2 active for step 2 (Path to Success)
   if (introStep >= 0) {
-    document.getElementById('ps1').className = 'ps active';
-    document.getElementById('ps2').className = 'ps';
+    const introActiveStage = introStep === 2 ? 2 : 1;
+    document.getElementById('ps1').className = 'ps' + (introActiveStage === 1 ? ' active' : ' done');
+    document.getElementById('ps2').className = 'ps' + (introActiveStage === 2 ? ' active' : '');
     document.getElementById('ps3').className = 'ps';
     document.getElementById('gp-row').style.display = 'none';
-    document.getElementById('fase-periodo').textContent = FASES[1].periodo;
+    document.getElementById('fase-periodo').textContent = FASES[introActiveStage].periodo;
     return;
   }
   const f = faseAtual;
