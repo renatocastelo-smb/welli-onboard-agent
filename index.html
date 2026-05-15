@@ -1080,6 +1080,7 @@ const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
 // ── Intro state ────────────────────────────────────────────────────────────
 // introStep 0–4 = in intro; -1 = intro done (returning user)
 let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
+let introPathMsgSent = false;
 
 // Render current intro step into the content panel
 function renderIntroStep() {
@@ -1168,12 +1169,30 @@ function renderIntroStep() {
       ${nav(true)}`;
 
   } else if (s === 2) {
-    const today = new Date();
+    const today = new Date(); today.setHours(0,0,0,0);
     const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
     const savedDate = localStorage.getItem('welli_launch_date') || '';
+    const hasDate = !!savedDate;
+    function fmtIntroBadge(d) {
+      if (!d) return '';
+      const p = d.split('-');
+      const dt = new Date(+p[0], +p[1]-1, +p[2]);
+      const diff = Math.round((dt - today) / 86400000);
+      const label = dt.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+      return label + (diff > 0 ? ' · ' + diff + ' days away' : diff < 0 ? ' · ' + Math.abs(diff) + ' days ago' : ' · Today');
+    }
     inner.innerHTML = `
-      <!-- Engagement chart (dismissable) -->
-      <div id="intro-eng-chart" style="background:linear-gradient(160deg,#1B1340,#2d1b69);border-radius:14px;padding:14px 16px;margin-bottom:14px;position:relative;">
+      <!-- Date badge (shown after date is picked) -->
+      <div id="intro-date-badge" style="display:${hasDate ? 'flex' : 'none'};align-items:center;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:10px 12px;margin-bottom:14px;">
+        <span style="font-size:16px;">🗓️</span>
+        <div style="flex:1;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:1px;">Launch date</div>
+          <div id="intro-date-badge-text" style="font-size:13px;font-weight:600;color:var(--dp);">${fmtIntroBadge(savedDate)}</div>
+        </div>
+        <button onclick="introChangeLaunchDate()" style="font-size:11px;color:var(--mg);background:none;border:none;cursor:pointer;font-weight:600;padding:0;white-space:nowrap;">Change</button>
+      </div>
+      <!-- Engagement chart (hidden once date is set) -->
+      <div id="intro-eng-chart" style="${hasDate ? 'display:none;' : ''}background:linear-gradient(160deg,#1B1340,#2d1b69);border-radius:14px;padding:14px 16px;margin-bottom:14px;position:relative;">
         <button onclick="document.getElementById('intro-eng-chart').style.display='none'" style="position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;font-family:Inter,sans-serif;padding:0;">Hide ×</button>
         <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;">Why this matters</div>
         <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:10px;">Engaged clients see <span style="color:#DCFF79;">4× more enrollment</span> over time.</div>
@@ -1201,8 +1220,8 @@ function renderIntroStep() {
           <span style="font-size:10px;font-weight:600;color:rgba(168,128,255,.7);display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:rgba(168,128,255,.7);border-radius:2px;display:inline-block;"></span>Disengaged</span>
         </div>
       </div>
-      <!-- Launch date -->
-      <div style="margin-bottom:14px;">
+      <!-- Launch date input (hidden once date is set) -->
+      <div id="intro-date-section" style="${hasDate ? 'display:none;' : ''}margin-bottom:14px;">
         <div style="font-size:14px;font-weight:700;color:var(--dp);margin-bottom:3px;">Let's get you set up.</div>
         <div style="font-size:12px;color:rgba(27,19,64,.45);line-height:1.5;margin-bottom:10px;">What's your best estimate for your launch date? This helps us build a plan that works for you.</div>
         <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}" placeholder="Pick a date">
@@ -1213,18 +1232,39 @@ function renderIntroStep() {
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
         <button class="intro-nav-back" onclick="introPrev()">← Back</button>
         <div class="path-dots" id="path-dots"></div>
-        <button class="path-nbtn" id="path-nbtn" onclick="pathNext()">Reveal →</button>
+        <button class="path-nbtn" id="path-nbtn" onclick="pathNext()" style="${hasDate ? 'display:none;' : ''}">Reveal →</button>
       </div>`;
-    // Save date on change
+    // Wire up date input → auto-reveal
     setTimeout(() => {
       document.getElementById('intro-date')?.addEventListener('change', e => {
-        if (e.target.value) { localStorage.setItem('welli_launch_date', e.target.value); updateGPProgress(); }
+        const val = e.target.value;
+        if (!val) return;
+        localStorage.setItem('welli_launch_date', val);
+        updateGPProgress();
+        // Hide chart and input section
+        document.getElementById('intro-eng-chart').style.display = 'none';
+        document.getElementById('intro-date-section').style.display = 'none';
+        document.getElementById('path-nbtn').style.display = 'none';
+        // Show date badge
+        const p = val.split('-');
+        const dt = new Date(+p[0], +p[1]-1, +p[2]);
+        const diff = Math.round((dt - today) / 86400000);
+        const label = dt.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+        const suffix = diff > 0 ? ' · ' + diff + ' days away' : diff < 0 ? ' · ' + Math.abs(diff) + ' days ago' : ' · Today';
+        document.getElementById('intro-date-badge-text').textContent = label + suffix;
+        document.getElementById('intro-date-badge').style.display = 'flex';
+        // Auto-reveal all path steps
+        while (pathVisible < PATH_STEPS.length) pathNext();
       });
     }, 80);
-    // Reset and build path steps
+    // Build path steps; if date already exists reveal all immediately
     pathVisible = 0;
     buildPathSteps();
-    setTimeout(pathNext, 400);
+    if (hasDate) {
+      while (pathVisible < PATH_STEPS.length) pathNext();
+    } else {
+      setTimeout(pathNext, 400);
+    }
   }
 
   inner.parentElement.scrollTop = 0;
@@ -1234,18 +1274,27 @@ function introNext() {
   introStep = Math.min(introStep + 1, 2);
   atualizarFaseUI();
   renderPanelOverview();
-  // When reaching the Path to Success step, drop a contextual chat message
-  if (introStep === 2) {
+  // When reaching the Path to Success step, drop a contextual chat message (once only)
+  if (introStep === 2 && !introPathMsgSent) {
+    introPathMsgSent = true;
     const msgs = document.getElementById('msgs');
     const d = document.createElement('div');
     d.className = 'msg b';
-    d.innerHTML = `<div class="lbl"><span>Welli</span></div><div class="bbl">${renderMarkdown("Now let's map out your launch 🗓️\n\nReveal each step on the left and set your target launch date — I'll help you with timing, messaging, and anything else along the way.")}</div>`;
+    d.innerHTML = `<div class="lbl"><span>Welli</span></div><div class="bbl">${renderMarkdown("Now let's map out your launch 🗓️\n\nSet your target launch date on the left — I'll help you with timing, messaging, and anything else along the way.")}</div>`;
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
   }
 }
 function introPrev() {
-  if (introStep > 0) { introStep--; renderPanelOverview(); }
+  if (introStep > 0) { introStep--; atualizarFaseUI(); renderPanelOverview(); }
+}
+function introChangeLaunchDate() {
+  document.getElementById('intro-date-badge').style.display = 'none';
+  document.getElementById('intro-date-section').style.display = 'block';
+  document.getElementById('path-nbtn').style.display = '';
+  const saved = localStorage.getItem('welli_launch_date') || '';
+  const inp = document.getElementById('intro-date');
+  if (inp && saved) inp.value = saved;
 }
 function introSkip() {
   localStorage.setItem('welli_seen_welcome', '1');
