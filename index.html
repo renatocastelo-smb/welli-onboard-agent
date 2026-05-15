@@ -1391,12 +1391,9 @@ function introToggleBuilderHint(id, event) {
   }
 }
 
-// Complete intro + open a builder panel directly (teaser or announce)
+// Open a builder from the intro — keeps introStep intact so Back returns to the intro GP list
 function introOpenBuilder(view) {
-  faseAtual = 2;
-  try { localStorage.setItem('welli_stage', '2'); } catch(e) {}
-  completeIntro();
-  // Use the proper init functions so thumbs/preview/library all render correctly
+  // Do NOT call completeIntro() — Back button in builder will re-render intro step 2
   if (view === 'teaser') {
     showTeaserScreen();
   } else {
