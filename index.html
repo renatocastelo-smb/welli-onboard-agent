@@ -160,6 +160,11 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .intro-setup-input:focus{border-color:var(--mg);}
 .intro-skip-link{display:block;text-align:center;font-size:11px;color:rgba(27,19,64,.3);cursor:pointer;margin-top:8px;background:none;border:none;font-family:'Inter',sans-serif;width:100%;}
 .intro-skip-link:hover{color:rgba(27,19,64,.6);}
+/* ── Intro control list (step 1) ── */
+.intro-control-list{display:flex;flex-direction:column;gap:6px;}
+.intro-control-item{display:flex;align-items:flex-start;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:9px 11px;font-size:11.5px;color:rgba(27,19,64,.7);line-height:1.45;}
+.intro-control-item strong{color:var(--dp);}
+.intro-ctrl-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
 
 /* ── W4C Intro slides (screen 2) ── */
 #w4c-screen{position:relative;background:#EDE8FF;height:490px;overflow:hidden;display:none;}
@@ -1144,15 +1149,23 @@ function renderIntroStep() {
         <div class="w4c-tag">Wellhub for Companies</div>
         <button class="intro-nav-back" onclick="introSkip()">Skip →</button>
       </div>
-      <div class="w4c-headline">Simplify wellbeing with<br>one easy-to-use platform.</div>
-      <div class="vp-card"><div class="vp-icon">⏱️</div><div><div class="vp-title">Save Time</div><div class="vp-desc">Manage eligibility, billing, and employee access in one place.</div></div></div>
-      <div class="vp-card"><div class="vp-icon">🤝</div><div><div class="vp-title">Boost Engagement</div><div class="vp-desc">Share invites and track adoption with tools built to drive signups.</div></div></div>
-      <div class="vp-card"><div class="vp-icon">📊</div><div><div class="vp-title">Show Results</div><div class="vp-desc">Monitor membership, subscriptions, and check-ins to prove ROI.</div></div></div>
-      <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;margin-top:10px;">
-        <div class="vid-play"></div>
-        <div><div class="vid-title">Wellhub for Companies</div><div class="vid-sub" id="vid-sub-lbl">Watch the platform walkthrough →</div></div>
+      <div class="w4c-headline" style="margin-bottom:8px;">Your admin portal.<br>Full control, one place.</div>
+      <div style="font-size:12px;color:rgba(27,19,64,.5);line-height:1.6;margin-bottom:14px;">Wellhub for Companies is where you manage your entire wellbeing benefit — from day one through ongoing engagement.</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">What you control</div>
+      <div class="intro-control-list">
+        <div class="intro-control-item"><span class="intro-ctrl-icon">👥</span><div><strong>Employee list</strong> — upload, update eligibility, add or remove people at any time</div></div>
+        <div class="intro-control-item"><span class="intro-ctrl-icon">✉️</span><div><strong>Invitations</strong> — configure how and when employees are invited to join Wellhub</div></div>
+        <div class="intro-control-item"><span class="intro-ctrl-icon">📊</span><div><strong>Engagement data</strong> — subscriptions, check-in rates, and active users in real time</div></div>
+        <div class="intro-control-item"><span class="intro-ctrl-icon">📥</span><div><strong>Reports</strong> — download usage, ROI, and wellbeing impact data anytime</div></div>
+        <div class="intro-control-item"><span class="intro-ctrl-icon">💎</span><div><strong>Wellhub+</strong> — set up cost-sharing subsidies if your plan includes it</div></div>
+        <div class="intro-control-item"><span class="intro-ctrl-icon">➕</span><div><strong>Add-ons</strong> — manage Family Members access or Global Digital plans</div></div>
+        <div class="intro-control-item"><span class="intro-ctrl-icon">📢</span><div><strong>Comms templates</strong> — ready-made launch emails, posters, and Slack messages</div></div>
       </div>
-      <button class="wk-cta" style="margin-top:14px;" onclick="introNext()">Next →</button>
+      <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;margin-top:14px;">
+        <div class="vid-play"></div>
+        <div><div class="vid-title">Watch the platform walkthrough</div><div class="vid-sub" id="vid-sub-lbl">See the portal in action — 3 min →</div></div>
+      </div>
+      <button class="wk-cta" style="margin-top:12px;" onclick="introNext()">Next →</button>
       ${nav(true)}`;
 
   } else if (s === 2) {
@@ -2432,11 +2445,13 @@ function buildWelcomeText() {
 
 // ── Phase UI ───────────────────────────────────────────────────────────────
 function atualizarFaseUI() {
-  // During intro: all stage pills greyed out, no GP row, show "Getting started"
+  // During intro: Stage 1 active, others greyed, no GP row
   if (introStep >= 0) {
-    for (let i = 1; i <= 3; i++) document.getElementById('ps' + i).className = 'ps';
+    document.getElementById('ps1').className = 'ps active';
+    document.getElementById('ps2').className = 'ps';
+    document.getElementById('ps3').className = 'ps';
     document.getElementById('gp-row').style.display = 'none';
-    document.getElementById('fase-periodo').textContent = 'Getting started';
+    document.getElementById('fase-periodo').textContent = FASES[1].periodo;
     return;
   }
   const f = faseAtual;
