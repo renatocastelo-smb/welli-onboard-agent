@@ -389,6 +389,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .ts-dl-btn:hover{background:var(--mg);}.ts-dl-btn:disabled{background:var(--lmg);cursor:not-allowed;}
 .chip-teaser{background:rgba(168,128,255,.1);border-color:rgba(168,128,255,.3);color:var(--mp);}
 .chip-teaser:hover{background:rgba(168,128,255,.2);border-color:var(--mp);}
+.chip-portal{background:rgba(12,128,70,.08);border-color:rgba(12,128,70,.3);color:var(--mgrn);}
+.chip-portal:hover{background:rgba(12,128,70,.16);border-color:var(--mgrn);}
 
 /* ── Persistent intro chat bar ── */
 #intro-bar{background:#fff;border-top:.5px solid var(--ow2);padding:8px 14px;display:none;gap:8px;align-items:center;}
@@ -2265,6 +2267,21 @@ function renderChips() {
   const nextId = nextGpStep ? nextGpStep.id : null;
   const teaserIsNext   = faseAtual === 2 && nextId === 'teaser';
   const announceIsNext = faseAtual === 2 && nextId === 'leadership';
+  const uploadIsNext   = faseAtual === 2 && nextId === 'upload';
+  const invitesIsNext  = faseAtual === 2 && nextId === 'invites';
+  const i2sIsNext      = faseAtual === 2 && nextId === 'i2s';
+
+  // Portal chips — promoted first when that portal action is the next GP step
+  function makePortalChip(label) {
+    const pb = document.createElement('button');
+    pb.className = 'chip chip-portal';
+    pb.textContent = label;
+    pb.onclick = () => window.open('https://clients.gympass.com', '_blank');
+    return pb;
+  }
+  if (uploadIsNext)  box.appendChild(makePortalChip('🏢 Open portal to upload →'));
+  if (invitesIsNext) box.appendChild(makePortalChip('⚡ Configure Smart Invites →'));
+  if (i2sIsNext)     box.appendChild(makePortalChip('🚀 Schedule kick-off email →'));
 
   // Action chips promoted to FIRST when they match the active GP step
   if (teaserIsNext) {
