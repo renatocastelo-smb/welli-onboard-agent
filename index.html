@@ -1411,15 +1411,18 @@ function introCheckStep(id, event) {
   updateGPProgress();
   const card = document.getElementById('igp-' + id);
   const chk  = document.getElementById('igp-chk-' + id);
+  const hint = document.getElementById('igp-hint-' + id);
   const done = gpState[id];
   if (card) {
-    card.style.opacity   = done ? '0.35' : '1';
-    card.style.transform = done ? 'scale(0.98)' : '';
-    const titleEl = card.querySelector('[data-title]');
-    if (titleEl) { titleEl.style.textDecoration = done ? 'line-through' : ''; titleEl.style.color = done ? 'rgba(27,19,64,.35)' : 'var(--dp)'; }
+    card.style.opacity      = done ? '0.35' : '1';
+    card.style.transform    = done ? 'scale(0.98)' : '';
+    card.style.borderRadius = '10px';
+    card.style.borderColor  = 'var(--ow2)';
   }
+  // Always close the hint panel when toggling the checkbox
+  if (hint) hint.style.display = 'none';
   if (chk) {
-    chk.innerHTML    = done ? '✓' : '';
+    chk.innerHTML         = done ? '✓' : '';
     chk.style.background  = done ? 'var(--mgrn)' : 'transparent';
     chk.style.borderColor = done ? 'var(--mgrn)' : 'var(--ow2)';
   }
