@@ -352,9 +352,11 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .an-subject-label{font-size:9px;font-weight:700;color:#ccc;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
 .an-subject{font-size:13px;font-weight:700;color:var(--dp);margin-bottom:12px;padding-bottom:12px;border-bottom:.5px solid var(--ow2);line-height:1.4;}
 .an-body{font-size:12.5px;line-height:1.8;color:var(--blk);white-space:pre-wrap;font-family:'Inter',sans-serif;}
-.an-dl-wrap{padding:10px 14px 14px;background:#fff;border-top:.5px solid var(--ow2);flex-shrink:0;}
+.an-dl-wrap{padding:10px 14px 14px;background:#fff;border-top:.5px solid var(--ow2);flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
 .an-copy-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
 .an-copy-btn:hover{background:var(--mg);}
+.an-dl-txt{width:100%;background:none;color:#bbb;border:.5px solid var(--ow2);border-radius:12px;padding:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.an-dl-txt:hover{border-color:var(--mg);color:var(--mg);}
 .chip-announce{background:rgba(27,19,64,.07);border-color:rgba(27,19,64,.2);color:var(--dp);}
 .chip-announce:hover{background:rgba(27,19,64,.13);border-color:var(--dp);}
 
@@ -985,6 +987,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
           </div>
           <div class="an-dl-wrap">
             <button class="an-copy-btn" id="an-copy-btn" onclick="copyAnnounce()">Copy to clipboard →</button>
+            <button class="an-dl-txt" onclick="downloadAnnounce()">⬇ Save as .txt</button>
           </div>
         </div><!-- /cp-announce -->
 
@@ -1706,6 +1709,19 @@ function copyAnnounce() {
   });
 }
 
+function downloadAnnounce() {
+  const tpl     = AN[anChannel][anLength];
+  const subject = anFillPlaceholders(tpl.subject);
+  const body    = anFillPlaceholders(tpl.body);
+  const full    = anChannel === 'email' ? `Subject: ${subject}\n\n${body}` : body;
+  const co      = (localStorage.getItem('welli_company') || 'announcement').replace(/\s+/g, '-').toLowerCase();
+  const fname   = `wellhub-${co}-${anChannel}-${anLength}.txt`;
+  const blob    = new Blob([full], { type: 'text/plain' });
+  const a       = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = fname; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 function showAnnounceScreen() {
   showPanel('announce');
   anChannel = 'email'; anLength = 'medium'; // default to official Wellhub template
@@ -1765,9 +1781,9 @@ function renderPanelOverview() {
   const strip = document.getElementById('cov-stage-strip');
   if (strip) strip.innerHTML = `
     <div class="cov-stage-nav">
-      <button class="cov-snav${faseAtual===1?' active':''}" onclick="mudarFase(1)">Stage 1</button>
-      <button class="cov-snav${faseAtual===2?' active':''}" onclick="mudarFase(2)">Stage 2</button>
-      <button class="cov-snav${faseAtual===3?' active':''}" onclick="mudarFase(3)">Stage 3</button>
+      <button class="cov-snav${faseAtual===1?' active':''}" onclick="mudarFase(1)">1 · Explore</button>
+      <button class="cov-snav${faseAtual===2?' active':''}" onclick="mudarFase(2)">2 · Launch</button>
+      <button class="cov-snav${faseAtual===3?' active':''}" onclick="mudarFase(3)">3 · Engage</button>
     </div>`;
 
   if (faseAtual === 1) {
