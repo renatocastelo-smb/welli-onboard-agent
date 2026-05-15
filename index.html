@@ -508,6 +508,10 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 #cov-stage-strip{background:var(--ow);border-bottom:.5px solid var(--ow2);padding:9px 14px;flex-shrink:0;}
 #cov-stage-strip .cov-stage-nav{margin-bottom:0;}
 
+/* Bottom fade gradient on overview panel — hints at more content below */
+#cp-overview{position:relative;}
+#cp-overview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:28px;background:linear-gradient(transparent,var(--ow));pointer-events:none;z-index:2;}
+
 /* Stage nav pills inside content overview */
 .cov-stage-nav{display:flex;gap:5px;margin-bottom:12px;}
 .cov-snav{flex:1;padding:6px 4px;border:1.5px solid var(--ow2);border-radius:20px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#bbb;background:none;cursor:pointer;transition:all .15s;text-align:center;}
@@ -2127,7 +2131,7 @@ function launchPeriod() {
 // ── Welcome message (GP + company + launch aware) ─────────────────────────
 const PHASE_BODY = {
   1: "You're in Stage 1 — let's get your portal set up. Your first step is uploading your employee list so your team can access Wellhub. Want me to walk you through it?",
-  2: "You're in Stage 2 — time to prepare your launch. The Golden Path has 5 steps that determine whether your rollout succeeds. Want to start with the most important one?",
+  2: "You're in Stage 2 — time to prepare your launch. The Golden Path has 7 steps that determine whether your rollout succeeds. Want to start with the most important one?",
   3: "You're in Stage 3 — your Wellhub is live. Now it's about keeping enrollment growing and employees engaged. Want to start with how to read your enrollment numbers?"
 };
 
