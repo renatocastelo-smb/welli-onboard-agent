@@ -576,6 +576,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-cta:hover{background:var(--mg);}
 .cov-cta-secondary{background:none;border:1.5px solid var(--mg);border-radius:12px;padding:10px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--mg);cursor:pointer;width:100%;text-align:center;transition:background .2s,color .2s;margin-top:6px;}
 .cov-cta-secondary:hover{background:var(--mg);color:#fff;}
+.cov-faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;}
+.cov-faq{background:var(--ow2);border:none;border-radius:10px;padding:9px 11px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:var(--dp);cursor:pointer;text-align:left;transition:background .15s,color .15s;line-height:1.35;}
+.cov-faq:hover{background:var(--lmg);color:var(--dm);}
 .gpp-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .gpp-back{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);display:flex;align-items:center;gap:4px;padding:0;transition:color .15s;}
 .gpp-back:hover{color:var(--dm);}
@@ -980,12 +983,22 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
           </div>
           <div class="an-fields">
             <div class="an-frow">
-              <span class="an-flabel">Sender</span>
-              <input class="an-finput" id="an-sender" placeholder="e.g. Sarah" oninput="renderAnnounce()">
+              <span class="an-flabel">From</span>
+              <input class="an-finput" id="an-sender" placeholder="e.g. Sarah Chen" oninput="renderAnnounce()">
             </div>
             <div class="an-frow">
-              <span class="an-flabel">Title</span>
-              <input class="an-finput" id="an-title" placeholder="e.g. Chief People Officer" oninput="renderAnnounce()">
+              <span class="an-flabel">Role</span>
+              <input class="an-finput" id="an-title" list="an-title-opts" placeholder="e.g. Chief People Officer" oninput="renderAnnounce()">
+              <datalist id="an-title-opts">
+                <option value="HR Director">
+                <option value="Chief People Officer">
+                <option value="CEO">
+                <option value="Head of People &amp; Culture">
+                <option value="VP of Human Resources">
+                <option value="People &amp; Culture Manager">
+                <option value="Head of HR">
+                <option value="HR Manager">
+              </datalist>
             </div>
           </div>
           <div class="an-preview-wrap">
@@ -1258,6 +1271,7 @@ function pathNext() {
 function showPathScreen() {
   pathVisible = 0;
   buildPathSteps();
+  document.getElementById('path-steps').scrollTop = 0; // always start at step 1
   const s = document.getElementById('path-screen');
   s.style.display = 'flex';
   s.style.opacity = '0';
@@ -1838,53 +1852,51 @@ function renderPanelOverview() {
     }
     inner.innerHTML = `
       <div class="cov-hdr">
-        <div class="cov-tag">Stage 1</div>
         <div class="cov-title">${co ? escH(co) + ' × Wellhub' : 'Get to Know Wellhub'}</div>
-        <div class="cov-sub">Days 1–3 · Explore the platform and benefits</div>
+        <div class="cov-sub">Days 1–3 · Your setup guide as an HR admin</div>
       </div>
       ${s1LaunchCard}
-      <div class="cov-bcard" onclick="covAskWelli('Tell me about the gyms and studios available with Wellhub — what networks are included?')">
-        <div class="cov-bcard-icon">🏋️</div>
-        <div style="flex:1;"><div class="cov-bcard-title">Gyms &amp; Studios</div><div class="cov-bcard-desc">Thousands of locations — chains, boutique studios, and more.</div></div>
+      <div class="cov-bcard" onclick="covAskWelli('How do I log in to the Wellhub admin portal? What can I do there?')">
+        <div class="cov-bcard-icon">🏢</div>
+        <div style="flex:1;"><div class="cov-bcard-title">Admin Portal</div><div class="cov-bcard-desc">Log in at clients.gympass.com — your control centre for employees, reports, and settings.</div></div>
         <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard" onclick="covAskWelli('What wellness apps are included with Wellhub, and how do employees access them?')">
-        <div class="cov-bcard-icon">🧘</div>
-        <div style="flex:1;"><div class="cov-bcard-title">Wellness Apps</div><div class="cov-bcard-desc">Meditation, sleep, nutrition, mental health — 50+ apps.</div></div>
+      <div class="cov-bcard" onclick="covAskWelli('What is the difference between an Eligible employee, a Member, and a Subscriber in Wellhub?')">
+        <div class="cov-bcard-icon">👥</div>
+        <div style="flex:1;"><div class="cov-bcard-title">Employee States</div><div class="cov-bcard-desc">Eligible → Member → Subscriber: the 3 stages every employee moves through.</div></div>
         <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard" onclick="covAskWelli('How do Wellhub live and on-demand classes work for employees?')">
-        <div class="cov-bcard-icon">💻</div>
-        <div style="flex:1;"><div class="cov-bcard-title">Live &amp; On-Demand Classes</div><div class="cov-bcard-desc">Yoga, HIIT, cycling, pilates — streamed anywhere.</div></div>
+      <div class="cov-bcard" onclick="covAskWelli('What are the 7 Golden Path steps I need to complete for a successful Wellhub launch?')">
+        <div class="cov-bcard-icon">📋</div>
+        <div style="flex:1;"><div class="cov-bcard-title">Your 7-Step Launch Roadmap</div><div class="cov-bcard-desc">The Golden Path — what to do before, on, and after launch day.</div></div>
         <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard" onclick="covAskWelli('How does Wellhub personal coaching work and how do employees book sessions?')">
-        <div class="cov-bcard-icon">👩‍⚕️</div>
-        <div style="flex:1;"><div class="cov-bcard-title">Personal Coaching</div><div class="cov-bcard-desc">1:1 fitness, nutrition, and wellness coaching sessions.</div></div>
+      <div class="cov-bcard" onclick="covAskWelli('What ROI and business case data can I share with my leadership team to justify the Wellhub investment?')">
+        <div class="cov-bcard-icon">📊</div>
+        <div style="flex:1;"><div class="cov-bcard-title">ROI &amp; Business Case</div><div class="cov-bcard-desc">Stats to share with leadership — 90% ROI, 47% lower absenteeism, 30% less turnover.</div></div>
         <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard" onclick="covAskWelli('How do Wellhub Challenges and Raffles work? How do I create one as an HR admin?')">
-        <div class="cov-bcard-icon">🏆</div>
-        <div style="flex:1;"><div class="cov-bcard-title">Challenges &amp; Raffles</div><div class="cov-bcard-desc">Run step contests and raffles — free tool, +35% enrollment lift.</div></div>
-        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
-      </div>
-      <div class="cov-bcard" onclick="covAskWelli('What are the differences between Wellhub plan tiers — Basic, Silver, Gold, and Platinum? What does each tier include, and what is the free Digital Plan?')">
-        <div class="cov-bcard-icon">⭐</div>
-        <div style="flex:1;"><div class="cov-bcard-title">Plan Tiers</div><div class="cov-bcard-desc">Basic, Silver, Gold, Platinum, and Digital — what each includes.</div></div>
-        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
+      <div class="cov-section">Questions employees will ask you</div>
+      <div class="cov-faq-grid">
+        <button class="cov-faq" onclick="covAskWelli('Is Wellhub free for employees, or do they have to pay?')">Is it free for employees?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can employees use Wellhub from home — do they need to go to a gym?')">Can they use it from home?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can employees add a spouse or family member to Wellhub?')">Can they add family members?</button>
+        <button class="cov-faq" onclick="covAskWelli('How does an employee sign up for Wellhub after receiving the invitation?')">How do they sign up?</button>
+        <button class="cov-faq" onclick="covAskWelli('What happens to an employee\\'s Wellhub access when they leave the company?')">What if an employee leaves?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can an employee cancel or pause their Wellhub subscription?')">Can they cancel or pause?</button>
       </div>
       <div class="cov-section">Resources</div>
       <a class="cov-vid" href="https://drive.google.com/file/d/1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze/view" target="_blank" rel="noopener">
         <div class="cov-vid-play"></div>
-        <div><div class="cov-vid-title">Platform Walkthrough</div><div class="cov-vid-sub">Watch the full demo →</div></div>
+        <div><div class="cov-vid-title">Platform Walkthrough</div><div class="cov-vid-sub">Watch the full admin demo →</div></div>
       </a>
       <a class="cov-link" href="https://clients.gympass.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">🏢</div>
-        <div class="cov-link-text">Open <strong>Wellhub for Companies</strong> — upload employees &amp; configure Smart Invites.</div>
+        <div class="cov-link-text">Open <strong>Wellhub for Companies</strong> — your admin portal.</div>
       </a>
       <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">📚</div>
-        <div class="cov-link-text">Visit the <strong>Help Center</strong> for guides, FAQs, and platform documentation.</div>
+        <div class="cov-link-text">Visit the <strong>Help Center</strong> for guides and platform documentation.</div>
       </a>
       <button class="cov-cta" onclick="covAskWelli('Give me a quick overview of what I need to do to launch Wellhub successfully for my team.')">Ask Welli what to expect →</button>`;
 
@@ -1984,7 +1996,6 @@ function renderPanelOverview() {
 
     inner.innerHTML = `
       <div class="cov-hdr">
-        <div class="cov-tag">Stage 2</div>
         <div class="cov-title">${co ? escH(co) + '\'s Launch Checklist' : 'Get Ready to Launch'}</div>
         <div class="cov-sub">Golden Path — ${done} of ${total} steps complete${(() => { const ld = localStorage.getItem('welli_launch_date'); if (!ld) return ''; try { const p = ld.split('-').map(Number); return ' · ' + new Date(p[0], p[1]-1, p[2]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' launch'; } catch(e) { return ''; } })()}</div>
       </div>
@@ -2012,6 +2023,15 @@ function renderPanelOverview() {
         <div class="cov-link-icon">📚</div>
         <div class="cov-link-text"><strong>Help Center</strong> — guides for upload, invite setup, and portal navigation.</div>
       </a>
+      <div class="cov-section">Common questions</div>
+      <div class="cov-faq-grid">
+        <button class="cov-faq" onclick="covAskWelli('What if employees don\\'t receive their Wellhub invitation email?')">Invite email not received?</button>
+        <button class="cov-faq" onclick="covAskWelli('How far in advance should I send the teaser before launch?')">When to send the teaser?</button>
+        <button class="cov-faq" onclick="covAskWelli('What happens if I upload the employee list but some names are wrong or missing?')">Upload errors or missing employees?</button>
+        <button class="cov-faq" onclick="covAskWelli('How do Smart Invites work — do I need to do anything after configuring them?')">How do Smart Invites work?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can I launch Wellhub even if I haven\\'t completed all 7 Golden Path steps?')">Can I launch before finishing all steps?</button>
+        <button class="cov-faq" onclick="covAskWelli('How do I book the Welcome Webinar and who presents it?')">How to book the webinar?</button>
+      </div>
       ${done < total ? `<button class="cov-cta" onclick="covAskWelli('What is my most important next step to prepare for a successful launch?')">Ask Welli what to prioritize →</button>` : ''}`;
 
   } else {
@@ -2046,7 +2066,6 @@ function renderPanelOverview() {
     }
     inner.innerHTML = `
       <div class="cov-hdr">
-        <div class="cov-tag">Stage 3</div>
         <div class="cov-title">${co ? escH(co) + ' · Engagement' : 'Life After Launch'}</div>
         <div class="cov-sub">Month 1+ · Drive ongoing enrollment</div>
       </div>
@@ -2100,6 +2119,15 @@ function renderPanelOverview() {
         <div class="cov-link-icon">📚</div>
         <div class="cov-link-text"><strong>Help Center</strong> — engagement guides, challenge setup, and portal navigation.</div>
       </a>
+      <div class="cov-section">Common questions</div>
+      <div class="cov-faq-grid">
+        <button class="cov-faq" onclick="covAskWelli('An employee says they can\\'t check in at a gym — what should they do?')">Can't check in at a gym?</button>
+        <button class="cov-faq" onclick="covAskWelli('How do I add a new employee to Wellhub after launch?')">Adding employees after launch?</button>
+        <button class="cov-faq" onclick="covAskWelli('An employee left the company — how do I remove them from Wellhub?')">Remove a departed employee?</button>
+        <button class="cov-faq" onclick="covAskWelli('What is a good enrollment rate and how do I benchmark mine?')">What's a good enrollment rate?</button>
+        <button class="cov-faq" onclick="covAskWelli('An employee wants to change their Wellhub plan — can they do that themselves?')">Can employees change their plan?</button>
+        <button class="cov-faq" onclick="covAskWelli('How do I re-engage employees who signed up but stopped using Wellhub?')">Re-engage inactive members?</button>
+      </div>
       ${(() => {
         const d3 = daysUntilLaunch();
         if (d3 !== null && d3 < 0) {
