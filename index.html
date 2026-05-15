@@ -549,6 +549,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 /* Next-up step scroll anchor subtle pulse */
 @keyframes step-pulse{0%{box-shadow:0 0 0 0 rgba(242,73,107,.3)}70%{box-shadow:0 0 0 6px rgba(242,73,107,0)}100%{box-shadow:none}}
 .cov-step.next-up.just-revealed{animation:step-pulse .7s ease;}
+/* Checkbox pop animation when step is marked done */
+@keyframes check-pop{0%{transform:scale(1)}40%{transform:scale(1.45)}75%{transform:scale(.92)}100%{transform:scale(1)}}
+.cov-step-check.pop{animation:check-pop .32s cubic-bezier(.4,0,.2,1);}
 
 /* Stage 1 ask-welli CTA in content panel */
 .cov-cta{background:var(--dp);border:none;border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;width:100%;text-align:center;transition:background .2s;margin-top:6px;}
@@ -1830,7 +1833,7 @@ function renderPanelOverview() {
         const actionBtn = isNext && STEP_ACTION[s.id] ? STEP_ACTION[s.id]() : '';
         if (s.group !== lastGrp) { lastGrp = s.group; stepItems.push(`<div class="cov-section">${s.group}</div>`); }
         stepItems.push(`
-          <div class="cov-step${gpState[s.id] ? ' done' : isNext ? ' next-up' : ''}" onclick="toggleCovStep('${s.id}')">
+          <div class="cov-step${gpState[s.id] ? ' done' : isNext ? ' next-up' : ''}" data-step-id="${s.id}" onclick="toggleCovStep('${s.id}')">
             <div class="cov-step-check">✓</div>
             <div class="cov-step-icon">${s.emoji}</div>
             <div class="cov-step-body">
@@ -1951,10 +1954,18 @@ function toggleCovStep(id) {
   updateGPProgress();
   renderPanelOverview();
   renderChips();
-  // When marking a step done: flash the progress bar and scroll to the new next-up step
+  // When marking a step done: pop the checkbox, flash the bar, scroll to next-up
   if (wasUnchecked && gpState[id]) {
+    // Checkbox pop on the just-checked step
+    const doneEl = document.querySelector(`#cov-inner [data-step-id="${id}"]`);
+    if (doneEl) {
+      const chk = doneEl.querySelector('.cov-step-check');
+      if (chk) { chk.classList.remove('pop'); void chk.offsetWidth; chk.classList.add('pop'); }
+    }
+    // Progress bar flash
     const fill = document.querySelector('#cov-inner .cov-prog-fill');
     if (fill) { fill.classList.remove('flash'); void fill.offsetWidth; fill.classList.add('flash'); }
+    // Scroll to new next-up step
     const nextEl = document.querySelector('#cov-inner .cov-step.next-up');
     if (nextEl) {
       nextEl.classList.add('just-revealed');
