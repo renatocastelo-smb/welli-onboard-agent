@@ -1,6 +1,7 @@
 // POST /api/faq-track  { id: 'hr-eligibility' }
-// Increments a click counter for a FAQ question ID in Upstash Redis.
-const { Redis } = require('@upstash/redis');
+// Increments a click counter for a FAQ question ID.
+// Requires: KV_REST_API_URL + KV_REST_API_TOKEN (set by Upstash via Vercel marketplace)
+const { kv } = require('@vercel/kv');
 
 const VALID_IDS = new Set([
   'hr-eligibility','hr-billing','hr-add-remove','hr-multicountry','hr-reports','hr-wellhubplus',
@@ -15,12 +16,10 @@ module.exports = async function handler(req, res) {
   if (!id || !VALID_IDS.has(id)) return res.status(400).json({ error: 'invalid id' });
 
   try {
-    const redis = Redis.fromEnv();
-    await redis.incr(`faq_clicks:${id}`);
+    await kv.incr(`faq_clicks:${id}`);
     res.status(200).json({ ok: true });
   } catch (e) {
-    // Never let tracking failures surface to the user
     console.error('faq-track error:', e.message);
-    res.status(200).json({ ok: false });
+    res.status(200).json({ ok: false }); // never surface tracking failures to users
   }
 };
