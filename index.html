@@ -1083,6 +1083,50 @@ let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
 let introPathMsgSent = false;
 let introFaqMsgSent  = false;
 
+// ── Intro FAQ data (single source of truth — synced with api/faq-top.js IDs) ──
+const INTRO_FAQ_DATA = {
+  hr: [
+    { id: 'hr-eligibility',  q: 'Who is eligible?',              prompt: 'What counts as an eligible employee — can I control who gets access to Wellhub?' },
+    { id: 'hr-billing',      q: 'How does billing work?',        prompt: 'How does Wellhub billing work — are we charged per employee or per subscriber?' },
+    { id: 'hr-add-remove',   q: 'Adding or removing employees?', prompt: 'How do I add or remove employees from Wellhub after the initial upload?' },
+    { id: 'hr-multicountry', q: 'Multi-country employees?',      prompt: 'We have employees in multiple countries — how does Wellhub work internationally?' },
+    { id: 'hr-reports',      q: 'What reports are available?',   prompt: 'What reports can I see in the portal and how do I track enrollment success?' },
+    { id: 'hr-wellhubplus',  q: 'What is Wellhub+?',             prompt: 'What is Wellhub+ and how does cost-sharing work for our company?' },
+  ],
+  emp: [
+    { id: 'emp-free',     q: 'Is it free for employees?',  prompt: 'Is Wellhub free for employees, or do they have to pay?' },
+    { id: 'emp-home',     q: 'Can they use it from home?', prompt: 'Can employees use Wellhub from home — do they need to go to a gym?' },
+    { id: 'emp-family',   q: 'Can they add family members?', prompt: 'Can employees add a spouse or family member to Wellhub?' },
+    { id: 'emp-signup',   q: 'How do they sign up?',       prompt: 'How does an employee sign up for Wellhub after receiving the invitation?' },
+    { id: 'emp-included', q: "What's included?",           prompt: 'What gyms, studios, and apps are included in Wellhub?' },
+    { id: 'emp-cancel',   q: 'Can they cancel or pause?',  prompt: 'Can an employee cancel or pause their Wellhub subscription?' },
+  ]
+};
+
+// Render FAQ grids in a given order (called immediately with default, then again with live order)
+function renderIntroFaqs(hrOrder, empOrder) {
+  const byId = {};
+  [...INTRO_FAQ_DATA.hr, ...INTRO_FAQ_DATA.emp].forEach(q => { byId[q.id] = q; });
+  ['hr','emp'].forEach(cat => {
+    const el = document.getElementById('intro-faq-' + cat);
+    if (!el) return;
+    const order = cat === 'hr' ? hrOrder : empOrder;
+    el.innerHTML = order.map(id => {
+      const q = byId[id]; if (!q) return '';
+      return `<button class="cov-faq" onclick="trackFaqClick('${q.id}');covAskWelli(${JSON.stringify(q.prompt)})">${q.q}</button>`;
+    }).join('');
+  });
+}
+
+// Fire-and-forget click tracker — never blocks the user
+function trackFaqClick(id) {
+  fetch('/api/faq-track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  }).catch(() => {});
+}
+
 // Render current intro step into the content panel
 function renderIntroStep() {
   showPanel('overview');
@@ -1175,29 +1219,17 @@ function renderIntroStep() {
         <div class="wk-tag" style="margin-bottom:10px;">Common questions</div>
         <div class="wk-headline" style="font-size:20px;line-height:1.3;">Questions you'll get.<br>Answers you'll have.</div>
       </div>
-
-      <!-- HR Admin FAQs -->
       <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">👤 HR admins ask Welli</div>
-      <div class="cov-faq-grid" style="margin-bottom:16px;">
-        <button class="cov-faq" onclick="covAskWelli('What counts as an eligible employee — can I control who gets access to Wellhub?')">Who is eligible?</button>
-        <button class="cov-faq" onclick="covAskWelli('How does Wellhub billing work — are we charged per employee or per subscriber?')">How does billing work?</button>
-        <button class="cov-faq" onclick="covAskWelli('How do I add or remove employees from Wellhub after the initial upload?')">Adding or removing employees?</button>
-        <button class="cov-faq" onclick="covAskWelli('We have employees in multiple countries — how does Wellhub work internationally?')">Multi-country employees?</button>
-        <button class="cov-faq" onclick="covAskWelli('What reports can I see in the portal and how do I track enrollment success?')">What reports are available?</button>
-        <button class="cov-faq" onclick="covAskWelli('What is Wellhub+ and how does cost-sharing work for our company?')">What is Wellhub+?</button>
-      </div>
-
-      <!-- Employee FAQs -->
+      <div class="cov-faq-grid" id="intro-faq-hr" style="margin-bottom:16px;"></div>
       <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">🙋 Employees will ask you</div>
-      <div class="cov-faq-grid" style="margin-bottom:8px;">
-        <button class="cov-faq" onclick="covAskWelli('Is Wellhub free for employees, or do they have to pay?')">Is it free for employees?</button>
-        <button class="cov-faq" onclick="covAskWelli('Can employees use Wellhub from home — do they need to go to a gym?')">Can they use it from home?</button>
-        <button class="cov-faq" onclick="covAskWelli('Can employees add a spouse or family member to Wellhub?')">Can they add family members?</button>
-        <button class="cov-faq" onclick="covAskWelli('How does an employee sign up for Wellhub after receiving the invitation?')">How do they sign up?</button>
-        <button class="cov-faq" onclick="covAskWelli('What gyms, studios, and apps are included in Wellhub?')">What's included?</button>
-        <button class="cov-faq" onclick="covAskWelli('Can an employee cancel or pause their Wellhub subscription?')">Can they cancel or pause?</button>
-      </div>
+      <div class="cov-faq-grid" id="intro-faq-emp" style="margin-bottom:8px;"></div>
       ${nav(true)}`;
+    // Render with default order immediately, then refresh from live API
+    renderIntroFaqs(INTRO_FAQ_DATA.hr.map(q => q.id), INTRO_FAQ_DATA.emp.map(q => q.id));
+    fetch('/api/faq-top')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) renderIntroFaqs(data.hr, data.emp); })
+      .catch(() => {}); // graceful fallback — default order stays
     inner.parentElement.scrollTop = 0;
 
   } else if (s === 3) {
