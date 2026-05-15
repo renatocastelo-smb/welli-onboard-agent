@@ -1081,12 +1081,13 @@ const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
 // introStep 0–4 = in intro; -1 = intro done (returning user)
 let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
 let introPathMsgSent = false;
+let introFaqMsgSent  = false;
 
 // Render current intro step into the content panel
 function renderIntroStep() {
   showPanel('overview');
   const inner = document.getElementById('cov-inner');
-  const TOTAL = 3;
+  const TOTAL = 4;
   const s = introStep;
   const navDots = Array.from({length: TOTAL}, (_, i) =>
     `<div class="intro-nav-dot${i === s ? ' active' : i < s ? ' done' : ''}"></div>`
@@ -1169,6 +1170,37 @@ function renderIntroStep() {
       ${nav(true)}`;
 
   } else if (s === 2) {
+    inner.innerHTML = `
+      <div style="margin-bottom:16px;">
+        <div class="wk-tag" style="margin-bottom:10px;">Common questions</div>
+        <div class="wk-headline" style="font-size:20px;line-height:1.3;">Questions you'll get.<br>Answers you'll have.</div>
+      </div>
+
+      <!-- HR Admin FAQs -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">👤 HR admins ask Welli</div>
+      <div class="cov-faq-grid" style="margin-bottom:16px;">
+        <button class="cov-faq" onclick="covAskWelli('What counts as an eligible employee — can I control who gets access to Wellhub?')">Who is eligible?</button>
+        <button class="cov-faq" onclick="covAskWelli('How does Wellhub billing work — are we charged per employee or per subscriber?')">How does billing work?</button>
+        <button class="cov-faq" onclick="covAskWelli('How do I add or remove employees from Wellhub after the initial upload?')">Adding or removing employees?</button>
+        <button class="cov-faq" onclick="covAskWelli('We have employees in multiple countries — how does Wellhub work internationally?')">Multi-country employees?</button>
+        <button class="cov-faq" onclick="covAskWelli('What reports can I see in the portal and how do I track enrollment success?')">What reports are available?</button>
+        <button class="cov-faq" onclick="covAskWelli('What is Wellhub+ and how does cost-sharing work for our company?')">What is Wellhub+?</button>
+      </div>
+
+      <!-- Employee FAQs -->
+      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">🙋 Employees will ask you</div>
+      <div class="cov-faq-grid" style="margin-bottom:8px;">
+        <button class="cov-faq" onclick="covAskWelli('Is Wellhub free for employees, or do they have to pay?')">Is it free for employees?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can employees use Wellhub from home — do they need to go to a gym?')">Can they use it from home?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can employees add a spouse or family member to Wellhub?')">Can they add family members?</button>
+        <button class="cov-faq" onclick="covAskWelli('How does an employee sign up for Wellhub after receiving the invitation?')">How do they sign up?</button>
+        <button class="cov-faq" onclick="covAskWelli('What gyms, studios, and apps are included in Wellhub?')">What's included?</button>
+        <button class="cov-faq" onclick="covAskWelli('Can an employee cancel or pause their Wellhub subscription?')">Can they cancel or pause?</button>
+      </div>
+      ${nav(true)}`;
+    inner.parentElement.scrollTop = 0;
+
+  } else if (s === 3) {
     const today = new Date(); today.setHours(0,0,0,0);
     const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
     const savedDate = localStorage.getItem('welli_launch_date') || '';
@@ -1316,13 +1348,22 @@ function renderIntroStep() {
 }
 
 function introNext() {
-  introStep = Math.min(introStep + 1, 2);
+  introStep = Math.min(introStep + 1, 3);
   atualizarFaseUI();
   renderPanelOverview();
-  // When reaching the Path to Success step, drop a contextual chat message (once only)
-  if (introStep === 2 && !introPathMsgSent) {
+  const msgs = document.getElementById('msgs');
+  // FAQ step — fire once
+  if (introStep === 2 && !introFaqMsgSent) {
+    introFaqMsgSent = true;
+    const d = document.createElement('div');
+    d.className = 'msg b';
+    d.innerHTML = `<div class="lbl"><span>Welli</span></div><div class="bbl">${renderMarkdown("Here are the questions that come up most often 💬\n\nTap any to get a full answer — or just ask me something directly.")}</div>`;
+    msgs.appendChild(d);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  // Golden Path step — fire once
+  if (introStep === 3 && !introPathMsgSent) {
     introPathMsgSent = true;
-    const msgs = document.getElementById('msgs');
     const d = document.createElement('div');
     d.className = 'msg b';
     d.innerHTML = `<div class="lbl"><span>Welli</span></div><div class="bbl">${renderMarkdown("Now let's map out your launch 🗓️\n\nSet your target launch date on the left — I'll help you with timing, messaging, and anything else along the way.")}</div>`;
@@ -2611,7 +2652,7 @@ function buildWelcomeText() {
 function atualizarFaseUI() {
   // During intro: Stage 1 active for steps 0–1, Stage 2 active for step 2 (Path to Success)
   if (introStep >= 0) {
-    const introActiveStage = introStep === 2 ? 2 : 1;
+    const introActiveStage = introStep === 3 ? 2 : 1;
     document.getElementById('ps1').className = 'ps' + (introActiveStage === 1 ? ' active' : ' done');
     document.getElementById('ps2').className = 'ps' + (introActiveStage === 2 ? ' active' : '');
     document.getElementById('ps3').className = 'ps';
