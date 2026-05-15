@@ -1396,7 +1396,12 @@ function introOpenBuilder(view) {
   faseAtual = 2;
   try { localStorage.setItem('welli_stage', '2'); } catch(e) {}
   completeIntro();
-  showPanel(view);
+  // Use the proper init functions so thumbs/preview/library all render correctly
+  if (view === 'teaser') {
+    showTeaserScreen();
+  } else {
+    showAnnounceScreen();
+  }
   const label = view === 'teaser' ? 'teaser post for employees' : 'leadership announcement email';
   setTimeout(() => covAskWelli('Help me write the ' + label + '.'), 80);
 }
