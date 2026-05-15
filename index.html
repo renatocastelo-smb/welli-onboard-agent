@@ -1147,7 +1147,10 @@ function renderIntroStep() {
     inner.innerHTML = `
       <div class="w4c-headline" style="margin-bottom:8px;">Your admin portal.<br>Full control, one place.</div>
       <div style="font-size:12px;color:rgba(27,19,64,.5);line-height:1.6;margin-bottom:14px;">Wellhub for Companies is where you manage your entire wellbeing benefit — from day one through ongoing engagement.</div>
-      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">What's inside the portal</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);">What's inside the portal</div>
+        <a href="https://clients.gympass.com/" target="_blank" rel="noopener" style="font-size:11px;font-weight:600;color:var(--mg);text-decoration:none;">Take me there →</a>
+      </div>
       <div class="intro-control-list">
         <div class="intro-control-item"><span class="intro-ctrl-icon">🏠</span><div><strong>Home</strong> — enrollment snapshot at a glance</div></div>
         <div class="intro-control-item"><span class="intro-ctrl-icon">👥</span><div><strong>Employees</strong> — upload list, manage eligibility, add or remove</div></div>
@@ -1157,7 +1160,6 @@ function renderIntroStep() {
         <div class="intro-control-item"><span class="intro-ctrl-icon">⚙️</span><div><strong>Settings</strong> — admin users & Smart Invites</div></div>
         <div class="intro-control-item"><span class="intro-ctrl-icon">❓</span><div><strong>Help</strong> — guides, FAQs, and support</div></div>
       </div>
-      <a href="https://clients.gympass.com/" target="_blank" rel="noopener" style="display:block;margin-top:14px;font-size:12px;font-weight:600;color:var(--mg);text-decoration:none;">→ clients.gympass.com</a>
       <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;margin-top:8px;padding:10px 12px;border-radius:10px;">
         <div class="vid-play" style="width:32px;height:32px;flex-shrink:0;"></div>
         <div><div class="vid-title" style="font-size:12px;">Watch the platform walkthrough</div><div class="vid-sub" id="vid-sub-lbl" style="font-size:10px;">See the portal in action — 3 min →</div></div>
