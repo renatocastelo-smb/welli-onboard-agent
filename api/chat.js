@@ -246,7 +246,9 @@ module.exports = async function handler(req, res) {
     }
     if (goldenPath) {
       clientLines.push(`Golden Path: ${goldenPath.completed}/${goldenPath.total} steps complete.`);
-      if (goldenPath.nextPending) clientLines.push(`Next pending step: "${goldenPath.nextPending}".`);
+      if (goldenPath.doneSteps?.length)    clientLines.push(`Completed steps: ${goldenPath.doneSteps.join(', ')}.`);
+      if (goldenPath.nextPending)          clientLines.push(`Next pending step: "${goldenPath.nextPending}".`);
+      if (goldenPath.pendingSteps?.length > 1) clientLines.push(`Remaining steps: ${goldenPath.pendingSteps.slice(1).join(', ')}.`);
     }
     const gpCtx = clientLines.length ? '\n\nCLIENT CONTEXT:\n' + clientLines.join(' ') : '';
 

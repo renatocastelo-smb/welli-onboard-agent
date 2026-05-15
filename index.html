@@ -2132,7 +2132,9 @@ function gpContext() {
   return {
     completed:   done.length,
     total:       GP_STEPS.length,
-    nextPending: pending.length ? pending[0].title : null
+    nextPending: pending.length ? pending[0].title : null,
+    doneSteps:   done.map(s => s.title),
+    pendingSteps: pending.map(s => s.title)
   };
 }
 
