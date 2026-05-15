@@ -1722,6 +1722,7 @@ function renderPanelOverview() {
   const inner = document.getElementById('cov-inner');
   if (!inner) return;
 
+  const co = localStorage.getItem('welli_company') || '';
   const stageNav = `
     <div class="cov-stage-nav">
       <button class="cov-snav${faseAtual===1?' active':''}" onclick="mudarFase(1)">Stage 1</button>
@@ -1746,7 +1747,7 @@ function renderPanelOverview() {
     inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 1</div>
-        <div class="cov-title">Get to Know Wellhub</div>
+        <div class="cov-title">${co ? co + ' × Wellhub' : 'Get to Know Wellhub'}</div>
         <div class="cov-sub">Days 1–3 · Explore the platform and benefits</div>
       </div>
       ${s1LaunchCard}
@@ -1842,7 +1843,7 @@ function renderPanelOverview() {
     inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
-        <div class="cov-title">Get Ready to Launch</div>
+        <div class="cov-title">${co ? co + '\'s Launch Checklist' : 'Get Ready to Launch'}</div>
         <div class="cov-sub">Golden Path — ${done} of ${total} steps complete</div>
       </div>
       ${launchCard}
@@ -1874,8 +1875,8 @@ function renderPanelOverview() {
     inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 3</div>
-        <div class="cov-title">Life After Launch</div>
-        <div class="cov-sub">Month 1+ · Drive ongoing engagement</div>
+        <div class="cov-title">${co ? co + ' · Engagement' : 'Life After Launch'}</div>
+        <div class="cov-sub">Month 1+ · Drive ongoing enrollment</div>
       </div>
       ${s3Card}
       <div class="cov-section">Monthly Actions</div>
@@ -2027,11 +2028,11 @@ const FASES = {
   },
   2: {
     nome: 'Stage 2 — Get Ready to Launch', periodo: 'Pre-launch',
-    chips: ['What are the 5 Golden Path steps?', 'How do I write the leadership email?', 'How do I schedule the Kick-off email?', 'How do I book the Welcome Webinar?']
+    chips: ['How do I write the leadership announcement?', 'How do I configure Smart Invites?', 'How do I schedule the Kick-off email?', 'How do I book the Welcome Webinar?']
   },
   3: {
     nome: 'Stage 3 — Life After Launch', periodo: 'Month 1+',
-    chips: ['How do I check my enrollment rate?', 'My enrollment is low — what do I do?', 'How do I run a Challenge?', 'What is the EEP?']
+    chips: ['How do I check my enrollment rate?', 'My enrollment is low — what do I do?', 'How do I run a Wellhub Challenge?', 'What is the EEP report?']
   }
 };
 
