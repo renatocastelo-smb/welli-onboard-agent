@@ -2138,8 +2138,11 @@ const FASES = {
 function daysUntilLaunch() {
   const ld = localStorage.getItem('welli_launch_date');
   if (!ld) return null;
-  const diff = new Date(ld).setHours(0,0,0,0) - new Date().setHours(0,0,0,0);
-  return Math.round(diff / (1000 * 60 * 60 * 24));
+  // Parse as local date (YYYY-MM-DD) to avoid UTC timezone day-off bug
+  const p = ld.split('-').map(Number);
+  const launchLocal = new Date(p[0], p[1] - 1, p[2]).getTime();
+  const todayLocal  = new Date().setHours(0, 0, 0, 0);
+  return Math.round((launchLocal - todayLocal) / 86400000);
 }
 
 function launchLine() {
