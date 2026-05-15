@@ -138,6 +138,28 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .wk-li::before{content:'•';color:var(--mp);font-weight:700;flex-shrink:0;}
 .wk-cta{background:var(--dp);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;margin-top:16px;width:100%;}
 .wk-cta:hover{background:var(--mg);}.wk-cta:active{transform:scale(.97);}
+/* ── Intro step nav (inside content panel) ── */
+.intro-nav{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:.5px solid var(--ow2);}
+.intro-nav-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:rgba(27,19,64,.35);cursor:pointer;padding:0;transition:color .15s;}
+.intro-nav-back:hover{color:var(--dp);}
+.intro-nav-dots{display:flex;gap:5px;align-items:center;}
+.intro-nav-dot{width:6px;height:6px;border-radius:50%;background:var(--ow2);transition:all .2s;}
+.intro-nav-dot.active{background:var(--dp);width:18px;border-radius:4px;}
+.intro-nav-dot.done{background:var(--mgrn);}
+/* ── Intro mission card ── */
+.intro-mission{background:var(--dp);border-radius:16px;padding:28px 24px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;}
+.intro-mission::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.25) 0%,transparent 70%);pointer-events:none;}
+.intro-mission::after{content:'';position:absolute;bottom:-40px;left:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(168,128,255,.2) 0%,transparent 70%);pointer-events:none;}
+.intro-mission-headline{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px;line-height:1.2;margin-bottom:12px;}
+.intro-mission-headline em{color:#DCFF79;font-style:normal;}
+.intro-mission-body{font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;}
+/* ── Intro setup fields (reuse setup CSS but inside panel) ── */
+.intro-setup-field{margin-bottom:12px;}
+.intro-setup-label{font-size:11px;font-weight:700;color:rgba(27,19,64,.45);letter-spacing:.04em;margin-bottom:5px;}
+.intro-setup-input{width:100%;border:.5px solid var(--ow2);border-radius:10px;padding:10px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--dp);background:#fff;outline:none;box-sizing:border-box;transition:border-color .15s;}
+.intro-setup-input:focus{border-color:var(--mg);}
+.intro-skip-link{display:block;text-align:center;font-size:11px;color:rgba(27,19,64,.3);cursor:pointer;margin-top:8px;background:none;border:none;font-family:'Inter',sans-serif;width:100%;}
+.intro-skip-link:hover{color:rgba(27,19,64,.6);}
 
 /* ── W4C Intro slides (screen 2) ── */
 #w4c-screen{position:relative;background:#EDE8FF;height:490px;overflow:hidden;display:none;}
@@ -609,8 +631,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     <div class="hi"><h2>Welli</h2><p>Wellhub · Onboarding Assistant</p></div>
     <div class="wm">wellhub<span class="wm-dot"></span></div>
   </div>
-  <!-- ══ WELCOME KIT OVERVIEW ══ -->
-  <div id="intro-screen">
+  <!-- ══ INTRO SCREENS REMOVED — intro now lives in the content panel ══ -->
+  <div id="intro-screen" style="display:none">
     <div class="wk-wrap">
       <div class="wk-top">
         <div class="wk-tag">Your onboarding overview</div>
@@ -876,16 +898,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     </div>
   </div>
 
-  <!-- ══ PERSISTENT INTRO CHAT BAR ══ -->
-  <div id="intro-bar">
-    <textarea class="intro-inp" id="intro-inp" placeholder="Ask Welli anything, or skip ahead…" rows="1"></textarea>
-    <button class="intro-sbtn" onclick="introSend()">
-      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    </button>
-  </div>
-
-  <!-- ══ APP MAIN — post-intro split panel ══ -->
-  <div id="app-main" style="display:none;">
+  <!-- ══ APP MAIN ══ -->
+  <div id="app-main" style="display:flex;flex-direction:column;opacity:0;transition:opacity .4s ease;">
 
     <!-- ▌ PROGRESS STRIP ▌ -->
     <div class="progress-strip">
@@ -1058,134 +1072,198 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 // ── Shared HTML escape helper ──────────────────────────────────────────────
 const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-// ── W4C Intro slides ───────────────────────────────────────────────────────
-let w4cSlide = 0;
-const W4C_TOTAL = 4;
+// ── Intro state ────────────────────────────────────────────────────────────
+// introStep 0–4 = in intro; -1 = intro done (returning user)
+let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
 
-function goW4C(n) {
-  document.querySelectorAll('.w4c-slide').forEach((s, i) => {
-    s.classList.remove('active', 'exit');
-    if (i === n)    s.classList.add('active');
-    else if (i < n) s.classList.add('exit');
-  });
-  document.querySelectorAll('.w4c-dot').forEach((d, i) => d.classList.toggle('active', i === n));
-  w4cSlide = n;
-  document.getElementById('w4c-next-btn').textContent = n === W4C_TOTAL - 1 ? "I'm ready →" : 'Next →';
-  document.getElementById('w4c-prev-btn').style.visibility = n > 0 ? 'visible' : 'hidden';
-  // Dark nav on mission slide (index 2)
-  document.querySelector('.w4c-nav').classList.toggle('on-mission', n === 2);
+// Render current intro step into the content panel
+function renderIntroStep() {
+  showPanel('overview');
+  const inner = document.getElementById('cov-inner');
+  const TOTAL = 5;
+  const s = introStep;
+  const navDots = Array.from({length: TOTAL}, (_, i) =>
+    `<div class="intro-nav-dot${i === s ? ' active' : i < s ? ' done' : ''}"></div>`
+  ).join('');
+  const nav = (showBack) => `
+    <div class="intro-nav">
+      ${showBack
+        ? `<button class="intro-nav-back" onclick="introPrev()">← Back</button>`
+        : `<div></div>`}
+      <div class="intro-nav-dots">${navDots}</div>
+    </div>`;
+
+  if (s === 0) {
+    inner.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div class="wk-tag">Your onboarding overview</div>
+        <button class="intro-nav-back" onclick="introSkip()">Skip all →</button>
+      </div>
+      <div class="wk-headline">Everything you need<br>for a successful launch.</div>
+      <div class="wk-section">
+        <div class="wk-num">1</div>
+        <div class="wk-body">
+          <div class="wk-title">Get to Know Wellhub for Companies</div>
+          <div class="wk-sub">Your all-in-one admin platform.</div>
+          <div class="wk-list">
+            <div class="wk-li">A tour of the admin portal</div>
+            <div class="wk-li">Upload your employee list</div>
+            <div class="wk-li">Schedule your launch invitations</div>
+          </div>
+        </div>
+      </div>
+      <div class="wk-section">
+        <div class="wk-num">2</div>
+        <div class="wk-body">
+          <div class="wk-title">Get Ready to Launch</div>
+          <div class="wk-sub">Your 7-step Golden Path to a successful rollout.</div>
+          <div class="wk-list">
+            <div class="wk-li">Teaser & announcement templates</div>
+            <div class="wk-li">Employee upload & invite setup</div>
+            <div class="wk-li">Welcome Webinar & comms assets</div>
+          </div>
+        </div>
+      </div>
+      <div class="wk-section">
+        <div class="wk-num">3</div>
+        <div class="wk-body">
+          <div class="wk-title">Life After Launch</div>
+          <div class="wk-sub">Keep enrollment growing month after month.</div>
+          <div class="wk-list">
+            <div class="wk-li">Monthly engagement actions & reports</div>
+            <div class="wk-li">D7 / D15 / D30 post-launch checkpoints</div>
+          </div>
+        </div>
+      </div>
+      <button class="wk-cta" onclick="introNext()">Let's get started →</button>
+      ${nav(false)}`;
+
+  } else if (s === 1) {
+    inner.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="w4c-tag">Wellhub for Companies</div>
+        <button class="intro-nav-back" onclick="introSkip()">Skip →</button>
+      </div>
+      <div class="w4c-headline">Simplify wellbeing with<br>one easy-to-use platform.</div>
+      <div class="vp-card"><div class="vp-icon">⏱️</div><div><div class="vp-title">Save Time</div><div class="vp-desc">Manage eligibility, billing, and employee access in one place.</div></div></div>
+      <div class="vp-card"><div class="vp-icon">🤝</div><div><div class="vp-title">Boost Engagement</div><div class="vp-desc">Share invites and track adoption with tools built to drive signups.</div></div></div>
+      <div class="vp-card"><div class="vp-icon">📊</div><div><div class="vp-title">Show Results</div><div class="vp-desc">Monitor membership, subscriptions, and check-ins to prove ROI.</div></div></div>
+      <div class="vid-card" onclick="toggleVidPlayer(this,'1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze')" style="cursor:pointer;margin-top:10px;">
+        <div class="vid-play"></div>
+        <div><div class="vid-title">Wellhub for Companies</div><div class="vid-sub" id="vid-sub-lbl">Watch the platform walkthrough →</div></div>
+      </div>
+      <button class="wk-cta" style="margin-top:14px;" onclick="introNext()">Next →</button>
+      ${nav(true)}`;
+
+  } else if (s === 2) {
+    inner.innerHTML = `
+      <div class="intro-mission">
+        <div style="font-size:48px;margin-bottom:14px;">🌍</div>
+        <div class="intro-mission-headline">Let's make your<br>employees <em>happier</em><br>and <em>healthier.</em></div>
+        <div class="intro-mission-body">Now that you know what Wellhub can do — let's give your team access to the world's best wellbeing platform.</div>
+      </div>
+      <button class="wk-cta" onclick="introNext()">I'm in →</button>
+      ${nav(true)}`;
+
+  } else if (s === 3) {
+    const today = new Date();
+    const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
+    const savedCo   = localStorage.getItem('welli_company') || '';
+    const savedDate = localStorage.getItem('welli_launch_date') || '';
+    inner.innerHTML = `
+      <div style="margin-bottom:18px;">
+        <div class="w4c-tag" style="display:inline-block;margin-bottom:12px;">Setup</div>
+        <div class="wk-headline" style="margin-bottom:6px;">Now let's set<br>you up.</div>
+        <div style="font-size:12px;color:rgba(27,19,64,.45);line-height:1.6;">Tell us about your company so Welli can personalise your experience and checklist.</div>
+      </div>
+      <div class="intro-setup-field">
+        <div class="intro-setup-label">YOUR COMPANY NAME</div>
+        <input class="intro-setup-input" id="intro-company" type="text" placeholder="e.g. Acme Corp" autocomplete="organization" value="${escH(savedCo)}">
+      </div>
+      <div class="intro-setup-field">
+        <div class="intro-setup-label">PLANNED LAUNCH DATE <span style="font-weight:400;color:#ccc;">(optional)</span></div>
+        <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}">
+      </div>
+      <button class="wk-cta" onclick="introSaveSetup()">Save & continue →</button>
+      <button class="intro-skip-link" onclick="introSkipSetup()">Skip for now</button>
+      ${nav(true)}`;
+    setTimeout(() => {
+      const inp = document.getElementById('intro-company');
+      if (inp && !inp.value) inp.focus();
+      ['intro-company','intro-date'].forEach(id => {
+        document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') introSaveSetup(); });
+      });
+    }, 80);
+
+  } else if (s === 4) {
+    inner.innerHTML = `
+      <div style="margin:-14px -16px 16px;background:var(--dp);padding:20px 20px 18px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-50px;right:-50px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.2) 0%,transparent 70%);pointer-events:none;"></div>
+        <div class="path-tag" style="color:#DCFF79;background:rgba(220,255,121,.12);border-color:rgba(220,255,121,.3);">Strategy</div>
+        <div class="path-title" style="color:#fff;margin-top:6px;">Your Path to Success</div>
+        <div class="path-sub" style="color:rgba(255,255,255,.5);">The first 60 days set the tone. Let's make them count.</div>
+      </div>
+      <div class="path-steps" id="path-steps" style="flex:none;overflow:visible;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
+        <div class="path-dots" id="path-dots"></div>
+        <button class="path-nbtn" id="path-nbtn" onclick="pathNext()">Reveal →</button>
+      </div>`;
+    buildPathSteps();
+    setTimeout(pathNext, 350);
+  }
+
+  inner.parentElement.scrollTop = 0;
 }
 
-function w4cNext() {
-  if (w4cSlide < W4C_TOTAL - 1) goW4C(w4cSlide + 1);
-  else completeW4C();
+function introNext() {
+  introStep = Math.min(introStep + 1, 4);
+  renderPanelOverview();
 }
-
-function w4cPrev() {
-  if (w4cSlide > 0) goW4C(w4cSlide - 1);
+function introPrev() {
+  if (introStep > 0) { introStep--; renderPanelOverview(); }
 }
-
-// ── Screen 1 → Screen 2: Welcome Kit overview → W4C slides ────────────────
-function skipToW4C() {
-  const intro = document.getElementById('intro-screen');
-  intro.style.transition = 'opacity .35s ease';
-  intro.style.opacity = '0';
-  setTimeout(() => {
-    intro.style.display = 'none';
-    showW4C();
-  }, 350);
-}
-
-function showW4C() {
-  const s = document.getElementById('w4c-screen');
-  s.style.display = 'block';
-  s.style.opacity = '0';
-  s.style.transition = 'opacity .35s ease';
-  goW4C(0);
-  requestAnimationFrame(() => { s.style.opacity = '1'; });
-}
-
-// ── Screen 2 → Setup/Chat: W4C slides complete or skipped ─────────────────
-function completeW4C() {
+function introSkip() {
   localStorage.setItem('welli_seen_welcome', '1');
-  const s = document.getElementById('w4c-screen');
-  s.style.transition = 'opacity .35s ease';
-  s.style.opacity = '0';
-  setTimeout(() => {
-    s.style.display = 'none';
-    if (localStorage.getItem('welli_company') === null) showSetup();
-    else showChat();
-  }, 350);
+  introStep = -1;
+  atualizarFaseUI();
+  updateGPProgress();
+  renderPanelOverview();
+  renderChips();
 }
-
-function showSetup() {
-  const s = document.getElementById('setup-screen');
-  s.style.display = 'flex';
-  s.style.opacity = '0';
-  s.style.transition = 'opacity .35s ease';
-  requestAnimationFrame(() => { s.style.opacity = '1'; });
-  // Set today as min date using local date (avoid UTC off-by-one at night)
-  const inp = document.getElementById('setup-date');
-  const today = new Date();
-  const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
-  inp.min = localToday;
-  // Focus company field
-  setTimeout(() => document.getElementById('setup-company').focus(), 350);
-  // Enter key on either field submits
-  ['setup-company','setup-date'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => {
-      if (e.key === 'Enter') completeSetup();
-    });
-  });
-}
-
-function completeSetup() {
-  const name = document.getElementById('setup-company').value.trim();
-  const date = document.getElementById('setup-date').value;
-  if (!name) { document.getElementById('setup-company').focus(); return; }
-  localStorage.setItem('welli_company', name);
+function introSaveSetup() {
+  const name = document.getElementById('intro-company')?.value.trim();
+  const date = document.getElementById('intro-date')?.value;
+  if (name) localStorage.setItem('welli_company', name);
+  else localStorage.setItem('welli_company', '');
   if (date) localStorage.setItem('welli_launch_date', date);
-  const s = document.getElementById('setup-screen');
-  s.style.opacity = '0';
-  setTimeout(() => { s.style.display = 'none'; showEngageScreen(); }, 300);
+  introNext();
+}
+function introSkipSetup() {
+  if (localStorage.getItem('welli_company') === null) localStorage.setItem('welli_company', '');
+  introNext();
+}
+function completeIntro() {
+  localStorage.setItem('welli_seen_welcome', '1');
+  introStep = -1;
+  atualizarFaseUI();
+  updateGPProgress();
+  renderPanelOverview();
+  renderChips();
 }
 
-function showEngageScreen() {
-  const s = document.getElementById('engage-screen');
-  s.style.display = 'flex';
-  s.style.opacity = '0';
-  s.style.transition = 'opacity .35s ease';
-  requestAnimationFrame(() => { s.style.opacity = '1'; });
-}
-
-function completeEngage() {
-  const s = document.getElementById('engage-screen');
-  s.style.transition = 'opacity .35s ease';
-  s.style.opacity = '0';
-  setTimeout(() => { s.style.display = 'none'; showPathScreen(); }, 350);
-}
-
-function skipSetup() {
-  localStorage.setItem('welli_company', '');  // mark as seen so we don't show again
-  const s = document.getElementById('setup-screen');
-  s.style.opacity = '0';
-  setTimeout(() => { s.style.display = 'none'; showChat(); }, 300);
-}
-
+// ── showChat: initialises the split-panel (always shown on load now) ────────
 function showChat() {
-  hideIntroBar();
   document.querySelector('.shell').classList.add('shell-wide');
   const main = document.getElementById('app-main');
-  main.style.display = 'flex';
-  main.style.flexDirection = 'column';
-  main.style.opacity = '0';
-  main.style.transition = 'opacity .4s ease';
   requestAnimationFrame(() => { main.style.opacity = '1'; });
   atualizarFaseUI();
   updateGPProgress();
   renderPanelOverview();
   renderChips();
-  if (!chatInitialized) { showWelcome(); chatInitialized = true; }
+  if (!chatInitialized) {
+    showWelcome();
+    chatInitialized = true;
+  }
 }
 
 // ── Path to Success screen ────────────────────────────────────────────────
@@ -1263,7 +1341,7 @@ function pathNext() {
     const btn = document.getElementById('path-nbtn');
     if (pathVisible >= PATH_STEPS.length) {
       btn.textContent = "Let's start →";
-      btn.onclick = completePathScreen;
+      btn.onclick = introStep >= 0 ? completeIntro : completePathScreen;
     }
   }
 }
@@ -1282,20 +1360,12 @@ function showPathScreen() {
 
 function completePathScreen() {
   const s = document.getElementById('path-screen');
+  if (!s) { completeIntro(); return; }
   s.style.transition = 'opacity .35s ease';
   s.style.opacity = '0';
   setTimeout(() => {
     s.style.display = 'none';
-    jumpedFromIntro = false;
     if (chatInitialized) {
-      hideIntroBar();
-      document.querySelector('.shell').classList.add('shell-wide');
-      const main = document.getElementById('app-main');
-      main.style.display = 'flex';
-      main.style.flexDirection = 'column';
-      main.style.opacity = '0';
-      main.style.transition = 'opacity .4s ease';
-      requestAnimationFrame(() => { main.style.opacity = '1'; });
       renderChips();
       renderPanelOverview();
     } else {
@@ -1323,42 +1393,8 @@ function toggleVidPlayer(card, fileId) {
   card.insertAdjacentElement('afterend', wrap);
 }
 
-// ── Intro bar: persistent chat during onboarding ──────────────────────────
+// ── Chat init flag ─────────────────────────────────────────────────────────
 let chatInitialized = false;
-let jumpedFromIntro  = false;
-
-function showIntroBar() { document.getElementById('intro-bar').style.display = 'flex'; }
-function hideIntroBar() { document.getElementById('intro-bar').style.display = 'none'; }
-
-function introSend() {
-  const inp = document.getElementById('intro-inp');
-  const txt = inp.value.trim();
-  inp.value = ''; inp.style.height = 'auto';
-  // Mark welcome as seen so returning visits skip intro
-  localStorage.setItem('welli_seen_welcome', '1');
-  // Hide all intro screens
-  ['intro-screen','w4c-screen','setup-screen','engage-screen','path-screen']
-    .forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-  hideIntroBar();
-  jumpedFromIntro = true;
-  if (!chatInitialized) {
-    showChat();
-  } else {
-    document.querySelector('.shell').classList.add('shell-wide');
-    const main = document.getElementById('app-main');
-    main.style.display = 'flex';
-    main.style.flexDirection = 'column';
-    renderChips();
-  }
-  if (txt) setTimeout(() => { document.getElementById('inp').value = txt; send(); }, 150);
-}
-
-function resumeSetup() {
-  document.getElementById('app-main').style.display = 'none';
-  document.querySelector('.shell').classList.remove('shell-wide');
-  showIntroBar();
-  showPathScreen();
-}
 
 // ── Teaser Builder ─────────────────────────────────────────────────────────
 const TS_TEMPLATES = [
@@ -1821,6 +1857,9 @@ function switchMobileTab(tab) {
 function renderPanelOverview() {
   const inner = document.getElementById('cov-inner');
   if (!inner) return;
+
+  // During intro: render intro steps inside the content panel
+  if (introStep >= 0) { renderIntroStep(); return; }
 
   const co = localStorage.getItem('welli_company') || '';
 
@@ -2363,6 +2402,11 @@ const PHASE_BODY = {
 };
 
 function buildWelcomeText() {
+  // During intro: show a friendly intro-specific greeting
+  if (introStep >= 0) {
+    return "Hi! I'm Welli, your Wellhub onboarding guide 👋\n\nGo through the quick intro on the left at your own pace — and feel free to ask me anything at any time.\n\nWant me to explain how Wellhub for Companies works, or shall we dive straight in?";
+  }
+
   const company = localStorage.getItem('welli_company') || null;
   const done    = GP_STEPS.filter(s => gpState[s.id]);
   const pending = GP_STEPS.filter(s => !gpState[s.id]);
@@ -2388,6 +2432,13 @@ function buildWelcomeText() {
 
 // ── Phase UI ───────────────────────────────────────────────────────────────
 function atualizarFaseUI() {
+  // During intro: all stage pills greyed out, no GP row, show "Getting started"
+  if (introStep >= 0) {
+    for (let i = 1; i <= 3; i++) document.getElementById('ps' + i).className = 'ps';
+    document.getElementById('gp-row').style.display = 'none';
+    document.getElementById('fase-periodo').textContent = 'Getting started';
+    return;
+  }
   const f = faseAtual;
   document.getElementById('fase-periodo').textContent = launchPeriod() || FASES[f].periodo;
   for (let i = 1; i <= 3; i++) {
@@ -2398,6 +2449,7 @@ function atualizarFaseUI() {
 }
 
 function mudarFase(f) {
+  if (introStep >= 0) return; // stage pills disabled during intro
   if (f === faseAtual || busy) return;
   faseAtual = f;
   try { localStorage.setItem('welli_stage', f); } catch(e) {}
@@ -2416,15 +2468,6 @@ function renderChips() {
   const box = document.getElementById('chips');
   box.innerHTML = '';
   box.style.display = 'flex';
-
-  // Resume setup chip — only shown when user jumped ahead from intro
-  if (jumpedFromIntro) {
-    const rb = document.createElement('button');
-    rb.className = 'chip chip-resume';
-    rb.textContent = '← Resume setup';
-    rb.onclick = resumeSetup;
-    box.appendChild(rb);
-  }
 
   // Detect next pending GP step
   const nextGpStep = GP_STEPS.find(s => !gpState[s.id]);
@@ -2860,9 +2903,6 @@ const inpEl = document.getElementById('inp');
 inpEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
 inpEl.addEventListener('input', () => { inpEl.style.height = 'auto'; inpEl.style.height = Math.min(inpEl.scrollHeight, 72) + 'px'; });
 
-const introInpEl = document.getElementById('intro-inp');
-introInpEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); introSend(); } });
-introInpEl.addEventListener('input', () => { introInpEl.style.height = 'auto'; introInpEl.style.height = Math.min(introInpEl.scrollHeight, 60) + 'px'; });
 
 // ── Dev reset (tap avatar 5× to wipe state and restart) ───────────────────
 let devTaps = 0, devTimer = null;
@@ -2885,14 +2925,9 @@ if (window.innerWidth >= 720) {
   document.getElementById('content-panel')?.classList.remove('mp-hidden');
 }
 
-if (localStorage.getItem('welli_seen_welcome')) {
-  document.getElementById('intro-screen').style.display = 'none';
-  if (localStorage.getItem('welli_company') === null) { showSetup(); showIntroBar(); }
-  else showChat();
-} else {
-  // First-time user: welcome kit visible by default — show intro bar
-  showIntroBar();
-}
+// introStep is already initialised above based on welli_seen_welcome.
+// Always show the split-panel immediately — intro runs inside the content panel.
+showChat();
 </script>
 </body>
 </html>
