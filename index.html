@@ -497,6 +497,12 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-builder-btn{background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:11px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--dp);cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.3;}
 .cov-builder-btn:hover{background:var(--xlmg);border-color:var(--lmg);}
 .cov-btn-icon{font-size:19px;}
+/* Stage nav pills inside content overview */
+.cov-stage-nav{display:flex;gap:5px;margin-bottom:12px;}
+.cov-snav{flex:1;padding:6px 4px;border:1.5px solid var(--ow2);border-radius:20px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#bbb;background:none;cursor:pointer;transition:all .15s;text-align:center;}
+.cov-snav.active{background:var(--dp);border-color:var(--dp);color:#fff;}
+.cov-snav:hover:not(.active){background:var(--xlmg);border-color:var(--lmg);color:var(--dp);}
+
 /* Stage 3 action cards */
 .cov-action{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border-radius:12px;margin-bottom:7px;border:.5px solid var(--ow2);}
 .cov-action-icon{font-size:17px;flex-shrink:0;margin-top:1px;}
@@ -1671,6 +1677,7 @@ function showPanel(view) {
 }
 
 function switchMobileTab(tab) {
+  if (window.innerWidth >= 720) return; // desktop: both panels always visible, no-op
   const cp = document.getElementById('content-panel');
   const ch = document.getElementById('chat-panel');
   const mc = document.getElementById('mt-content');
@@ -1686,7 +1693,6 @@ function switchMobileTab(tab) {
     cp.classList.add('mp-hidden');
     mh.classList.add('active');
     mc.classList.remove('active');
-    // Clear unread badge when user returns to chat
     mh.classList.remove('has-unread');
   }
 }
@@ -1695,8 +1701,15 @@ function renderPanelOverview() {
   const inner = document.getElementById('cov-inner');
   if (!inner) return;
 
+  const stageNav = `
+    <div class="cov-stage-nav">
+      <button class="cov-snav${faseAtual===1?' active':''}" onclick="mudarFase(1)">Stage 1</button>
+      <button class="cov-snav${faseAtual===2?' active':''}" onclick="mudarFase(2)">Stage 2</button>
+      <button class="cov-snav${faseAtual===3?' active':''}" onclick="mudarFase(3)">Stage 3</button>
+    </div>`;
+
   if (faseAtual === 1) {
-    inner.innerHTML = `
+    inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 1</div>
         <div class="cov-title">Get to Know Wellhub</div>
@@ -1764,7 +1777,7 @@ function renderPanelOverview() {
       }).join('');
     }
 
-    inner.innerHTML = `
+    inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
         <div class="cov-title">Get Ready to Launch</div>
@@ -1781,7 +1794,7 @@ function renderPanelOverview() {
       </div>`;
 
   } else {
-    inner.innerHTML = `
+    inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 3</div>
         <div class="cov-title">Life After Launch</div>
@@ -2141,7 +2154,7 @@ function addMsg(role, text, agentName, agentColor) {
   else              b.textContent = text;
   w.append(l, b); c.append(w); c.scrollTop = c.scrollHeight;
   // Mobile: light the Chat tab badge when Welli replies while user is on Content tab
-  if (role === 'b') {
+  if (role === 'b' && window.innerWidth < 720) {
     const ch = document.getElementById('chat-panel');
     if (ch && ch.classList.contains('mp-hidden')) {
       document.getElementById('mt-chat')?.classList.add('has-unread');
@@ -2363,6 +2376,11 @@ function devReset() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────
+// On desktop: strip mp-hidden from content-panel so it's always accessible
+if (window.innerWidth >= 720) {
+  document.getElementById('content-panel')?.classList.remove('mp-hidden');
+}
+
 if (localStorage.getItem('welli_seen_welcome')) {
   document.getElementById('intro-screen').style.display = 'none';
   if (!localStorage.getItem('welli_company')) { showSetup(); showIntroBar(); }
