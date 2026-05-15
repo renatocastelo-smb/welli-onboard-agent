@@ -466,7 +466,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-sub{font-size:11px;color:#bbb;font-weight:500;}
 .cov-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ccc;margin:12px 0 6px;}
 /* Benefit cards (Stage 1) */
-.cov-bcard{background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:.5px solid var(--ow2);}
+.cov-bcard{background:#fff;border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:7px;border:.5px solid var(--ow2);cursor:pointer;transition:background .15s;}
+.cov-bcard:hover{background:var(--xlmg);}
 .cov-bcard-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center;}
 .cov-bcard-title{font-size:12px;font-weight:700;color:var(--dp);margin-bottom:1px;}
 .cov-bcard-desc{font-size:11px;color:rgba(27,19,64,.5);line-height:1.4;}
@@ -1778,21 +1779,25 @@ function renderPanelOverview() {
         <div class="cov-sub">Days 1–3 · Explore the platform and benefits</div>
       </div>
       ${s1LaunchCard}
-      <div class="cov-bcard">
+      <div class="cov-bcard" onclick="covAskWelli('Tell me about the gyms and studios available with Wellhub — what networks are included?')">
         <div class="cov-bcard-icon">🏋️</div>
-        <div><div class="cov-bcard-title">Gyms &amp; Studios</div><div class="cov-bcard-desc">Thousands of locations — chains, boutique studios, and more.</div></div>
+        <div style="flex:1;"><div class="cov-bcard-title">Gyms &amp; Studios</div><div class="cov-bcard-desc">Thousands of locations — chains, boutique studios, and more.</div></div>
+        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard">
+      <div class="cov-bcard" onclick="covAskWelli('What wellness apps are included with Wellhub, and how do employees access them?')">
         <div class="cov-bcard-icon">🧘</div>
-        <div><div class="cov-bcard-title">Wellness Apps</div><div class="cov-bcard-desc">Meditation, sleep, nutrition, mental health — 50+ apps.</div></div>
+        <div style="flex:1;"><div class="cov-bcard-title">Wellness Apps</div><div class="cov-bcard-desc">Meditation, sleep, nutrition, mental health — 50+ apps.</div></div>
+        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard">
+      <div class="cov-bcard" onclick="covAskWelli('How do Wellhub live and on-demand classes work for employees?')">
         <div class="cov-bcard-icon">💻</div>
-        <div><div class="cov-bcard-title">Live &amp; On-Demand Classes</div><div class="cov-bcard-desc">Yoga, HIIT, cycling, pilates — streamed anywhere.</div></div>
+        <div style="flex:1;"><div class="cov-bcard-title">Live &amp; On-Demand Classes</div><div class="cov-bcard-desc">Yoga, HIIT, cycling, pilates — streamed anywhere.</div></div>
+        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
-      <div class="cov-bcard">
+      <div class="cov-bcard" onclick="covAskWelli('How does Wellhub personal coaching work and how do employees book sessions?')">
         <div class="cov-bcard-icon">👩‍⚕️</div>
-        <div><div class="cov-bcard-title">Personal Coaching</div><div class="cov-bcard-desc">1:1 fitness, nutrition, and wellness coaching sessions.</div></div>
+        <div style="flex:1;"><div class="cov-bcard-title">Personal Coaching</div><div class="cov-bcard-desc">1:1 fitness, nutrition, and wellness coaching sessions.</div></div>
+        <div style="color:var(--mg);font-size:16px;flex-shrink:0;">›</div>
       </div>
       <div class="cov-section">Resources</div>
       <a class="cov-vid" href="https://drive.google.com/file/d/1pXnltW0_wVCeNYa_8zLdizP_5kKTGjze/view" target="_blank" rel="noopener">
