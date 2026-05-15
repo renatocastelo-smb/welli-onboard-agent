@@ -503,6 +503,25 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-action-title{font-size:12px;font-weight:700;color:var(--dp);margin-bottom:2px;}
 .cov-action-desc{font-size:11px;color:rgba(27,19,64,.5);line-height:1.4;}
 .cov-action-tag{font-size:9px;font-weight:700;color:var(--mg);background:var(--xlmg);padding:2px 6px;border-radius:8px;display:inline-block;margin-top:3px;}
+
+/* Next-step highlight on GP checklist */
+.cov-step.next-up{border-color:rgba(242,73,107,.35);background:linear-gradient(135deg,var(--xlmg),#fff);}
+.cov-step.next-up .cov-step-check{border-color:var(--mg);}
+.cov-step.next-up .cov-step-title{font-weight:700;color:var(--dp);}
+.cov-next-row{display:flex;align-items:center;justify-content:space-between;margin-top:5px;}
+.cov-next-label{font-size:9px;font-weight:700;color:var(--mg);letter-spacing:.05em;text-transform:uppercase;}
+.cov-next-open{font-size:10px;font-weight:700;color:#fff;background:var(--mg);border:none;border-radius:8px;padding:3px 9px;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s;}
+.cov-next-open:hover{background:var(--dm);}
+
+/* GP complete celebration */
+.cov-celebrate{text-align:center;padding:24px 16px 16px;}
+.cov-celebrate-icon{font-size:44px;margin-bottom:10px;}
+.cov-celebrate-title{font-size:15px;font-weight:800;color:var(--dp);margin-bottom:5px;letter-spacing:-.2px;}
+.cov-celebrate-sub{font-size:11.5px;color:#aaa;line-height:1.65;max-width:200px;margin:0 auto;}
+
+/* Stage 1 ask-welli CTA in content panel */
+.cov-cta{background:var(--dp);border:none;border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;width:100%;text-align:center;transition:background .2s;margin-top:6px;}
+.cov-cta:hover{background:var(--mg);}
 .gpp-hdr{background:#fff;border-bottom:.5px solid var(--ow2);padding:11px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .gpp-back{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);display:flex;align-items:center;gap:4px;padding:0;transition:color .15s;}
 .gpp-back:hover{color:var(--dm);}
@@ -1644,6 +1663,10 @@ function showPanel(view) {
   ['overview','teaser','announce'].forEach(v => {
     document.getElementById('cp-' + v).classList.toggle('cp-active', v === view);
   });
+  if (view === 'overview') {
+    const s = document.getElementById('cov-inner');
+    if (s) s.parentElement.scrollTop = 0;
+  }
   switchMobileTab('content'); // on mobile shows content tab; no-op visually on desktop
 }
 
@@ -1671,12 +1694,13 @@ function switchMobileTab(tab) {
 function renderPanelOverview() {
   const inner = document.getElementById('cov-inner');
   if (!inner) return;
+
   if (faseAtual === 1) {
     inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 1</div>
         <div class="cov-title">Get to Know Wellhub</div>
-        <div class="cov-sub">Days 1–3 · Explore the platform</div>
+        <div class="cov-sub">Days 1–3 · Explore what's included</div>
       </div>
       <div class="cov-bcard">
         <div class="cov-bcard-icon">🏋️</div>
@@ -1702,19 +1726,44 @@ function renderPanelOverview() {
       <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">📚</div>
         <div class="cov-link-text">Visit the <strong>Help Center</strong> for guides, FAQs, and platform documentation.</div>
-      </a>`;
+      </a>
+      <button class="cov-cta" onclick="covAskWelli('Walk me through setting up my Wellhub portal for the first time.')">Ask Welli to walk me through setup →</button>`;
+
   } else if (faseAtual === 2) {
-    const total = GP_STEPS.length;
-    const done  = GP_STEPS.filter(s => gpState[s.id]).length;
-    const pct   = total > 0 ? (done / total) * 100 : 0;
-    const steps = GP_STEPS.map(s => `
-      <div class="cov-step${gpState[s.id] ? ' done' : ''}" onclick="toggleCovStep('${s.id}')">
-        <div class="cov-step-check">✓</div>
-        <div class="cov-step-body">
-          <div class="cov-step-title">${s.title}</div>
-          <div class="cov-step-sub">${s.sub}</div>
-        </div>
-      </div>`).join('');
+    const total   = GP_STEPS.length;
+    const done    = GP_STEPS.filter(s => gpState[s.id]).length;
+    const pct     = total > 0 ? (done / total) * 100 : 0;
+    const nextId  = GP_STEPS.find(s => !gpState[s.id])?.id;
+
+    let checklist = '';
+    if (done === total) {
+      checklist = `
+        <div class="cov-celebrate">
+          <div class="cov-celebrate-icon">🏆</div>
+          <div class="cov-celebrate-title">Golden Path complete!</div>
+          <div class="cov-celebrate-sub">All 7 steps done. You've set your team up for a great Wellhub launch.</div>
+        </div>`;
+    } else {
+      // Builder actions for steps that have a dedicated tool
+      const STEP_ACTION = {
+        teaser:     () => `<button class="cov-next-open" onclick="showTeaserScreen();event.stopPropagation()">Open builder →</button>`,
+        leadership: () => `<button class="cov-next-open" onclick="showAnnounceScreen();event.stopPropagation()">Open builder →</button>`,
+      };
+      checklist = GP_STEPS.map(s => {
+        const isNext = s.id === nextId;
+        const actionBtn = isNext && STEP_ACTION[s.id] ? STEP_ACTION[s.id]() : '';
+        return `
+          <div class="cov-step${gpState[s.id] ? ' done' : isNext ? ' next-up' : ''}" onclick="toggleCovStep('${s.id}')">
+            <div class="cov-step-check">✓</div>
+            <div class="cov-step-body">
+              <div class="cov-step-title">${s.title}</div>
+              <div class="cov-step-sub">${s.sub}</div>
+              ${isNext ? `<div class="cov-next-row"><span class="cov-next-label">→ Do this next</span>${actionBtn}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
     inner.innerHTML = `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 2</div>
@@ -1725,11 +1774,12 @@ function renderPanelOverview() {
         <div class="cov-prog-bar"><div class="cov-prog-fill" style="width:${pct}%"></div></div>
         <span class="cov-prog-count">${done}/${total}</span>
       </div>
-      ${steps}
+      ${checklist}
       <div class="cov-builders">
         <button class="cov-builder-btn" onclick="showTeaserScreen()"><span class="cov-btn-icon">🎨</span>Teaser Builder</button>
         <button class="cov-builder-btn" onclick="showAnnounceScreen()"><span class="cov-btn-icon">📢</span>Announcement Builder</button>
       </div>`;
+
   } else {
     inner.innerHTML = `
       <div class="cov-hdr">
@@ -1738,19 +1788,19 @@ function renderPanelOverview() {
         <div class="cov-sub">Month 1+ · Drive ongoing engagement</div>
       </div>
       <div class="cov-section">Monthly Actions</div>
-      <div class="cov-action">
+      <div class="cov-action" onclick="covAskWelli('How do I check my enrollment rate and what should I be aiming for?')" style="cursor:pointer;">
         <div class="cov-action-icon">📊</div>
         <div><div class="cov-action-title">Check your enrollment rate</div><div class="cov-action-desc">Review signups vs. eligible employees in the Wellhub portal.</div><span class="cov-action-tag">Monthly</span></div>
       </div>
-      <div class="cov-action">
+      <div class="cov-action" onclick="covAskWelli('Where do I find the monthly communication assets and how do I use them?')" style="cursor:pointer;">
         <div class="cov-action-icon">📧</div>
         <div><div class="cov-action-title">Share communication assets</div><div class="cov-action-desc">Forward Wellhub's ready-made emails and social posts to boost awareness.</div><span class="cov-action-tag">Monthly</span></div>
       </div>
-      <div class="cov-action">
+      <div class="cov-action" onclick="covAskWelli('How do I run a Wellhub Challenge or Raffle to re-engage my team?')" style="cursor:pointer;">
         <div class="cov-action-icon">🏆</div>
         <div><div class="cov-action-title">Run a Challenge or Raffle</div><div class="cov-action-desc">Wellhub Challenges drive check-ins and re-engage inactive members.</div><span class="cov-action-tag">Quarterly</span></div>
       </div>
-      <div class="cov-action">
+      <div class="cov-action" onclick="covAskWelli('What is the EEP report and how do I read it?')" style="cursor:pointer;">
         <div class="cov-action-icon">📈</div>
         <div><div class="cov-action-title">Review the EEP report</div><div class="cov-action-desc">Employee Engagement Performance shows ROI and engagement trends.</div><span class="cov-action-tag">Monthly</span></div>
       </div>
@@ -1760,6 +1810,9 @@ function renderPanelOverview() {
         <div class="cov-link-text"><strong>Help Center</strong> — engagement guides, challenge setup, EEP reports.</div>
       </a>`;
   }
+
+  // Always scroll back to top
+  inner.parentElement.scrollTop = 0;
 }
 
 function toggleCovStep(id) {
@@ -1768,6 +1821,13 @@ function toggleCovStep(id) {
   updateGPProgress();
   renderPanelOverview();
   renderChips();
+}
+
+// Tap a content panel card → ask Welli that question and switch to Chat
+function covAskWelli(question) {
+  switchMobileTab('chat');
+  document.getElementById('inp').value = question;
+  send();
 }
 
 // ── Phase state ────────────────────────────────────────────────────────────
