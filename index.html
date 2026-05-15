@@ -431,8 +431,10 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
 /* Mobile tab bar */
 .mobile-tabs{display:flex;background:#fff;border-bottom:.5px solid var(--ow2);flex-shrink:0;}
-.mt-tab{flex:1;padding:10px 4px;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#bbb;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;}
+.mt-tab{flex:1;padding:10px 4px;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#bbb;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;position:relative;}
 .mt-tab.active{color:var(--dp);border-bottom-color:var(--mg);}
+.mt-badge{display:none;position:absolute;top:8px;right:calc(50% - 32px);width:7px;height:7px;border-radius:50%;background:var(--mg);pointer-events:none;}
+.mt-tab.has-unread .mt-badge{display:block;}
 @media(min-width:720px){.mobile-tabs{display:none;}}
 
 /* Split layout */
@@ -811,7 +813,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     <!-- Mobile tab bar (hidden on desktop ≥720px) -->
     <div class="mobile-tabs">
       <button class="mt-tab" id="mt-content" onclick="switchMobileTab('content')">📄 Content</button>
-      <button class="mt-tab active" id="mt-chat" onclick="switchMobileTab('chat')">💬 Chat</button>
+      <button class="mt-tab active" id="mt-chat" onclick="switchMobileTab('chat')">💬 Chat<span class="mt-badge" id="mt-badge"></span></button>
     </div>
     <!-- Split: content panel (left) + chat panel (right) -->
     <div class="app-split">
@@ -1642,8 +1644,7 @@ function showPanel(view) {
   ['overview','teaser','announce'].forEach(v => {
     document.getElementById('cp-' + v).classList.toggle('cp-active', v === view);
   });
-  // On mobile: switching to a tool view → show content tab
-  if (view !== 'overview') switchMobileTab('content');
+  switchMobileTab('content'); // on mobile shows content tab; no-op visually on desktop
 }
 
 function switchMobileTab(tab) {
@@ -1662,6 +1663,8 @@ function switchMobileTab(tab) {
     cp.classList.add('mp-hidden');
     mh.classList.add('active');
     mc.classList.remove('active');
+    // Clear unread badge when user returns to chat
+    mh.classList.remove('has-unread');
   }
 }
 
@@ -2077,6 +2080,13 @@ function addMsg(role, text, agentName, agentColor) {
   if (role === 'b') b.innerHTML = renderMarkdown(text);
   else              b.textContent = text;
   w.append(l, b); c.append(w); c.scrollTop = c.scrollHeight;
+  // Mobile: light the Chat tab badge when Welli replies while user is on Content tab
+  if (role === 'b') {
+    const ch = document.getElementById('chat-panel');
+    if (ch && ch.classList.contains('mp-hidden')) {
+      document.getElementById('mt-chat')?.classList.add('has-unread');
+    }
+  }
 }
 
 function showTyping() {
