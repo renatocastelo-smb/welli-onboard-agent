@@ -1870,7 +1870,7 @@ function renderPanelOverview() {
         <button class="cov-builder-btn" onclick="showTeaserScreen()"><span class="cov-btn-icon">🎨</span>Teaser Builder</button>
         <button class="cov-builder-btn" onclick="showAnnounceScreen()"><span class="cov-btn-icon">📢</span>Announcement Builder</button>
       </div>
-      <button class="cov-cta" onclick="covAskWelli('What is my most important next step to prepare for a successful launch?')">Ask Welli what to prioritize →</button>`;
+      ${done < total ? `<button class="cov-cta" onclick="covAskWelli('What is my most important next step to prepare for a successful launch?')">Ask Welli what to prioritize →</button>` : ''}`;
 
   } else {
     const days3 = daysUntilLaunch();
@@ -2023,7 +2023,9 @@ function updateGPProgress() {
   const done  = GP_STEPS.filter(s => gpState[s.id]).length;
   const pct   = total > 0 ? (done / total) * 100 : 0;
   document.getElementById('gp-fill').style.width  = pct + '%';
-  document.getElementById('gp-label').textContent = 'Golden Path · ' + done + ' of ' + total + ' steps';
+  document.getElementById('gp-label').textContent = done === total
+    ? 'Golden Path · All ' + total + ' done 🏆'
+    : 'Golden Path · ' + done + ' of ' + total + ' steps';
   const fillEl  = document.getElementById('gpp-fill');
   const countEl = document.getElementById('gpp-count');
   if (fillEl)  fillEl.style.width  = pct + '%';
@@ -2112,6 +2114,12 @@ function buildWelcomeText() {
 }
 
 // ── Phase UI ───────────────────────────────────────────────────────────────
+const SB_CONTEXT = {
+  1: 'Stage 1 · Get to Know Wellhub',
+  2: 'Stage 2 · Launch prep',
+  3: 'Stage 3 · Life after launch',
+};
+
 function atualizarFaseUI() {
   const f = faseAtual;
   document.getElementById('fase-nome').textContent    = FASES[f].nome;
@@ -2121,6 +2129,9 @@ function atualizarFaseUI() {
   }
   // Golden Path row only visible in Stage 2
   document.getElementById('gp-row').style.display = f === 2 ? 'flex' : 'none';
+  // Status bar context
+  const sbP = document.querySelector('.sb p');
+  if (sbP) sbP.textContent = 'Online · ' + SB_CONTEXT[f];
 }
 
 function mudarFase(f) {
