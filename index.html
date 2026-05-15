@@ -28,8 +28,8 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
 /* ── Progress Strip (top bar — stage pills + GP progress + launch date) ── */
 .progress-strip{background:#fff;border-bottom:.5px solid var(--ow2);padding:0 14px;height:46px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.pst-stages{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.pst-stages .ps{display:inline-flex;align-items:center;padding:5px 9px;border:none;border-radius:20px;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--ow2);color:rgba(27,19,64,.4);white-space:nowrap;}
+.pst-stages{display:flex;align-items:center;gap:4px;}
+.pst-stages .ps{display:inline-flex;align-items:center;justify-content:center;flex:1;padding:5px 10px;border:none;border-radius:20px;font-family:'Inter',sans-serif;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--ow2);color:rgba(27,19,64,.4);white-space:nowrap;text-align:center;}
 .pst-stages .ps:hover{background:var(--lmg);color:var(--dm);}
 .pst-stages .ps.active{background:var(--mg);color:#fff;}
 .pst-stages .ps.done{background:rgba(12,128,70,.12);color:var(--mgrn);}
@@ -904,11 +904,11 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
     <!-- ▌ PROGRESS STRIP ▌ -->
     <div class="progress-strip">
       <div class="pst-stages">
-        <button class="ps active" id="ps1" onclick="mudarFase(1)">Get to Know Wellhub for Companies</button>
+        <button class="ps active" id="ps1" onclick="mudarFase(1)">Stage 1 · Get to Know</button>
         <div class="pst-sep"></div>
-        <button class="ps" id="ps2" onclick="mudarFase(2)">Get Ready to Launch</button>
+        <button class="ps" id="ps2" onclick="mudarFase(2)">Stage 2 · Get Ready to Launch</button>
         <div class="pst-sep"></div>
-        <button class="ps" id="ps3" onclick="mudarFase(3)">Life After Launch</button>
+        <button class="ps" id="ps3" onclick="mudarFase(3)">Stage 3 · Life After Launch</button>
       </div>
       <!-- GP progress bar (Stage 2 only) -->
       <div class="gp-row" id="gp-row" onclick="toggleGP()">
