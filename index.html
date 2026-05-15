@@ -1852,7 +1852,18 @@ function renderPanelOverview() {
 
     const days = daysUntilLaunch();
     let launchCard = '';
-    if (days !== null) {
+    if (days === null) {
+      const todayIso = new Date().toISOString().split('T')[0];
+      launchCard = `
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(168,128,255,.1);border:.5px solid rgba(168,128,255,.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;">
+          <div style="font-size:18px;flex-shrink:0;">📅</div>
+          <div style="flex:1;">
+            <div style="font-size:11.5px;font-weight:700;color:var(--mp);margin-bottom:1px;">Set your launch date</div>
+            <div style="font-size:10px;color:rgba(27,19,64,.5);line-height:1.4;">Unlocks your countdown timer and helps plan your Golden Path timeline.</div>
+          </div>
+          <input type="date" id="cov-date-set2" min="${todayIso}" style="border:.5px solid rgba(168,128,255,.4);border-radius:8px;padding:5px 8px;font-family:Inter,sans-serif;font-size:11px;color:var(--dp);background:rgba(255,255,255,.7);outline:none;cursor:pointer;" onchange="setCovLaunchDate(this.value)">
+        </div>`;
+    } else if (days !== null) {
       const abs = Math.abs(days);
       if (days === 0) {
         launchCard = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🎉</div><div style="flex:1;"><div style="font-size:14px;font-weight:800;color:var(--grn);margin-bottom:2px;">It's Launch Day!</div><div class="cov-launch-label">Share the invitation link with your entire team now.</div></div></div>`;
