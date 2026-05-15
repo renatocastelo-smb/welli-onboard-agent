@@ -1229,14 +1229,34 @@ function renderIntroStep() {
       <!-- Golden Path steps (shown after date is set) -->
       <div id="intro-gp-list" style="display:${hasDate ? 'block' : 'none'};">
         <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">Your 7-step Golden Path</div>
-        ${GP_STEPS.map(step => `
-          <div style="display:flex;align-items:flex-start;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:9px 11px;margin-bottom:6px;">
+        ${GP_STEPS.map(step => {
+          const deadline = pathDate(step.daysOffset);
+          // Urgency colour for the date badge
+          let ld = localStorage.getItem('welli_launch_date');
+          let urgColor = 'rgba(27,19,64,.35)';
+          if (ld) {
+            const p = ld.split('-').map(Number);
+            const due = new Date(p[0], p[1]-1, p[2]);
+            due.setDate(due.getDate() + step.daysOffset);
+            const daysLeft = Math.round((due - today) / 86400000);
+            if (daysLeft <= 3) urgColor = '#F2496B';
+            else if (daysLeft <= 10) urgColor = '#E8820C';
+          }
+          const deadlineLabel = step.daysOffset === 0 ? 'Launch day' : deadline;
+          return `
+          <div onclick="covAskWelli('What is the \\'${step.title}\\' step and how do I complete it?')"
+               style="display:flex;align-items:flex-start;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:border-color .15s;"
+               onmouseover="this.style.borderColor='var(--mg)'" onmouseout="this.style.borderColor='var(--ow2)'">
             <span style="font-size:15px;flex-shrink:0;margin-top:1px;">${step.emoji}</span>
-            <div>
-              <div style="font-size:12px;font-weight:600;color:var(--dp);line-height:1.4;">${step.title}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px;">
+                <div style="font-size:12px;font-weight:600;color:var(--dp);line-height:1.4;">${step.title}</div>
+                <div style="font-size:10px;font-weight:600;color:${urgColor};white-space:nowrap;flex-shrink:0;">${deadlineLabel}</div>
+              </div>
               <div style="font-size:11px;color:rgba(27,19,64,.45);line-height:1.45;margin-top:1px;">${step.sub}</div>
             </div>
-          </div>`).join('')}
+          </div>`;
+        }).join('')}
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
         <button class="intro-nav-back" onclick="introPrev()">← Back</button>
@@ -2316,13 +2336,13 @@ let faseAtual = (() => {
 
 // ── Golden Path ────────────────────────────────────────────────────────────
 const GP_STEPS = [
-  { id: 'upload',     emoji: '👥', group: 'Portal Setup',      title: 'Upload your employee list',         sub: 'Add eligible employees via spreadsheet import in the portal.' },
-  { id: 'invites',    emoji: '⚡', group: 'Portal Setup',       title: 'Configure Smart Invites',           sub: 'Turn on auto-invitations so new eligibles get invited automatically.' },
-  { id: 'teaser',     emoji: '📣', group: 'Pre-Launch',         title: 'Post a teaser on internal channels', sub: 'Build buzz via email, Slack, or intranet 1–2 weeks before launch.' },
-  { id: 'leadership', emoji: '✉️', group: 'Pre-Launch',         title: 'Send the leadership announcement',  sub: 'A CEO or HR Director message — the single highest-impact action.' },
-  { id: 'i2s',        emoji: '🚀', group: 'Launch Day',         title: 'Schedule the Kick-off email (I2S)', sub: 'The invitation with Magic Link goes out automatically on the date you set.' },
-  { id: 'webinar',    emoji: '🎙️', group: 'Week 1 Post-Launch', title: 'Host the Welcome Webinar',          sub: 'Free 30-min Wellhub-run session — book the date before you launch.' },
-  { id: 'comms',      emoji: '📋', group: 'Ongoing',            title: 'Share monthly communication assets', sub: 'Forward Wellhub\'s ready-made emails; run challenges and raffles.' }
+  { id: 'upload',     emoji: '👥', group: 'Portal Setup',      daysOffset: -21, title: 'Upload your employee list',         sub: 'Add eligible employees via spreadsheet import in the portal.' },
+  { id: 'invites',    emoji: '⚡', group: 'Portal Setup',       daysOffset: -14, title: 'Configure Smart Invites',           sub: 'Turn on auto-invitations so new eligibles get invited automatically.' },
+  { id: 'teaser',     emoji: '📣', group: 'Pre-Launch',         daysOffset: -14, title: 'Post a teaser on internal channels', sub: 'Build buzz via email, Slack, or intranet 1–2 weeks before launch.' },
+  { id: 'leadership', emoji: '✉️', group: 'Pre-Launch',         daysOffset:  -7, title: 'Send the leadership announcement',  sub: 'A CEO or HR Director message — the single highest-impact action.' },
+  { id: 'i2s',        emoji: '🚀', group: 'Launch Day',         daysOffset:   0, title: 'Schedule the Kick-off email',       sub: 'The invitation with Magic Link goes out automatically on the date you set.' },
+  { id: 'webinar',    emoji: '🎙️', group: 'Week 1 Post-Launch', daysOffset:  +7, title: 'Host the Welcome Webinar',          sub: 'Free 30-min Wellhub-run session — book the date before you launch.' },
+  { id: 'comms',      emoji: '📋', group: 'Ongoing',            daysOffset: +30, title: 'Share monthly communication assets', sub: 'Forward Wellhub\'s ready-made emails; run challenges and raffles.' }
 ];
 
 let gpState = {};
