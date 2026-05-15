@@ -2060,7 +2060,10 @@ function setCovLaunchDate(val) {
 }
 
 // ── Phase state ────────────────────────────────────────────────────────────
-let faseAtual = 1;
+let faseAtual = (() => {
+  const saved = parseInt(localStorage.getItem('welli_stage'), 10);
+  return (saved >= 1 && saved <= 3) ? saved : 1;
+})();
 
 // ── Golden Path ────────────────────────────────────────────────────────────
 const GP_STEPS = [
@@ -2265,6 +2268,7 @@ function atualizarFaseUI() {
 function mudarFase(f) {
   if (f === faseAtual || busy) return;
   faseAtual = f;
+  try { localStorage.setItem('welli_stage', f); } catch(e) {}
   hist = [];
   atualizarFaseUI();
   renderChips();
