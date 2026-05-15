@@ -1500,8 +1500,18 @@ function downloadTeaser() {
   const prev = document.getElementById('ts-preview');
   if (!window.html2canvas) {
     btn.textContent = 'Loading…';
+    let waited = 0;
     const check = setInterval(() => {
+      waited += 200;
       if (window.html2canvas) { clearInterval(check); downloadTeaser(); }
+      else if (waited >= 8000) {
+        clearInterval(check);
+        btn.textContent = 'Download PNG →';
+        // Retry loading the script
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+        document.head.appendChild(s);
+      }
     }, 200);
     return;
   }
@@ -1509,8 +1519,9 @@ function downloadTeaser() {
   btn.disabled = true;
   html2canvas(prev, { scale: 4, useCORS: true, allowTaint: true, backgroundColor: null })
     .then(canvas => {
+      const co = (localStorage.getItem('welli_company') || 'teaser').replace(/\s+/g, '-').toLowerCase();
       const link = document.createElement('a');
-      link.download = 'wellhub-teaser.png';
+      link.download = `wellhub-teaser-${co}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       btn.textContent = '✓ Downloaded!';
