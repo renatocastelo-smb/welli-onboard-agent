@@ -536,6 +536,12 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-launch-today{background:linear-gradient(135deg,var(--mgrn) 0%,#0a6038 100%);}
 /* Compact launch card for Stage 1 */
 .cov-launch-sm .cov-launch-num{font-size:20px;}
+/* Progress bar flash when a step is completed */
+@keyframes prog-flash{0%{opacity:1}40%{opacity:.5}100%{opacity:1}}
+.cov-prog-fill.flash{animation:prog-flash .5s ease;}
+/* Next-up step scroll anchor subtle pulse */
+@keyframes step-pulse{0%{box-shadow:0 0 0 0 rgba(242,73,107,.3)}70%{box-shadow:0 0 0 6px rgba(242,73,107,0)}100%{box-shadow:none}}
+.cov-step.next-up.just-revealed{animation:step-pulse .7s ease;}
 
 /* Stage 1 ask-welli CTA in content panel */
 .cov-cta{background:var(--dp);border:none;border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;width:100%;text-align:center;transition:background .2s;margin-top:6px;}
@@ -1841,12 +1847,25 @@ function renderPanelOverview() {
       <button class="cov-cta" onclick="covAskWelli('What is my most important next step to prepare for a successful launch?')">Ask Welli what to prioritize →</button>`;
 
   } else {
+    const days3 = daysUntilLaunch();
+    let s3Card = '';
+    if (days3 !== null) {
+      const abs3 = Math.abs(days3);
+      if (days3 <= 0) {
+        const months = Math.floor(abs3 / 30);
+        const lbl3 = months >= 1
+          ? `<strong>${months} month${months !== 1 ? 's' : ''} since launch</strong>Keep the engagement momentum going.`
+          : `<strong>${abs3} day${abs3 !== 1 ? 's' : ''} since launch</strong>Great start — keep communicating with your team.`;
+        s3Card = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🌱</div><div class="cov-launch-num" style="font-size:${months>=10?'18':'26'}px">${months>=1?months+'mo':abs3+'d'}</div><div class="cov-launch-label">${lbl3}</div></div>`;
+      }
+    }
     inner.innerHTML = stageNav + `
       <div class="cov-hdr">
         <div class="cov-tag">Stage 3</div>
         <div class="cov-title">Life After Launch</div>
         <div class="cov-sub">Month 1+ · Drive ongoing engagement</div>
       </div>
+      ${s3Card}
       <div class="cov-section">Monthly Actions</div>
       <div class="cov-action" onclick="covAskWelli('How do I check my enrollment rate and what should I be aiming for?')" style="cursor:pointer;">
         <div class="cov-action-icon">📊</div>
@@ -1876,11 +1895,23 @@ function renderPanelOverview() {
 }
 
 function toggleCovStep(id) {
+  const wasUnchecked = !gpState[id];
   gpState[id] = !gpState[id];
   try { localStorage.setItem('welli_gp', JSON.stringify(gpState)); } catch(e) {}
   updateGPProgress();
   renderPanelOverview();
   renderChips();
+  // When marking a step done: flash the progress bar and scroll to the new next-up step
+  if (wasUnchecked && gpState[id]) {
+    const fill = document.querySelector('#cov-inner .cov-prog-fill');
+    if (fill) { fill.classList.remove('flash'); void fill.offsetWidth; fill.classList.add('flash'); }
+    const nextEl = document.querySelector('#cov-inner .cov-step.next-up');
+    if (nextEl) {
+      nextEl.classList.add('just-revealed');
+      setTimeout(() => nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+      setTimeout(() => nextEl.classList.remove('just-revealed'), 800);
+    }
+  }
 }
 
 // Tap a content panel card → ask Welli that question and switch to Chat
