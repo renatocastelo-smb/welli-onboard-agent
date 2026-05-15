@@ -1085,7 +1085,7 @@ let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
 function renderIntroStep() {
   showPanel('overview');
   const inner = document.getElementById('cov-inner');
-  const TOTAL = 5;
+  const TOTAL = 4;
   const s = introStep;
   const navDots = Array.from({length: TOTAL}, (_, i) =>
     `<div class="intro-nav-dot${i === s ? ' active' : i < s ? ' done' : ''}"></div>`
@@ -1170,16 +1170,6 @@ function renderIntroStep() {
       ${nav(true)}`;
 
   } else if (s === 2) {
-    inner.innerHTML = `
-      <div class="intro-mission">
-        <div style="font-size:48px;margin-bottom:14px;">🌍</div>
-        <div class="intro-mission-headline">Let's make your<br>employees <em>happier</em><br>and <em>healthier.</em></div>
-        <div class="intro-mission-body">Now that you know what Wellhub can do — let's give your team access to the world's best wellbeing platform.</div>
-      </div>
-      <button class="wk-cta" onclick="introNext()">I'm in →</button>
-      ${nav(true)}`;
-
-  } else if (s === 3) {
     const today = new Date();
     const localToday = [today.getFullYear(), String(today.getMonth()+1).padStart(2,'0'), String(today.getDate()).padStart(2,'0')].join('-');
     const savedCo   = localStorage.getItem('welli_company') || '';
@@ -1209,7 +1199,7 @@ function renderIntroStep() {
       });
     }, 80);
 
-  } else if (s === 4) {
+  } else if (s === 3) {
     inner.innerHTML = `
       <div style="margin:-14px -16px 16px;background:var(--dp);padding:20px 20px 18px;position:relative;overflow:hidden;">
         <div style="position:absolute;top:-50px;right:-50px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(242,73,107,.2) 0%,transparent 70%);pointer-events:none;"></div>
@@ -1230,7 +1220,7 @@ function renderIntroStep() {
 }
 
 function introNext() {
-  introStep = Math.min(introStep + 1, 4);
+  introStep = Math.min(introStep + 1, 3);
   renderPanelOverview();
 }
 function introPrev() {
