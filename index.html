@@ -2292,6 +2292,8 @@ function renderMarkdown(raw) {
   let s = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Bold: **text**
   s = s.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Auto-link URLs (after HTML escaping so & is already &amp; etc.)
+  s = s.replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--mg);text-decoration:underline;word-break:break-all;">$1</a>');
 
   const lines = s.split('\n');
   const out   = [];
@@ -2385,13 +2387,25 @@ function renderEscalation() {
 }
 
 function renderMilestone() {
-  const emojis = ['🎉','🏆','⭐','🚀'];
-  const emoji  = emojis[Math.floor(Math.random() * emojis.length)];
+  const done  = GP_STEPS.filter(s => gpState[s.id]).length;
+  const total = GP_STEPS.length;
+  const stageEmoji = { 1: '🌟', 2: '🚀', 3: '🏆' };
+  const emoji = stageEmoji[faseAtual] || '🎉';
+  const titles = {
+    1: 'Great start!',
+    2: done === total ? 'Golden Path complete!' : `${done} of ${total} steps done!`,
+    3: 'Engagement milestone!'
+  };
+  const descs = {
+    1: 'You\'re getting to know Wellhub — your team will love it.',
+    2: done === total ? 'You\'ve completed every launch step. Time to go live!' : 'Keep going — you\'re building toward a successful launch.',
+    3: 'You\'re driving real engagement. Keep the momentum going.'
+  };
   const c = document.getElementById('msgs');
   const wrap = document.createElement('div'); wrap.className = 'msg b';
   const lbl  = document.createElement('div'); lbl.className = 'lbl'; lbl.style.color = 'var(--mg)'; lbl.textContent = 'Welli';
   const card = document.createElement('div'); card.className = 'milestone-card';
-  card.innerHTML = `<div style="font-size:22px">${emoji}</div><div class="mc-title">Milestone reached!</div><div class="mc-desc">Great progress — keep it up!</div>`;
+  card.innerHTML = `<div style="font-size:22px">${emoji}</div><div class="mc-title">${titles[faseAtual]||'Milestone reached!'}</div><div class="mc-desc">${descs[faseAtual]||'Great progress — keep it up!'}</div>`;
   wrap.append(lbl, card); c.append(wrap); c.scrollTop = c.scrollHeight;
 }
 
@@ -2462,6 +2476,8 @@ function renderGPAction(id) {
     try { localStorage.setItem('welli_gp', JSON.stringify(gpState)); } catch(e) {}
     gpStepTicked = true;
     updateGPProgress();
+    renderPanelOverview(); // sync the content panel checklist
+    renderChips();         // surface updated quick-reply chips
     btn.className = 'gp-action-btn done';
     btn.innerHTML = '✓ Marked as done';
     btn.disabled = true;
