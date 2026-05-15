@@ -521,11 +521,13 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-snav:hover:not(.active){background:var(--xlmg);border-color:var(--lmg);color:var(--dp);}
 
 /* Stage 3 action cards */
-.cov-action{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border-radius:12px;margin-bottom:7px;border:.5px solid var(--ow2);}
+.cov-action{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border-radius:12px;margin-bottom:7px;border:.5px solid var(--ow2);cursor:pointer;transition:background .15s;}
+.cov-action:hover{background:var(--xlmg);}
 .cov-action-icon{font-size:17px;flex-shrink:0;margin-top:1px;}
 .cov-action-title{font-size:12px;font-weight:700;color:var(--dp);margin-bottom:2px;}
 .cov-action-desc{font-size:11px;color:rgba(27,19,64,.5);line-height:1.4;}
 .cov-action-tag{font-size:9px;font-weight:700;color:var(--mg);background:var(--xlmg);padding:2px 6px;border-radius:8px;display:inline-block;margin-top:3px;}
+.cov-action-tag.warn{color:#c05000;background:rgba(255,100,0,.1);}
 
 /* Next-step highlight on GP checklist */
 .cov-step.next-up{border-color:rgba(242,73,107,.35);background:linear-gradient(135deg,var(--xlmg),#fff);border-left:3px solid var(--mg);}
@@ -535,6 +537,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-next-label{font-size:9px;font-weight:700;color:var(--mg);letter-spacing:.05em;text-transform:uppercase;}
 .cov-next-open{font-size:10px;font-weight:700;color:#fff;background:var(--mg);border:none;border-radius:8px;padding:3px 9px;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s;}
 .cov-next-open:hover{background:var(--dm);}
+/* "How?" nudge on pending GP steps */
+.cov-step-how{font-size:9.5px;font-weight:700;color:var(--dp);background:var(--ow2);border:none;border-radius:6px;padding:2px 7px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s;margin-top:4px;display:inline-block;}
+.cov-step-how:hover{background:var(--xlmg);color:var(--mg);}
 
 /* GP step icon in content panel */
 .cov-step-icon{font-size:14px;flex-shrink:0;margin-top:2px;width:22px;text-align:center;line-height:1;}
@@ -1853,7 +1858,7 @@ function renderPanelOverview() {
             <div class="cov-step-body">
               <div class="cov-step-title">${s.title}</div>
               <div class="cov-step-sub">${s.sub}</div>
-              ${isNext ? `<div class="cov-next-row"><span class="cov-next-label">→ Do this next</span>${actionBtn}</div>` : ''}
+              ${isNext ? `<div class="cov-next-row"><span class="cov-next-label">→ Do this next</span>${actionBtn}</div>` : (!gpState[s.id] ? `<button class="cov-step-how" onclick="covAskWelli('How do I ${s.title.toLowerCase()}?');event.stopPropagation()">How? →</button>` : '')}
             </div>
           </div>`);
       });
@@ -1933,24 +1938,30 @@ function renderPanelOverview() {
       </div>
       ${s3Card}
       <div class="cov-section">Monthly Actions</div>
-      <div class="cov-action" onclick="covAskWelli('How do I check my enrollment rate and what should I be aiming for?')" style="cursor:pointer;">
+      <div class="cov-action" onclick="covAskWelli('How do I check my enrollment rate and what should I be aiming for?')">
         <div class="cov-action-icon">📊</div>
         <div style="flex:1;"><div class="cov-action-title">Check your enrollment rate</div><div class="cov-action-desc">Review signups vs. eligible employees in the Wellhub portal.</div><span class="cov-action-tag">Monthly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
-      <div class="cov-action" onclick="covAskWelli('Where do I find the monthly communication assets and how do I use them?')" style="cursor:pointer;">
+      <div class="cov-action" onclick="covAskWelli('Where do I find the monthly communication assets and how do I use them?')">
         <div class="cov-action-icon">📧</div>
         <div style="flex:1;"><div class="cov-action-title">Share communication assets</div><div class="cov-action-desc">Forward Wellhub's ready-made emails and social posts to boost awareness.</div><span class="cov-action-tag">Monthly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
-      <div class="cov-action" onclick="covAskWelli('How do I run a Wellhub Challenge or Raffle to re-engage my team?')" style="cursor:pointer;">
+      <div class="cov-action" onclick="covAskWelli('How do I run a Wellhub Challenge or Raffle to re-engage my team?')">
         <div class="cov-action-icon">🏆</div>
         <div style="flex:1;"><div class="cov-action-title">Run a Challenge or Raffle</div><div class="cov-action-desc">Wellhub Challenges drive check-ins and re-engage inactive members.</div><span class="cov-action-tag">Quarterly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
-      <div class="cov-action" onclick="covAskWelli('What is the EEP report and how do I read it?')" style="cursor:pointer;">
+      <div class="cov-action" onclick="covAskWelli('What is the EEP report and how do I read it?')">
         <div class="cov-action-icon">📈</div>
         <div style="flex:1;"><div class="cov-action-title">Review the EEP report</div><div class="cov-action-desc">Employee Engagement Performance shows ROI and engagement trends.</div><span class="cov-action-tag">Monthly</span></div>
+        <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
+      </div>
+      <div class="cov-section">Troubleshooting</div>
+      <div class="cov-action" onclick="covAskWelli('My enrollment rate is low — what are the most effective actions I can take right now to boost it?')">
+        <div class="cov-action-icon">⚠️</div>
+        <div style="flex:1;"><div class="cov-action-title">Enrollment lower than expected?</div><div class="cov-action-desc">Get a personalized action plan to boost signups and re-engage your team.</div><span class="cov-action-tag warn">If needed</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
       <div class="cov-section">Resources</div>
