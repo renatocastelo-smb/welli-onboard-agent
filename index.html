@@ -2681,13 +2681,6 @@ function renderChips() {
   }
 
   // Action chips promoted to FIRST when they match the active GP step
-  if (teaserIsNext) {
-    const tb = document.createElement('button');
-    tb.className = 'chip chip-teaser';
-    tb.textContent = '🎨 Create a teaser';
-    tb.onclick = showTeaserScreen;
-    box.appendChild(tb);
-  }
   if (announceIsNext) {
     const ab = document.createElement('button');
     ab.className = 'chip chip-announce';
@@ -2711,13 +2704,6 @@ function renderChips() {
   });
 
   // Action chips at end when NOT the active step
-  if (faseAtual === 2 && !teaserIsNext) {
-    const tb = document.createElement('button');
-    tb.className = 'chip chip-teaser';
-    tb.textContent = '🎨 Create a teaser';
-    tb.onclick = showTeaserScreen;
-    box.appendChild(tb);
-  }
   if (faseAtual === 2 && !announceIsNext) {
     const ab = document.createElement('button');
     ab.className = 'chip chip-announce';
