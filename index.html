@@ -1226,15 +1226,23 @@ function renderIntroStep() {
         <div style="font-size:12px;color:rgba(27,19,64,.45);line-height:1.5;margin-bottom:10px;">What's your best estimate for your launch date? This helps us build a plan that works for you.</div>
         <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}" placeholder="Pick a date">
       </div>
-      <!-- Path to Success -->
-      <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">Your Path to Success</div>
-      <div class="path-steps" id="path-steps" style="flex:none;overflow:visible;"></div>
+      <!-- Golden Path steps (shown after date is set) -->
+      <div id="intro-gp-list" style="display:${hasDate ? 'block' : 'none'};">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">Your 7-step Golden Path</div>
+        ${GP_STEPS.map(step => `
+          <div style="display:flex;align-items:flex-start;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:9px 11px;margin-bottom:6px;">
+            <span style="font-size:15px;flex-shrink:0;margin-top:1px;">${step.emoji}</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--dp);line-height:1.4;">${step.title}</div>
+              <div style="font-size:11px;color:rgba(27,19,64,.45);line-height:1.45;margin-top:1px;">${step.sub}</div>
+            </div>
+          </div>`).join('')}
+      </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
         <button class="intro-nav-back" onclick="introPrev()">← Back</button>
-        <div class="path-dots" id="path-dots"></div>
-        <button class="path-nbtn" id="path-nbtn" onclick="pathNext()" style="${hasDate ? 'display:none;' : ''}">Reveal →</button>
+        <button class="path-nbtn" id="path-nbtn" onclick="completeIntro()" style="${hasDate ? '' : 'display:none;'}">Let's go →</button>
       </div>`;
-    // Wire up date input → auto-reveal
+    // Wire up date input → show GP list
     setTimeout(() => {
       document.getElementById('intro-date')?.addEventListener('change', e => {
         const val = e.target.value;
@@ -1244,7 +1252,6 @@ function renderIntroStep() {
         // Hide chart and input section
         document.getElementById('intro-eng-chart').style.display = 'none';
         document.getElementById('intro-date-section').style.display = 'none';
-        document.getElementById('path-nbtn').style.display = 'none';
         // Show date badge
         const p = val.split('-');
         const dt = new Date(+p[0], +p[1]-1, +p[2]);
@@ -1253,18 +1260,12 @@ function renderIntroStep() {
         const suffix = diff > 0 ? ' · ' + diff + ' days away' : diff < 0 ? ' · ' + Math.abs(diff) + ' days ago' : ' · Today';
         document.getElementById('intro-date-badge-text').textContent = label + suffix;
         document.getElementById('intro-date-badge').style.display = 'flex';
-        // Auto-reveal all path steps
-        while (pathVisible < PATH_STEPS.length) pathNext();
+        // Show GP list and Let's go button
+        document.getElementById('intro-gp-list').style.display = 'block';
+        document.getElementById('path-nbtn').style.display = '';
+        inner.parentElement.scrollTop = 0;
       });
     }, 80);
-    // Build path steps; if date already exists reveal all immediately
-    pathVisible = 0;
-    buildPathSteps();
-    if (hasDate) {
-      while (pathVisible < PATH_STEPS.length) pathNext();
-    } else {
-      setTimeout(pathNext, 400);
-    }
   }
 
   inner.parentElement.scrollTop = 0;
