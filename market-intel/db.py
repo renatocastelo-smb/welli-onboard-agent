@@ -61,6 +61,24 @@ def init_db():
             CREATE INDEX IF NOT EXISTS idx_posts_vendor ON posts(vendor_id);
             CREATE INDEX IF NOT EXISTS idx_posts_posted_at ON posts(posted_at);
             CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date);
+
+            CREATE TABLE IF NOT EXISTS vendor_candidates (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                vendor_name     TEXT NOT NULL,
+                vendor_category TEXT NOT NULL DEFAULT 'planner',
+                platform        TEXT NOT NULL DEFAULT 'instagram',
+                handle          TEXT NOT NULL,
+                display_name    TEXT,
+                bio             TEXT,
+                followers       TEXT,
+                profile_url     TEXT,
+                confidence      REAL NOT NULL DEFAULT 0.5,
+                status          TEXT NOT NULL DEFAULT 'pending',
+                created_at      TEXT NOT NULL DEFAULT (datetime('now'))
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_candidates_vendor ON vendor_candidates(vendor_name);
+            CREATE INDEX IF NOT EXISTS idx_candidates_status ON vendor_candidates(status);
         """)
 
 
@@ -209,6 +227,93 @@ def get_vendor_network(min_cooccurrences: int = 2) -> list[dict]:
             ORDER BY cooccurrences DESC
         """, (min_cooccurrences,)).fetchall()
         return [dict(r) for r in rows]
+
+
+def insert_candidate(vendor_name: str, vendor_category: str, platform: str,
+                     handle: str, display_name: str, bio: str, followers: str,
+                     profile_url: str, confidence: float):
+    with get_conn() as conn:
+        conn.execute("""
+            INSERT OR IGNORE INTO vendor_candidates
+                (vendor_name, vendor_category, platform, handle, display_name,
+                 bio, followers, profile_url, confidence)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (vendor_name, vendor_category, platform, handle, display_name,
+              bio, followers, profile_url, confidence))
+
+
+def has_confirmed_or_pending(vendor_name: str) -> bool:
+    with get_conn() as conn:
+        row = conn.execute("""
+            SELECT COUNT(*) FROM vendor_candidates
+            WHERE vendor_name = ? AND status IN ('pending', 'confirmed')
+        """, (vendor_name,)).fetchone()
+        return row[0] > 0
+
+
+def get_pending_vendors() -> list[dict]:
+    with get_conn() as conn:
+        rows = conn.execute("""
+            SELECT DISTINCT vendor_name, vendor_category,
+                   COUNT(*) AS candidate_count
+            FROM vendor_candidates
+            WHERE status = 'pending'
+            GROUP BY vendor_name
+            ORDER BY vendor_name
+        """).fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_candidates_for_vendor(vendor_name: str) -> list[dict]:
+    with get_conn() as conn:
+        rows = conn.execute("""
+            SELECT id, handle, display_name, bio, followers, profile_url,
+                   confidence, status, platform
+            FROM vendor_candidates
+            WHERE vendor_name = ? AND status = 'pending'
+            ORDER BY confidence DESC
+        """, (vendor_name,)).fetchall()
+        return [dict(r) for r in rows]
+
+
+def confirm_candidate(vendor_name: str, handle: str) -> str:
+    """Mark one candidate as confirmed, reject the others. Returns category."""
+    with get_conn() as conn:
+        conn.execute("""
+            UPDATE vendor_candidates SET status = 'confirmed'
+            WHERE vendor_name = ? AND handle = ?
+        """, (vendor_name, handle))
+        conn.execute("""
+            UPDATE vendor_candidates SET status = 'rejected'
+            WHERE vendor_name = ? AND handle != ?
+        """, (vendor_name, handle))
+        row = conn.execute(
+            "SELECT vendor_category FROM vendor_candidates WHERE vendor_name = ?",
+            (vendor_name,)
+        ).fetchone()
+        return row["vendor_category"] if row else "other"
+
+
+def reject_all_candidates(vendor_name: str):
+    with get_conn() as conn:
+        conn.execute("""
+            UPDATE vendor_candidates SET status = 'rejected'
+            WHERE vendor_name = ?
+        """, (vendor_name,))
+
+
+def get_enrichment_stats() -> dict:
+    with get_conn() as conn:
+        total = conn.execute(
+            "SELECT COUNT(DISTINCT vendor_name) FROM vendor_candidates"
+        ).fetchone()[0]
+        pending = conn.execute(
+            "SELECT COUNT(DISTINCT vendor_name) FROM vendor_candidates WHERE status='pending'"
+        ).fetchone()[0]
+        confirmed = conn.execute(
+            "SELECT COUNT(DISTINCT vendor_name) FROM vendor_candidates WHERE status='confirmed'"
+        ).fetchone()[0]
+        return {"total": total, "pending": pending, "confirmed": confirmed}
 
 
 def get_stats() -> dict:
