@@ -1,0 +1,42 @@
+[
+  {
+    "handle": "@exemplo_espaco_eventos",
+    "platform": "instagram",
+    "category": "venue",
+    "name": "Espaço Exemplo Eventos",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "handle": "@exemplo_assessoria",
+    "platform": "instagram",
+    "category": "planner",
+    "name": "Exemplo Assessoria",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "handle": "@exemplo_decoracao",
+    "platform": "instagram",
+    "category": "decorator",
+    "name": "Exemplo Decoração",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "handle": "@exemplo_buffet",
+    "platform": "instagram",
+    "category": "buffet",
+    "name": "Exemplo Buffet",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "handle": "@exemplo_concorrente",
+    "platform": "instagram",
+    "category": "competitor",
+    "name": "Exemplo Concorrente (Locação)",
+    "active": true,
+    "notes": "Principal concorrente de locação de móveis"
+  }
+]
