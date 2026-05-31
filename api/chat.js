@@ -2,6 +2,75 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+// ── Connect+ Help Center search ───────────────────────────────────────────
+// Queries api.cx.gympass.com for relevant articles to augment Welli's answers.
+// Requires CONNECT_PLUS_TOKEN env var. Falls back to TEST_FIXTURES when the
+// token is absent so the integration can be validated before credentials arrive.
+
+const HC_TEST_FIXTURES = [
+  {
+    title: 'How to upload your employee eligibility list',
+    url: 'https://helpcenter.gympass.com/en-us/articles/employee-list-upload',
+    excerpt: 'To add employees in bulk: go to Employees > Update employees > Import from a spreadsheet > Add employees. Download the template, fill in name, work email, and National ID Number (NIN), then upload and click Confirm and import. After upload a security check runs — Low requires one click to confirm, Moderate asks you to type a phrase, High pauses the upload for Wellhub manual review. Check status under Employees > Upload history.'
+  },
+  {
+    title: 'Setting up Smart Invites and automatic invitations',
+    url: 'https://helpcenter.gympass.com/en-us/articles/smart-invites',
+    excerpt: 'Smart Invites automatically send a personalised invitation to every new eligible employee and re-invite non-subscribers every 60 days. To enable: Settings > Communication > Invite your employees > select Smart Invites > Save. You can also add a custom sender name on the same page. For a one-time blast to all eligibles (Kick-off email), select Kick Off Invites, pick a date up to 30 days ahead, and confirm. Important: set the date before clicking Import on an upload or invitations send immediately.'
+  },
+  {
+    title: 'Understanding employee statuses: Eligible, Member, Subscriber',
+    url: 'https://helpcenter.gympass.com/en-us/articles/employee-statuses',
+    excerpt: 'Eligible: employee is on your uploaded list and has access rights but has not yet created a Wellhub account. Member: employee created a Wellhub account but has not chosen a paid plan. Subscriber: employee has an active plan (including free trial, paused, or limited access). Paused: employee paused their subscription (15–30 days, once every 6 months). Cancelled: employee ended their subscription — monthly subscribers can re-subscribe freely; annual subscribers lose access for the rest of their year. Limited Access: employee was removed from the eligibility list but their plan has not expired yet. You can filter by status in the Employees tab to identify who needs a re-invitation.'
+  },
+  {
+    title: 'How to check enrollment reports and track usage',
+    url: 'https://helpcenter.gympass.com/en-us/articles/enrollment-reports',
+    excerpt: 'Portal reports are in Dashboard & Reports (requires Analytics role). Key reports: Engagement Report — daily count of eligibles, members, subscribers. Subscribers Report — per-employee plan status (Active, Paused, Cancelled, Limited Access). Visit Details — every verified gym/studio/app visit per employee. Subscription History — full log of plan changes. Enrollment rate = Subscribers ÷ Eligible employees × 100. Target benchmarks: 27%+ by Month 1 for Wellhub+ clients, 9.7%+ without Wellhub+.'
+  },
+  {
+    title: 'Running a Wellhub Challenge to boost enrollment',
+    url: 'https://helpcenter.gympass.com/en-us/articles/challenges',
+    excerpt: 'Challenges are free for all clients — no extra cost or setup. Average +35% enrollment lift. To create: Challenges > Create a challenge > choose preset or custom title > set duration (up to 30 days) and start date > select level > Publish. Non-subscribers can join step challenges by downloading the free Wellhub app, removing the sign-up barrier. Pre-built promotional assets (social posts, email templates, infographics) are at Challenges > View materials. Challenges cannot be cancelled once started.'
+  }
+];
+
+async function searchHelpCenter(query) {
+  const token = process.env.CONNECT_PLUS_TOKEN;
+
+  // ── Live API (Connect+ credentials present) ───────────────────────────────
+  if (token) {
+    try {
+      const url = `https://api.cx.gympass.com/requester/v1/search?q=${encodeURIComponent(query)}&locale=en-us&per_page=3`;
+      const resp = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+      });
+      if (!resp.ok) return [];
+      const data = await resp.json();
+      const articles = data.articles || data.results || data.data || [];
+      return articles.slice(0, 3).map(a => ({
+        title:   a.title   || a.name || '',
+        url:     a.html_url || a.url  || '',
+        excerpt: (a.body_text || a.body || a.excerpt || a.snippet || '').replace(/<[^>]+>/g, '').slice(0, 400)
+      })).filter(a => a.title && a.excerpt);
+    } catch (e) {
+      console.error('Help center search error:', e.message);
+      return [];
+    }
+  }
+
+  // ── Test fixture mode (no token yet) ─────────────────────────────────────
+  // Simple keyword match against fixture titles + excerpts
+  const q = query.toLowerCase();
+  const scored = HC_TEST_FIXTURES.map(a => {
+    const text = (a.title + ' ' + a.excerpt).toLowerCase();
+    const words = q.split(/\s+/).filter(w => w.length > 3);
+    const score = words.reduce((n, w) => n + (text.includes(w) ? 1 : 0), 0);
+    return { ...a, score };
+  }).filter(a => a.score > 0).sort((a, b) => b.score - a.score);
+  return scored.slice(0, 2);
+}
+
 // ── Models ────────────────────────────────────────────────────────────────
 const ORCHESTRATOR_MODEL = 'claude-haiku-4-5';   // fast + cheap for routing
 const AGENT_MODEL        = 'claude-sonnet-4-5';  // quality for answers
@@ -39,18 +108,21 @@ PLANS: Four paid tiers + one free tier. All paid tiers include gym + studio acce
 - Silver: everything in Basic + physiotherapy sessions (1:1 virtual).
 - Gold: everything in Silver + nutrition coaching (1:1 virtual).
 - Platinum: everything in Gold + financial coaching (1:1 virtual).
-- Digital (free): wellness apps and live/on-demand classes only — no gym network access, no 1:1 sessions. Good for remote employees.
-Plans cost up to 60% less than retail gym prices. Employees can change plan or pause once every 6 months (pause: 15–30 consecutive days). If Wellhub+ is enabled, the company subsidizes part or all of the plan cost. Trainiac (personal training) is available from Silver tier upward.
+- Digital (free): wellness apps and live/on-demand classes only — no in-person gym access, no 1:1 sessions. Good for remote employees.
+Plans cost up to 60% less than retail gym prices. If Wellhub+ is enabled, the company subsidizes part or all of the plan cost. Trainiac (personal training) is available from Silver tier upward.
+PLAN COMMITMENT: Monthly plans can be cancelled and re-subscribed at any time — full flexibility. Annual plans are a 12-month commitment; employees are locked in for the full year.
+PAUSE: Employees can pause their subscription once every 6 months for 15–30 consecutive days. After using a pause, they must wait 6 months before pausing again — but they can still cancel at any time during that 6-month window if needed.
+PAUSE VS CANCEL GUIDANCE: Recommend pause for short, planned breaks under 30 days (vacation, injury). Recommend cancel for longer breaks or uncertain timelines — monthly subscribers can always re-subscribe with no restrictions. Annual subscribers who cancel still lose access for the remainder of their year.
 
 ADD-ONS (company level): Family Members (employees add up to 3 dependents), Global Digital Plan (digital-only for regions without in-person partners), Wellhub+ (company subsidizes part or all of employee plan costs — enabling this restricts employee additions to spreadsheet-import only).
 
-EMPLOYEE EXPERIENCE: Employees download the Wellhub app, sign up with their work email, choose a plan, and check in to partner facilities or apps to log usage. A check-in is a verified visit. Active User = 5+ check-ins per month. Employees can pause a subscription once every 6 months for 15–30 consecutive days.
+EMPLOYEE EXPERIENCE: Employees download the Wellhub app, sign up with their work email, choose a plan, and book or visit partner facilities or apps to log usage. A visit is a verified booking. Active User = 5+ visits per month. Employees on monthly plans can cancel and re-subscribe freely. Annual plan employees are locked in for 12 months. Any employee can pause once every 6 months (15–30 consecutive days); cancellation is always available even after a recent pause.
 
 ROI BENCHMARKS: 90% of HR leaders measuring wellness ROI see a positive return. 89% report fewer sick days. 47% lower absenteeism for active users. Up to 35% reduction in healthcare costs. Average client ROI = 127%. 52% of clients report a significant productivity increase. Turnover is 30% lower among actively engaged Wellhub employees. 93% of workers prioritize wellbeing as much as salary.
 
 TRAINIAC: Wellhub's personal training service — assigned certified coach, 100% personalized plans, daily follow-up, video library, progress tracking. Available from Silver tier.
 WELLHUB AI: AI-powered conversational wellness assistant in the employee app (beta).
-CHALLENGES: Free feature for all clients. Employees earn points via steps, gym check-ins, and class bookings. Non-subscribers can join step challenges by downloading the free app.
+CHALLENGES: Free feature for all clients. Employees earn points via steps, gym visits, and class bookings. Non-subscribers can join step challenges by downloading the free app.
 `,
 
   PLATFORM_SUPPORT: `
@@ -87,7 +159,7 @@ Step 3 — TEASER (id: teaser, Pre-Launch, 1–2 weeks before launch): Post earl
 Step 4 — LEADERSHIP ANNOUNCEMENT (id: leadership, Pre-Launch, launch day or day before): A message from a leader using Wellhub-supplied copy confirming the benefit is real and supported. This builds trust and is the single highest-impact action.
 Step 5 — I2S — INVITATION TO SIGN UP (id: i2s, Launch Day): The Kick-off email sends automatically from the portal with a Magic Link. Employees click and sign up in minutes.
 Step 6 — WELCOME WEBINAR (id: webinar, Week 1 Post-Launch, ~1 week after launch): Free 30-min live session hosted by Wellhub — HR doesn't need to prepare anything. HR picks a date 1–2 weeks after launch, shares the Zoom/Teams link with employees, and Wellhub runs it. Covers product features, plan selection, and employee Q&A. To book: contact your CS rep or check with your onboarding team — they'll provide a calendar link. Promote it via Slack, email, and internal channels before launch.
-Step 7 — COMMUNICATION ASSETS (id: comms, Ongoing, Month 2+): Wellhub sends monthly ready-made emails and assets automatically. HR forwards the email to all employees or shares assets on Slack, intranet, or digital screens. To access assets: portal homepage > "Communication" section, or wellhub.bynder.com (Brand Library) for posters, GIFs, videos, and social content. Also run monthly or quarterly Challenges — average +35% enrollment lift. Consider a raffle for new subscribers each month.
+Step 7 — COMMUNICATION ASSETS (id: comms, Ongoing, Month 2+): Wellhub provides a monthly ready-made communications pack — emails, social posts, challenge templates, digital content. HR's only job is to forward and share. Three access points: (1) Momentum Program: digital.gympass.com/momentum-program/us/ — monthly packs, webinar calendar, toolkits; (2) portal homepage > Communication section — email templates; (3) Brand Library: wellhub.bynder.com — posters, GIFs, videos, social posts, challenge graphics. Share on Slack, email, intranet, or digital screens. Also run a Challenge each quarter — average +35% enrollment lift. Pair each challenge with a raffle for new subscribers.
 
 ENGAGEMENT IMPACT DATA (use these exact figures): With Wellhub+, engaged clients reach 27.4% enrollment at Month 1, 35.1% at Month 3, 41.3% at Month 6 — vs. 5.4%, 7.5%, 10.2% for non-engaged. Without Wellhub+, engaged clients reach 9.7% at Month 1, 13.2% at Month 3, 21.7% at Month 6 — vs. 1.1%, 1.0%, 1.4% for non-engaged.
 
@@ -105,17 +177,17 @@ FORMAL ONBOARDING MILESTONES (EU T1/T2): M0 = internal alignment (3 days post-Op
   ENROLLMENT_SPRINT: `
 ENROLLMENT BENCHMARKS: Engaged clients with Wellhub+ hit 27.4% enrollment at Month 1, 35.1% at Month 3, 41.3% at Month 6. Without Wellhub+: 9.7% at Month 1, 21.7% at Month 6. Non-engaged clients average 1–5% across the same periods. Top-quartile clients hit 27%+ by Month 1.
 
-CHECK ENROLLMENT: Dashboard & Reports section of the admin portal (requires Analytics role). The homepage shows at-a-glance counts of eligible employees, members, subscribers, and check-ins. Full reports:
+CHECK ENROLLMENT: Dashboard & Reports section of the admin portal (requires Analytics role). The homepage shows at-a-glance counts of eligible employees, members, subscribers, and visits. Full reports:
 - Engagement Report: daily count of eligibles, members, subscribers, family members. Tracks subscription rate over time.
-- Subscribers Report: current plan status per employee (Active, Paused, Cancelled, Limited Access). Active = current paying subscriber. Paused = subscription on hold (employee chose to pause for 15–30 days, allowed once per 6 months). Cancelled = employee ended their subscription. Limited Access = employee was removed from the eligibility list but their plan has not yet expired — they can still access Wellhub until the current period ends, after which access stops. Shows who is and isn't subscribed.
-- Check-in Details: every verified gym/studio/app visit per employee. Measures active usage.
+- Subscribers Report: current plan status per employee (Active, Paused, Cancelled, Limited Access). Active = current paying subscriber. Paused = subscription on hold (employee paused for 15–30 days; allowed once every 6 months — employee can still cancel even while in the 6-month pause cooldown). Cancelled = employee ended their subscription (monthly subscribers can re-subscribe anytime; annual subscribers lose access for the remainder of their year). Limited Access = employee was removed from the eligibility list but their plan has not yet expired — they can still access Wellhub until the current period ends, after which access stops.
+- Visit Details: every verified gym/studio/app visit per employee. Measures active usage.
 - Subscription History: full chronological log of plan changes. Use to audit changes or spot churn.
 Enrollment rate = (Subscribers ÷ Eligible employees) × 100. Target: 27%+ by Month 1 (engaged clients with Wellhub+), 9.7%+ without Wellhub+.
 
 POST-LAUNCH CHECKPOINTS:
-D7 — First Value (FV) Track: confirm that at least one employee has created a Wellhub account and made a check-in (gym visit, app usage, or class). Check via Dashboard & Reports > Check-in Details. If nobody has checked in yet, manually re-invite a small group of enthusiastic employees and promote the Welcome Webinar immediately. D7 is the earliest signal of adoption — low FV at D7 predicts low Month-1 enrollment.
+D7 — First Value (FV) Track: confirm that at least one employee has created a Wellhub account and made a visit (gym, app usage, or class booking). Check via Dashboard & Reports > Visit Details. If nobody has visited yet, manually re-invite a small group of enthusiastic employees and promote the Welcome Webinar immediately. D7 is the earliest signal of adoption — low FV at D7 predicts low Month-1 enrollment.
 D15 — Health Checkpoint: review your enrollment rate (Subscribers ÷ Eligibles). Compare to benchmarks: 27%+ is on track for Wellhub+ clients, 9.7%+ for non-Wellhub+. If below target: re-invite non-subscribers manually, promote the Welcome Webinar if it hasn't happened yet, and ask leadership to send a re-announcement message.
-D30 — Growth Checkpoint: check overall subscription rate and check-in frequency. If below target: run a Challenge (average +35% enrollment lift), do a second leadership message, share Wellhub's monthly comms assets, and consider a raffle to reward new subscribers.
+D30 — Growth Checkpoint: check overall subscription rate and visit frequency. If below target: run a Challenge (average +35% enrollment lift), do a second leadership message, share Wellhub's monthly comms assets, and consider a raffle to reward new subscribers.
 D60 — Growth Checkpoint: plan the next quarter's engagement calendar. Review which GP comms you've done and which are still pending. Commit to at least one Challenge per quarter. Assess whether D2E (Direct to Employee) is enabled — contact CS if not. Reference the Momentum Program for monthly HR-ready assets and webinars.
 
 RE-INVITE NON-SUBSCRIBERS: Smart Invites automatically re-invites eligible non-subscribers every 60 days — no manual action needed. For manual re-invitations: Employees > select employees with uninvited or pending status > click the arrow > "Resend invitation." Employees with "Missing email" status cannot be invited until a valid address is added.
@@ -134,28 +206,47 @@ KEY SUCCESS FACTORS (from WE Knowledge Center case studies): Institutional and l
 `,
 
   ENGAGEMENT_RETENTION: `
-EEP (EMPLOYEE ENGAGEMENT PLAN): A co-created annual wellbeing plan between Wellhub's WE (Wellbeing Engagement) team and the client, presented using the Scalable Menu slide pack. Four content blocks:
+STAGE 3 OVERVIEW — LIFE AFTER LAUNCH: HR's job in Stage 3 is simple: Wellhub provides everything, HR forwards and shares it. There are four core pillars: (1) Monthly email pack, (2) Content library, (3) Monthly employee webinars, (4) Team challenges. None of these require HR to create content.
+
+MONTHLY COMMUNICATIONS PACK (core Stage 3 action): Every month, Wellhub prepares a ready-made pack of emails, social posts, challenge templates, and digital content — HR's only job is to forward the email and share the assets on internal channels (Slack, email, intranet, digital screens). The more frequently HR shares, the higher the enrollment rate. Where to access:
+- Momentum Program: digital.gympass.com/momentum-program/us/ — monthly packs, challenge guides, webinar calendar, and HR Insider briefing.
+- Portal: Homepage > Communication section — email templates and campaign materials.
+- Brand Library (Bynder): wellhub.bynder.com — posters (A3/A4), flyers, social posts, GIFs, email templates, challenge graphics, digital screen banners, and employee videos. Download and share freely.
+HR does not need to create any content. Recommended cadence: share at least once per month across at least 2 channels.
+
+MONTHLY EMPLOYEE WEBINARS: Wellhub runs monthly employee-facing webinars at no cost. Two formats:
+- "Say Hello to Wellhub" — recurring onboarding session for new and unconverted employees: covers plan options, how to sign up, popular features, and live Q&A.
+- Themed monthly sessions — rotating wellbeing topics (stress, sleep, nutrition, financial health, emotional health, etc.).
+HR's role is only to share the calendar link — Wellhub handles hosting, content, and presenting. To get the calendar link: check the Momentum Program page (digital.gympass.com/momentum-program/us/) or ask your CS or WE team rep. UK/IE event registration: promo.wellhub.com/uki/calendar/. Share the link via Slack, email, or a calendar invite to all employees.
+
+WELLBEING CONTENT LIBRARY: Curated wellbeing content available for HR to share with employees at any time:
+- wellhub.bynder.com (Brand Library) — employee how-to videos, benefit explainer videos, infographics, digital screen banners, social posts, and challenge graphics.
+- Momentum Program (digital.gympass.com/momentum-program/us/) — monthly themed content packs, the Employee Engagement Toolkit, New Hire Toolkit, Challenges Toolkit, and the Wellness Pulse newsletter.
+No portal configuration needed. Download any asset and share on Slack, email, intranet, or digital screens.
+
+TEAM CHALLENGES (highest-impact Stage 3 tool): Free feature included in all Wellhub contracts — no extra setup or cost required. Average +35% enrollment lift (Wellhub internal study, 2024). Non-subscribers can join step challenges by downloading the free Wellhub app — no plan required, which removes the sign-up barrier.
+CREATE A CHALLENGE: Challenges > Create a challenge > choose preset or custom title > set duration (up to 30 days) and start date > select level > Publish challenge. Once live: real-time participation rate, points, days remaining, and leaderboard visible. Pre-built promotional assets (social posts, email templates, infographics): Challenges > View materials.
+CHALLENGE CADENCE: Minimum 1 challenge per quarter. Best results when paired with a raffle for new subscribers during the challenge period. Challenges cannot be cancelled once started — only before the start date.
+RAFFLES: Best run alongside a challenge, with at least 3 weeks of promotion across at least 2 channels. Winners are selected from new subscribers during the period. Wellhub sponsors the prize — prizes cannot be plan discounts or free trials.
+
+EEP (EMPLOYEE ENGAGEMENT PLAN): A co-created annual wellbeing plan between Wellhub's WE (Wellbeing Engagement) team and the client. Four content blocks:
 Block 1 — Awareness: update intranet, benefits page, monthly newsletters with current Wellhub service info.
 Block 2 — 1:1 Tools Awareness: promote personalized sessions (psychologists, physiotherapists, nutritionists, personal trainers via Trainiac, financial coaches) available at different plan tiers.
 Block 3 — Cross-Client Events: monthly free seasonal events, raffles, challenges, and webinars from Wellhub's shared calendar.
 Block 4 — Quarterly Communication Plan: live seminars, fitness sessions, testimonials, zone-segmented actions, Wellhub challenges, and wellbeing materials.
-EEP CADENCE: 1 initiative per quarter, 3–6 months of planning ahead at all times. Weekly SLA: Week 1 gather info + consult WE Planner, Week 2 present to client, Week 3 confirm plan, Week 4+ execute.
+EEP CADENCE: 1 initiative per quarter, 3–6 months of planning ahead. Contact your WE team rep to start.
 
-SCALABLE MENU CATEGORIES: Events & Webinars (Monthly Wellhub Refresh — 20-min monthly webinar open to all UK+IE eligibles, Tailored Events, Wellbeing Champion Calls, Pre-Recorded Videos, Campaign Events), Printed/Onsite Materials (posters A3/A4, flyers A5, pull-up banners, scratch/business cards with QR codes, payslips), Digital Content (e-screens, banners, GIFs, interactive PDFs, infographics, social posts), Challenges & Motivators (raffles, challenges).
+MOMENTUM PROGRAM (free HR resource hub): digital.gympass.com/momentum-program/us/ — Employee Engagement Toolkit, New Hire Toolkit, Challenges Toolkit, monthly employee webinars, monthly HR insider briefing (30-min Wellhub Monthly Insider covering roadmap and platform updates), and the Wellness Pulse newsletter (50,000+ HR members).
 
-RAFFLES: Best run with at least 3 weeks of promotion across at least 2 channels. Winners selected from new subscribers during the promotional period. Wellhub sponsors the prize — cannot be plan discounts or free trials.
+D2E (DIRECT TO EMPLOYEE): Wellhub-driven weekly personalized messages sent to all opted-in employees at no extra cost. Companies using D2E see significantly higher participation. Managed entirely by Wellhub — HR doesn't create any content. To enable: contact your CS rep or WE team lead. Employees opt in through the Wellhub app.
 
-MOMENTUM PROGRAM (free HR resource hub): digital.gympass.com/momentum-program/us/ — includes Employee Engagement Toolkit, New Hire Toolkit, Challenges Toolkit, monthly employee webinars ("Say Hello to Wellhub" + themed sessions), monthly HR insider briefing (30-min Wellhub Monthly Insider covering roadmap and network updates), and the Wellness Pulse newsletter (50,000+ HR members).
+ANNUAL CAMPAIGN CALENDAR (UK/IE): Gympass Moves (Jan–Feb), Spring Fling (Mar–May), Check-in with your Wellbeing (Jun–Aug), Back to Basics (Sept–Oct), Winter Wellbeing (Nov–Dec). Registration: promo.wellhub.com/uki/calendar/
 
-D2E (DIRECT TO EMPLOYEE): Wellhub-driven weekly personalized messages sent to all opted-in employees at no extra cost. Companies using the complete D2E experience see significantly higher participation vs. basic flow. D2E is managed by Wellhub on the backend — HR admins don't need to create content. To enable or configure D2E: contact your CS rep or WE team lead. Employees opt in through the Wellhub app.
+FIND YOUR PATH: Interactive quiz delivering personalized plan recommendations to employees — converts free members to paid plans. Available to clients on an approved list — ask CS.
 
-ANNUAL CAMPAIGN CALENDAR (UK/IE): Gympass Moves (Jan–Feb), Spring Fling (Mar–May, includes MHAW webinar), Check-in with your Wellbeing (Jun–Aug), Back to Basics (Sept–Oct, includes WMHD with Ifeel), Winter Wellbeing (Nov–Dec). Registration for cross-client events: promo.wellhub.com/uki/calendar/
+WELLBEING CHAMPIONS MODEL: Nominated employee advocates equipped via WC Calls; they become brand ambassadors driving word-of-mouth adoption across the workforce.
 
-FIND YOUR PATH: Interactive quiz that delivers personalized plan recommendations to employees — targets converting free members to paid plans. Available only to clients on an approved list — ask CS.
-
-WELLBEING CHAMPIONS MODEL: Nominated employee advocates equipped via WC Calls with Wellhub knowledge; they become brand ambassadors driving word-of-mouth adoption across the workforce.
-
-KEY LONG-TERM BENCHMARKS: 90% of HR leaders measuring wellness ROI see positive returns. 89% report fewer sick days. 47% lower absenteeism for active users. Average client ROI = 127%. Celebrate milestone enrollment: 10%, 20%, 27%+ — run a raffle or challenge tied to each.
+KEY LONG-TERM BENCHMARKS: 90% of HR leaders measuring wellness ROI see positive returns. 89% report fewer sick days. 47% lower absenteeism for active users. Average client ROI = 127%. Celebrate milestone enrollment: 10%, 20%, 27%+ — pair each milestone with a raffle or challenge.
 `
 };
 
@@ -195,7 +286,7 @@ PRODUCT_FAQ — What Wellhub is, plan tiers (Basic/Silver/Gold/Platinum), featur
 PLATFORM_SUPPORT — Admin portal how-tos: adding or removing employees, managing admin roles and permissions, invitation settings, Magic Link, QR code, portal login or access issues
 LAUNCH_READINESS — Pre-launch setup, the Golden Path, communication strategy, eligibility file upload, scheduling the I2S (first invitation email), Welcome Webinar setup, leadership announcement; also "what's my next step" questions where the next pending step is a pre-launch or setup action
 ENROLLMENT_SPRINT — First 30 days after I2S: checking enrollment numbers, low enrollment fixes, re-sending invitations, running Challenges, reading dashboard reports; also "what's my next step" questions where the next pending step is post-launch
-ENGAGEMENT_RETENTION — Month 2+ long-term engagement: EEP, WE program, Scalable Menu, Momentum Program, annual campaigns, raffles, Wellbeing Champions, D2E; also "what's my next step" questions in Stage 3
+ENGAGEMENT_RETENTION — Month 2+ long-term engagement: monthly communications pack, content library (Bynder/Momentum Program), monthly employee webinars, team challenges, EEP, WE program, Scalable Menu, Momentum Program, annual campaigns, raffles, Wellbeing Champions, D2E; also "what's my next step" questions in Stage 3
 
 Reply with only the category name — nothing else.`;
 
@@ -299,12 +390,20 @@ module.exports = async function handler(req, res) {
     const agentKey = AGENTS[rawKey] ? rawKey : 'PLATFORM_SUPPORT';
     const agent = AGENTS[agentKey];
 
+    // ── Step 1b: Fetch relevant Help Center articles (Connect+ KB) ───────────
+    const hcArticles = await searchHelpCenter(message);
+    const hcContext = hcArticles.length
+      ? '\n\nHELP CENTER ARTICLES (official Wellhub support documentation — use these to supplement your answer):\n' +
+        hcArticles.map((a, i) => `[${i + 1}] ${a.title}\n${a.excerpt}`).join('\n\n')
+      : '';
+
     // ── Step 2: Answer via Specialist Agent (Sonnet — quality) ───────────
     const systemPrompt = [
       SHARED_RULES,
       `\nYour specialty: ${agent.specialty}`,
       gpCtx ? `${gpCtx}\n\nUse the client context above to personalise your answers. When days until launch is low (≤7), flag urgency explicitly. When the client asks "what's my next step", give one concrete action: name it, explain why it matters, and give the exact steps to do it right now.` : '',
-      `\nKNOWLEDGE:\n${KB[agentKey]}`
+      `\nKNOWLEDGE:\n${KB[agentKey]}`,
+      hcContext
     ].join('\n');
 
     // Keep last 8 messages (4 turns) for better multi-turn continuity
