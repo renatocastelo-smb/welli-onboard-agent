@@ -8,14 +8,33 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --dp:#1B1340;--mg:#F2496B;--lmg:#FFB2C6;--xlmg:#FFEBF1;
-  --mp:#A880FF;--grn:#DCFF79;--mgrn:#0C8046;
-  --ow:#FBF8EC;--ow1:#F6EDDF;--ow2:#ECE0CD;--dm:#590931;--blk:#1D1D1F;
+  /* ── Wellhub brand palette (official Design System) ── */
+  --dp:#1B1340;   /* purple-900  */
+  --mg:#F2496B;   /* magenta     */
+  --lmg:#FFB2C6;  /* magenta-100 */
+  --xlmg:#FFEBF1; /* magenta-50  */
+  --mp:#A880FF;   /* purple      */
+  --grn:#DCFF79;  /* green       */
+  --mgrn:#0C8046; /* green-600   */
+  --ow:#FBF8EC;   /* off-white   */
+  --ow1:#F6EDDF;  /* cream-100   */
+  --ow2:#ECE0CD;  /* cream-200   */
+  --dm:#590932;   /* magenta-700 */
+  --blk:#1D1D1F;  /* near-black  */
+  /* ── Brand motion tokens ── */
+  --ease-brand: cubic-bezier(0.2,0.8,0.2,1);
+  --dur-fast:   140ms;
+  --dur-base:   220ms;
+  --dur-slow:   360ms;
+  /* ── Brand shadow tokens ── */
+  --shadow-sm: 0 1px 2px rgba(27,19,64,.06);
+  --shadow-md: 0 4px 16px rgba(27,19,64,.08);
+  --shadow-lg: 0 12px 32px rgba(27,19,64,.10);
 }
 html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;padding:20px;}
 
 /* ── Shell ── */
-.shell{width:420px;max-width:100%;background:var(--ow);border-radius:20px;overflow:hidden;border:1px solid var(--ow2);box-shadow:0 8px 32px rgba(27,19,64,.12);display:flex;flex-direction:column;}
+.shell{width:420px;max-width:100%;background:var(--ow);border-radius:20px;overflow:hidden;border:1px solid var(--ow2);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;}
 
 /* ── Header ── */
 .hdr{background:var(--dp);padding:16px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
@@ -29,7 +48,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 /* ── Progress Strip (top bar — stage pills + GP progress + launch date) ── */
 .progress-strip{background:#fff;border-bottom:.5px solid var(--ow2);padding:0 14px;height:46px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .pst-stages{display:flex;align-items:center;gap:4px;}
-.pst-stages .ps{display:inline-flex;align-items:center;justify-content:center;flex:1;padding:5px 8px;border:none;border-radius:20px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--ow2);color:rgba(27,19,64,.4);white-space:nowrap;text-align:center;}
+.pst-stages .ps{display:inline-flex;align-items:center;justify-content:center;flex:1;padding:5px 8px;border:none;border-radius:20px;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:600;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);background:var(--ow2);color:rgba(27,19,64,.4);white-space:nowrap;text-align:center;}
 .pst-stages .ps:hover{background:var(--lmg);color:var(--dm);}
 .pst-stages .ps.active{background:var(--mg);color:#fff;}
 .pst-stages .ps.done{background:rgba(12,128,70,.12);color:var(--mgrn);}
@@ -61,7 +80,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .b .bbl .mhd{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#aaa;margin:6px 0 3px;}
 /* Copy button on bot bubbles */
 .b .bbl{position:relative;}
-.bbl-copy{position:absolute;top:6px;right:7px;background:none;border:none;font-size:12px;color:#ccc;cursor:pointer;padding:2px 4px;border-radius:5px;opacity:0;transition:all .15s;line-height:1;font-family:monospace;}
+.bbl-copy{position:absolute;top:6px;right:7px;background:none;border:none;font-size:12px;color:#ccc;cursor:pointer;padding:2px 4px;border-radius:5px;opacity:0;transition:all var(--dur-fast) var(--ease-brand);line-height:1;font-family:monospace;}
 .b .bbl:hover .bbl-copy{opacity:1;}
 .bbl-copy:hover{background:var(--ow2);color:var(--mg);}
 .bbl-copy.copied{opacity:1;color:var(--mgrn);}
@@ -76,7 +95,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .card-tag{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
 .card-title{font-size:13px;font-weight:600;color:var(--blk);}
 .card-desc{font-size:12px;color:#666;line-height:1.6;}
-.card-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:9px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background .2s;color:#fff;background:#D9534F;}
+.card-btn{display:flex;align-items:center;justify-content:center;border:none;border-radius:9px;padding:10px 14px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:background var(--dur-base) var(--ease-brand);color:#fff;background:#D9534F;}
 .card-btn:hover{background:#b33a37;}
 
 /* ── Milestone Card ── */
@@ -101,7 +120,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 /* ── Chips ── */
 .chips{display:flex;gap:6px;padding:8px 14px 10px;overflow-x:auto;scrollbar-width:none;border-top:.5px solid var(--ow2);}
 .chips::-webkit-scrollbar{display:none;}
-.chip{white-space:nowrap;background:#fff;border:.5px solid var(--lmg);border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Inter',sans-serif;color:var(--dm);cursor:pointer;font-weight:500;transition:all .15s;flex-shrink:0;}
+.chip{white-space:nowrap;background:#fff;border:.5px solid var(--lmg);border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Inter',sans-serif;color:var(--dm);cursor:pointer;font-weight:500;transition:all var(--dur-fast) var(--ease-brand);flex-shrink:0;}
 .chip:hover{background:var(--xlmg);border-color:var(--mg);color:var(--mg);}
 .chip-next{background:var(--dp);border-color:var(--dp);color:#fff;font-weight:600;letter-spacing:-.1px;}
 .chip-next:hover{background:var(--mg);border-color:var(--mg);color:#fff;}
@@ -112,11 +131,11 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .ftr{background:#fff;border-top:.5px solid var(--ow2);padding:10px 14px;display:flex;gap:8px;align-items:center;}
 .inp{flex:1;border:.5px solid var(--ow2);border-radius:22px;padding:9px 16px;font-family:'Inter',sans-serif;font-size:13px;color:var(--blk);background:var(--ow);outline:none;resize:none;max-height:72px;line-height:1.5;transition:border-color .15s,background .15s;}
 .inp:focus{border-color:var(--mg);background:#fff;}.inp::placeholder{color:#bbb;}
-.sbtn{width:36px;height:36px;border-radius:50%;background:var(--mg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .1s;}
+.sbtn{width:36px;height:36px;border-radius:50%;background:var(--mg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--dur-base) var(--ease-brand),transform 100ms var(--ease-brand);}
 .sbtn:hover{background:var(--dm);}.sbtn:active{transform:scale(.95);}.sbtn:disabled{background:var(--lmg);cursor:not-allowed;}
 .sbtn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 /* Retry button on error messages */
-.bbl-retry{display:inline-block;margin-top:8px;background:none;border:.5px solid rgba(192,64,64,.3);border-radius:8px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#c04040;cursor:pointer;transition:all .15s;}
+.bbl-retry{display:inline-block;margin-top:8px;background:none;border:.5px solid rgba(192,64,64,.3);border-radius:8px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#c04040;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);}
 .bbl-retry:hover{background:rgba(192,64,64,.08);border-color:#c04040;}
 
 /* ── Welcome Kit overview (screen 1) ── */
@@ -136,7 +155,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .wk-list{display:flex;flex-direction:column;gap:3px;}
 .wk-li{font-size:12px;color:rgba(27,19,64,.6);line-height:1.5;display:flex;align-items:flex-start;gap:6px;}
 .wk-li::before{content:'•';color:var(--mp);font-weight:700;flex-shrink:0;}
-.wk-cta{background:var(--dp);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;margin-top:16px;width:100%;}
+.wk-cta{background:var(--dp);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand),transform 100ms var(--ease-brand);letter-spacing:-.1px;margin-top:16px;width:100%;}
 .wk-cta:hover{background:var(--mg);}.wk-cta:active{transform:scale(.97);}
 /* ── Intro step nav (inside content panel) ── */
 .intro-nav{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:14px;border-top:.5px solid var(--ow2);}
@@ -162,9 +181,12 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .intro-skip-link:hover{color:rgba(27,19,64,.6);}
 /* ── Intro control list (step 1) ── */
 .intro-control-list{display:flex;flex-direction:column;gap:6px;}
-.intro-control-item{display:flex;align-items:flex-start;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:9px 11px;font-size:11.5px;color:rgba(27,19,64,.7);line-height:1.45;}
+.intro-control-item{display:flex;align-items:center;gap:10px;background:#fff;border:.5px solid var(--ow2);border-radius:10px;padding:9px 11px;font-size:11.5px;color:rgba(27,19,64,.7);line-height:1.45;cursor:pointer;transition:border-color 140ms,box-shadow 140ms;}
+.intro-control-item:hover{border-color:var(--mg);box-shadow:0 2px 8px rgba(242,73,107,.10);}
+.intro-control-item:hover .intro-ctrl-ask{opacity:1;}
 .intro-control-item strong{color:var(--dp);}
-.intro-ctrl-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.intro-ctrl-icon{font-size:15px;flex-shrink:0;}
+.intro-ctrl-ask{margin-left:auto;font-size:10px;font-weight:600;color:var(--mg);opacity:0;transition:opacity 140ms;white-space:nowrap;flex-shrink:0;}
 
 /* ── W4C Intro slides (screen 2) ── */
 #w4c-screen{position:relative;background:#EDE8FF;height:490px;overflow:hidden;display:none;}
@@ -237,7 +259,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .w4c-dot.active{background:var(--dp);width:18px;}
 .w4c-pbtn{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:rgba(27,19,64,.35);cursor:pointer;padding:0;transition:color .15s;visibility:hidden;}
 .w4c-pbtn:hover{color:rgba(27,19,64,.7);}
-.w4c-nbtn{background:var(--dp);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s;}
+.w4c-nbtn{background:var(--dp);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand);}
 .w4c-nbtn:hover{background:var(--mg);}
 
 /* ── Path to Success screen ── */
@@ -265,7 +287,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .path-dots{display:flex;gap:5px;}
 .path-dot{height:6px;border-radius:4px;background:rgba(27,19,64,.15);transition:all .25s;width:6px;}
 .path-dot.active{background:var(--dp);width:18px;}
-.path-nbtn{background:var(--dp);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s;}
+.path-nbtn{background:var(--dp);color:#fff;border:none;border-radius:20px;padding:8px 18px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand);}
 .path-nbtn:hover{background:var(--mg);}
 
 /* ── Setup screen ── */
@@ -289,7 +311,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .setup-input::placeholder{color:rgba(255,255,255,.22);}
 .setup-input:focus{border-color:var(--mg);background:rgba(255,255,255,.12);}
 .setup-input[type="date"]{color-scheme:dark;}
-.setup-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;margin-top:2px;}
+.setup-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand),transform 100ms var(--ease-brand);letter-spacing:-.1px;margin-top:2px;}
 .setup-btn:hover{background:var(--dm);}.setup-btn:active{transform:scale(.97);}
 .setup-skip{background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;color:rgba(255,255,255,.25);cursor:pointer;transition:color .15s;text-align:center;padding:2px;}
 .setup-skip:hover{color:rgba(255,255,255,.55);}
@@ -314,14 +336,14 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .eng-legend-dis::before{background:#C5BCEF;}
 .eng-source{font-size:9px;color:#bbb;text-align:center;margin-top:5px;line-height:1.4;}
 .eng-body{font-size:12px;color:rgba(255,255,255,.5);line-height:1.65;text-align:left;align-self:flex-start;}
-.eng-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:-.1px;width:100%;}
+.eng-btn{background:var(--mg);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand),transform 100ms var(--ease-brand);letter-spacing:-.1px;width:100%;}
 .eng-btn:hover{background:var(--dm);}.eng-btn:active{transform:scale(.97);}
 
 /* ── Teaser Builder ── */
 #teaser-screen{background:#f5f2eb;display:none;flex-direction:column;overflow:hidden;}
 /* ── Teaser tabs ── */
 .ts-tabs{display:flex;background:#fff;border-bottom:.5px solid var(--ow2);flex-shrink:0;}
-.ts-tab{flex:1;padding:10px 4px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:#bbb;border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;}
+.ts-tab{flex:1;padding:10px 4px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:#bbb;border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:all var(--dur-fast) var(--ease-brand);}
 .ts-tab.active{color:var(--dp);border-bottom-color:var(--mg);}
 /* ── Build pane (scrollable internally) ── */
 #ts-build-pane{display:flex;flex-direction:column;flex:1;overflow-y:auto;}
@@ -350,7 +372,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .ts-lcard-info{padding:8px 10px 4px;}
 .ts-lcard-name{font-size:11px;font-weight:700;color:var(--dp);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ts-lcard-usage{font-size:9px;color:#bbb;margin-bottom:6px;}
-.ts-lcard-btn{display:block;text-align:center;background:var(--dp);color:#fff;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:7px 8px;margin:0 8px 9px;border-radius:8px;text-decoration:none;transition:background .2s;}
+.ts-lcard-btn{display:block;text-align:center;background:var(--dp);color:#fff;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;padding:7px 8px;margin:0 8px 9px;border-radius:8px;text-decoration:none;transition:background var(--dur-base) var(--ease-brand);}
 .ts-lcard-btn:hover{background:var(--mg);}
 
 /* ── Leadership Announcement Builder ── */
@@ -359,10 +381,10 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .an-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--mg);cursor:pointer;padding:0;display:flex;align-items:center;gap:3px;}
 .an-hdr-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;}
 .an-seg-row{background:#fff;border-bottom:.5px solid var(--ow2);padding:9px 14px;display:flex;gap:6px;flex-shrink:0;}
-.an-seg{flex:1;border:1.5px solid var(--ow2);border-radius:20px;padding:6px 10px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:#aaa;background:none;cursor:pointer;transition:all .15s;text-align:center;}
+.an-seg{flex:1;border:1.5px solid var(--ow2);border-radius:20px;padding:6px 10px;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;color:#aaa;background:none;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);text-align:center;}
 .an-seg.active{background:var(--dp);border-color:var(--dp);color:#fff;}
 .an-len-row{background:#fff;border-bottom:.5px solid var(--ow2);padding:7px 14px;display:flex;gap:5px;flex-shrink:0;}
-.an-len{flex:1;border:1.5px solid var(--ow2);border-radius:20px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#aaa;background:none;cursor:pointer;transition:all .15s;text-align:center;}
+.an-len{flex:1;border:1.5px solid var(--ow2);border-radius:20px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:#aaa;background:none;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);text-align:center;}
 .an-len.active{background:var(--mg);border-color:var(--mg);color:#fff;}
 .an-fields{background:#fff;border-bottom:.5px solid var(--ow2);padding:10px 14px;display:flex;flex-direction:column;gap:7px;flex-shrink:0;}
 .an-frow{display:flex;align-items:center;gap:8px;}
@@ -377,9 +399,9 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .an-subject{font-size:13px;font-weight:700;color:var(--dp);margin-bottom:12px;padding-bottom:12px;border-bottom:.5px solid var(--ow2);line-height:1.4;}
 .an-body{font-size:12.5px;line-height:1.8;color:var(--blk);white-space:pre-wrap;font-family:'Inter',sans-serif;}
 .an-dl-wrap{padding:10px 14px 14px;background:#fff;border-top:.5px solid var(--ow2);flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
-.an-copy-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.an-copy-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand);}
 .an-copy-btn:hover{background:var(--mg);}
-.an-dl-txt{width:100%;background:none;color:#bbb;border:.5px solid var(--ow2);border-radius:12px;padding:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.an-dl-txt{width:100%;background:none;color:#bbb;border:.5px solid var(--ow2);border-radius:12px;padding:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);}
 .an-dl-txt:hover{border-color:var(--mg);color:var(--mg);}
 .chip-announce{background:rgba(27,19,64,.07);border-color:rgba(27,19,64,.2);color:var(--dp);}
 .chip-announce:hover{background:rgba(27,19,64,.13);border-color:var(--dp);}
@@ -389,7 +411,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .ts-hdr-title{font-size:13px;font-weight:700;color:var(--dp);flex:1;text-align:right;}
 .ts-picker{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;background:#fff;border-bottom:.5px solid var(--ow2);}
 .ts-picker::-webkit-scrollbar{display:none;}
-.ts-thumb{width:72px;height:42px;border-radius:8px;flex-shrink:0;cursor:pointer;border:2.5px solid transparent;transition:all .15s;position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;}
+.ts-thumb{width:72px;height:42px;border-radius:8px;flex-shrink:0;cursor:pointer;border:2.5px solid transparent;transition:all var(--dur-fast) var(--ease-brand);position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;}
 .ts-thumb.active{border-color:var(--mg);transform:scale(1.06);}
 .ts-thumb-label{font-size:7px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;}
 .ts-preview-wrap{padding:16px 16px 8px;flex-shrink:0;}
@@ -409,12 +431,12 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .ts-field input{width:100%;border:.5px solid var(--ow2);border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--blk);background:var(--ow);outline:none;transition:border-color .15s;}
 .ts-field input:focus{border-color:var(--mg);background:#fff;}
 .ts-logo-row{display:flex;gap:8px;}
-.ts-logo-btn{background:var(--ow);border:.5px solid var(--ow2);border-radius:8px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--dp);cursor:pointer;transition:all .15s;flex:1;text-align:center;}
+.ts-logo-btn{background:var(--ow);border:.5px solid var(--ow2);border-radius:8px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--dp);cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);flex:1;text-align:center;}
 .ts-logo-btn:hover{background:var(--xlmg);border-color:var(--lmg);}
-.ts-logo-clear{background:none;border:.5px solid var(--ow2);border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:12px;color:#bbb;cursor:pointer;display:none;transition:all .15s;}
+.ts-logo-clear{background:none;border:.5px solid var(--ow2);border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:12px;color:#bbb;cursor:pointer;display:none;transition:all var(--dur-fast) var(--ease-brand);}
 .ts-logo-clear:hover{border-color:#F2496B;color:#F2496B;}
 .ts-dl-wrap{padding:12px 16px 16px;background:#fff;border-top:.5px solid var(--ow2);}
-.ts-dl-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s;}
+.ts-dl-btn{width:100%;background:var(--dp);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background var(--dur-base) var(--ease-brand);}
 .ts-dl-btn:hover{background:var(--mg);}.ts-dl-btn:disabled{background:var(--lmg);cursor:not-allowed;}
 .chip-teaser{background:rgba(168,128,255,.1);border-color:rgba(168,128,255,.3);color:var(--mp);}
 .chip-teaser:hover{background:rgba(168,128,255,.2);border-color:var(--mp);}
@@ -428,7 +450,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 #intro-bar .hint{font-size:10px;color:#ccc;white-space:nowrap;letter-spacing:.01em;}
 .intro-inp{flex:1;border:.5px solid var(--ow2);border-radius:22px;padding:8px 14px;font-family:'Inter',sans-serif;font-size:13px;color:var(--blk);background:var(--ow);outline:none;resize:none;max-height:60px;line-height:1.5;transition:border-color .15s,background .15s;}
 .intro-inp:focus{border-color:var(--mp);background:#fff;}.intro-inp::placeholder{color:#bbb;}
-.intro-sbtn{width:34px;height:34px;border-radius:50%;background:var(--mp);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;}
+.intro-sbtn{width:34px;height:34px;border-radius:50%;background:var(--mp);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--dur-base) var(--ease-brand);}
 .intro-sbtn:hover{background:var(--dp);}
 .intro-sbtn svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
@@ -471,7 +493,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 
 /* Mobile tab bar — sits at the BOTTOM of app-main */
 .mobile-tabs{display:flex;background:#fff;border-top:.5px solid var(--ow2);flex-shrink:0;}
-.mt-tab{flex:1;padding:10px 4px;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#bbb;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;position:relative;}
+.mt-tab{flex:1;padding:10px 4px;border:none;background:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#bbb;cursor:pointer;border-bottom:2.5px solid transparent;transition:all var(--dur-fast) var(--ease-brand);position:relative;}
 .mt-tab.active{color:var(--dp);border-bottom-color:var(--mg);}
 .mt-badge{display:none;position:absolute;top:8px;right:calc(50% - 32px);width:7px;height:7px;border-radius:50%;background:var(--mg);pointer-events:none;}
 .mt-tab.has-unread .mt-badge{display:block;}
@@ -481,15 +503,15 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .app-split{flex:1;display:flex;overflow:hidden;min-height:0;}
 
 /* Panels */
-.content-panel{display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(160deg,rgba(242,73,107,.15) 0%,rgba(168,128,255,.10) 100%);}
+.content-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--ow1);}
 .chat-panel{display:flex;flex-direction:column;overflow:hidden;background:var(--ow);}
 @media(max-width:719px){
   .content-panel,.chat-panel{flex:0 0 100%;max-width:100%;min-height:0;}
   .mp-hidden{display:none!important;}
 }
 @media(min-width:720px){
-  .content-panel{flex:0 0 50%;border-right:.5px solid var(--ow2);}
-  .chat-panel{flex:0 0 50%;}
+  .content-panel{flex:0 0 62%;border-right:.5px solid var(--ow2);}
+  .chat-panel{flex:0 0 38%;}
 }
 
 /* Content panel views */
@@ -504,7 +526,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-tag{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mg);margin-bottom:4px;}
 .cov-title{font-size:17px;font-weight:800;color:var(--dp);letter-spacing:-.4px;line-height:1.2;margin-bottom:2px;}
 .cov-sub{font-size:11px;color:#bbb;font-weight:500;}
-.cov-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ccc;margin:12px 0 6px;display:flex;align-items:center;gap:5px;}
+.cov-section{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#bbb;margin:12px 0 6px;display:flex;align-items:center;gap:5px;}
 .cov-grp-count{font-size:8.5px;font-weight:700;color:#bbb;background:var(--ow2);border-radius:6px;padding:1px 5px;letter-spacing:0;}
 .cov-grp-done{font-size:8.5px;font-weight:700;color:var(--mgrn);background:rgba(12,128,70,.1);border-radius:6px;padding:1px 5px;letter-spacing:0;}
 /* Benefit cards (Stage 1) */
@@ -538,7 +560,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-step.done .cov-step-title{color:#aaa;text-decoration:line-through;}
 .cov-step-sub{font-size:10px;color:#bbb;margin-top:1px;line-height:1.4;}
 .cov-builders{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px;}
-.cov-builder-btn{background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:11px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--dp);cursor:pointer;text-align:center;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.3;}
+.cov-builder-btn{background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:11px 8px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--dp);cursor:pointer;text-align:center;transition:all var(--dur-fast) var(--ease-brand);display:flex;flex-direction:column;align-items:center;gap:4px;line-height:1.3;}
 .cov-builder-btn:hover{background:var(--xlmg);border-color:var(--lmg);}
 .cov-btn-icon{font-size:19px;}
 /* Launch countdown card */
@@ -562,6 +584,29 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-action-tag.warn{color:#c05000;background:rgba(255,100,0,.1);}
 .cov-action-tag.neutral{color:rgba(27,19,64,.45);background:var(--ow2);}
 
+/* Stage 3 hero card — "We handle the comms" */
+.s3-hero{background:linear-gradient(135deg,#1a0c45 0%,var(--dp) 100%);border-radius:13px;padding:14px 16px 16px;margin-bottom:12px;border:.5px solid rgba(168,128,255,.2);}
+.s3-hero-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mp);margin-bottom:7px;}
+.s3-hero-title{font-size:14px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:5px;letter-spacing:-.25px;}
+.s3-hero-sub{font-size:11px;color:rgba(255,255,255,.42);line-height:1.55;}
+.s3-forward{display:flex;align-items:stretch;gap:5px;margin-top:12px;}
+.s3-fwd-step{flex:1;background:rgba(255,255,255,.08);border-radius:9px;padding:7px 6px;text-align:center;}
+.s3-fwd-step span{display:block;font-size:9px;font-weight:500;color:rgba(255,255,255,.38);margin-bottom:3px;line-height:1.2;}
+.s3-fwd-step strong{display:block;font-size:11px;color:#fff;font-weight:700;line-height:1.2;}
+.s3-fwd-arrow{font-size:12px;color:rgba(168,128,255,.55);flex-shrink:0;align-self:center;padding:0 1px;}
+
+/* Stage 3 pillar grid — 4 engagement tiles */
+.s3-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+.s3-tile{background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:12px 11px 10px;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);display:flex;flex-direction:column;gap:4px;min-height:96px;}
+.s3-tile:hover{background:var(--xlmg);border-color:var(--lmg);transform:translateY(-1px);}
+.s3-tile:active{transform:translateY(0);}
+.s3-tile-icon{font-size:21px;line-height:1;margin-bottom:1px;}
+.s3-tile-title{font-size:12px;font-weight:700;color:var(--dp);line-height:1.3;}
+.s3-tile-desc{font-size:10.5px;color:rgba(27,19,64,.48);line-height:1.4;flex:1;}
+.s3-tile-tag{font-size:9px;font-weight:700;color:var(--mg);background:var(--xlmg);padding:2px 7px;border-radius:8px;display:inline-block;margin-top:4px;align-self:flex-start;}
+.s3-tile-tag.grn{color:var(--mgrn);background:rgba(12,128,70,.1);}
+.s3-tile-tag.pur{color:#7C3AED;background:rgba(124,58,237,.08);}
+
 /* Next-step highlight on GP checklist */
 .cov-step.next-up{border-color:rgba(242,73,107,.35);background:linear-gradient(135deg,var(--xlmg),#fff);border-left:3px solid var(--mg);}
 .cov-step.next-up .cov-step-check{border-color:var(--mg);}
@@ -571,7 +616,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 .cov-next-open{font-size:10px;font-weight:700;color:#fff;background:var(--mg);border:none;border-radius:8px;padding:3px 9px;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s;}
 .cov-next-open:hover{background:var(--dm);}
 /* "How?" nudge on pending GP steps */
-.cov-step-how{font-size:9.5px;font-weight:700;color:var(--dp);background:var(--ow2);border:none;border-radius:6px;padding:2px 7px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s;margin-top:4px;display:inline-block;}
+.cov-step-how{font-size:9.5px;font-weight:700;color:var(--dp);background:var(--ow2);border:none;border-radius:6px;padding:2px 7px;font-family:'Inter',sans-serif;cursor:pointer;transition:all var(--dur-fast) var(--ease-brand);margin-top:4px;display:inline-block;}
 .cov-step-how:hover{background:var(--xlmg);color:var(--mg);}
 
 /* GP step icon in content panel */
@@ -598,8 +643,26 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 @keyframes check-pop{0%{transform:scale(1)}40%{transform:scale(1.45)}75%{transform:scale(.92)}100%{transform:scale(1)}}
 .cov-step-check.pop{animation:check-pop .32s cubic-bezier(.4,0,.2,1);}
 
+/* ── Welcome Video Modal ── */
+.wv-modal{position:fixed;inset:0;background:rgba(12,8,28,.93);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);animation:fu .3s ease;}
+.wv-modal.wv-out{animation:wv-fade-out .35s ease forwards;}
+@keyframes wv-fade-out{to{opacity:0;pointer-events:none;}}
+.wv-inner{width:100%;max-width:420px;border-radius:22px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.6);border:.5px solid rgba(168,128,255,.2);display:flex;flex-direction:column;}
+.wv-hdr{background:var(--dp);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.wv-logo{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.3px;display:flex;align-items:center;gap:2px;}
+.wv-logo-dot{width:5px;height:5px;background:var(--mg);border-radius:50%;display:inline-block;margin-left:1px;margin-bottom:1px;}
+.wv-skip{background:none;border:none;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.3);cursor:pointer;padding:4px 10px;border-radius:8px;transition:color .15s;}
+.wv-skip:hover{color:rgba(255,255,255,.7);}
+.wv-video-wrap{position:relative;overflow:hidden;line-height:0;}
+.wv-video{width:100%;height:auto;display:block;object-fit:fill;}
+.wv-play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);cursor:pointer;transition:opacity .2s;}
+.wv-play-overlay.hidden{display:none;}
+.wv-play-btn{width:68px;height:68px;border-radius:50%;background:rgba(242,73,107,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 28px rgba(242,73,107,.55);animation:wv-btn-pulse 2s ease-in-out infinite;}
+.wv-play-btn::after{content:'';border-left:22px solid #fff;border-top:13px solid transparent;border-bottom:13px solid transparent;margin-left:5px;}
+@keyframes wv-btn-pulse{0%,100%{transform:scale(1);box-shadow:0 4px 28px rgba(242,73,107,.55)}50%{transform:scale(1.07);box-shadow:0 6px 36px rgba(242,73,107,.75)}}
+
 /* Stage 1 ask-welli CTA in content panel */
-.cov-cta{background:var(--dp);border:none;border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;width:100%;text-align:center;transition:background .2s;margin-top:6px;}
+.cov-cta{background:var(--dp);border:none;border-radius:12px;padding:12px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;width:100%;text-align:center;transition:background var(--dur-base) var(--ease-brand);margin-top:6px;}
 .cov-cta:hover{background:var(--mg);}
 .cov-cta-secondary{background:none;border:1.5px solid var(--mg);border-radius:12px;padding:10px 16px;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--mg);cursor:pointer;width:100%;text-align:center;transition:background .2s,color .2s;margin-top:6px;}
 .cov-cta-secondary:hover{background:var(--mg);color:#fff;}
@@ -630,6 +693,28 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
 </style>
 </head>
 <body>
+
+<!-- ══ Welcome Video Modal ══════════════════════════════════════════════════ -->
+<div class="wv-modal" id="wv-modal" style="display:none;">
+  <div class="wv-inner">
+    <div class="wv-hdr">
+      <div class="wv-logo">welli<span class="wv-logo-dot"></span></div>
+      <button class="wv-skip" onclick="dismissWelcomeVideo()">Skip →</button>
+    </div>
+    <div class="wv-video-wrap">
+      <video class="wv-video" id="wv-video" playsinline
+             ontimeupdate="wvProgress()"
+             onended="wvEnded()"
+             onplay="document.getElementById('wv-play-overlay').classList.add('hidden')">
+        <!-- src will be set by JS when WELCOME_VIDEO_SRC is defined -->
+      </video>
+      <div class="wv-play-overlay" id="wv-play-overlay" onclick="wvTogglePlay()">
+        <div class="wv-play-btn"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="shell">
   <div class="hdr">
     <div class="av" id="av" onclick="devReset()">W</div>
@@ -711,7 +796,7 @@ html,body{min-height:100%;background:#f0ede4;display:flex;align-items:center;jus
         <div class="vp-icon">📊</div>
         <div>
           <div class="vp-title">Show Results</div>
-          <div class="vp-desc">Monitor membership, subscriptions, and check-ins to prove ROI.</div>
+          <div class="vp-desc">Monitor membership, subscriptions, and visits to prove ROI.</div>
         </div>
       </div>
     </div>
@@ -1080,6 +1165,7 @@ const escH = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
 // ── Intro state ────────────────────────────────────────────────────────────
 // introStep 0–4 = in intro; -1 = intro done (returning user)
 let introStep = localStorage.getItem('welli_seen_welcome') ? -1 : 0;
+let _introReturnStep = -1; // bookmarks which intro step the user was on when they clicked a stage pill — lets Stage 1 pill restore the intro
 let introPathMsgSent = false;
 let introFaqMsgSent  = false;
 
@@ -1113,7 +1199,7 @@ function renderIntroFaqs(hrOrder, empOrder) {
     const order = cat === 'hr' ? hrOrder : empOrder;
     el.innerHTML = order.map(id => {
       const q = byId[id]; if (!q) return '';
-      return `<button class="cov-faq" onclick="trackFaqClick('${q.id}');covAskWelli(${JSON.stringify(q.prompt)})">${q.q}</button>`;
+      return `<button class="cov-faq" onclick="trackFaqClick('${q.id}');covAskWelli(${JSON.stringify(q.prompt).replace(/"/g,'&quot;')})">${q.q}</button>`;
     }).join('');
   });
 }
@@ -1199,13 +1285,13 @@ function renderIntroStep() {
         <a href="https://clients.gympass.com/" target="_blank" rel="noopener" style="font-size:11px;font-weight:600;color:var(--mg);text-decoration:none;">Take me there →</a>
       </div>
       <div class="intro-control-list">
-        <div class="intro-control-item"><span class="intro-ctrl-icon">🏠</span><div><strong>Home</strong> — enrollment snapshot at a glance</div></div>
-        <div class="intro-control-item"><span class="intro-ctrl-icon">👥</span><div><strong>Employees</strong> — upload list, manage eligibility, add or remove</div></div>
-        <div class="intro-control-item"><span class="intro-ctrl-icon">📊</span><div><strong>Dashboard</strong> — subscription & check-in reports</div></div>
-        <div class="intro-control-item"><span class="intro-ctrl-icon">💳</span><div><strong>Billing</strong> — invoices and payment history</div></div>
-        <div class="intro-control-item"><span class="intro-ctrl-icon">📋</span><div><strong>Subscription</strong> — plan details, Wellhub+ and add-on status</div></div>
-        <div class="intro-control-item"><span class="intro-ctrl-icon">⚙️</span><div><strong>Settings</strong> — admin users & Smart Invites</div></div>
-        <div class="intro-control-item"><span class="intro-ctrl-icon">❓</span><div><strong>Help</strong> — guides, FAQs, and support</div></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;What does the Home tab show me in the Wellhub admin portal?&quot;)"><span class="intro-ctrl-icon">🏠</span><div><strong>Home</strong> — enrollment snapshot at a glance</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;How do I manage employees in the Wellhub portal — upload, add, remove, and check eligibility?&quot;)"><span class="intro-ctrl-icon">👥</span><div><strong>Employees</strong> — upload list, manage eligibility, add or remove</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;What reports can I see in the Wellhub Dashboard tab, and how do I use them to track enrollment?&quot;)"><span class="intro-ctrl-icon">📊</span><div><strong>Dashboard</strong> — subscription & visit reports</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;How does billing work in the Wellhub admin portal — where do I find invoices and how am I charged?&quot;)"><span class="intro-ctrl-icon">💳</span><div><strong>Billing</strong> — invoices and payment history</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;What is the Subscription tab in the Wellhub portal — what plan details and Wellhub+ options can I see there?&quot;)"><span class="intro-ctrl-icon">📋</span><div><strong>Subscription</strong> — plan details, Wellhub+ and add-on status</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;What can I configure in the Settings tab — how do I manage admin users and set up Smart Invites?&quot;)"><span class="intro-ctrl-icon">⚙️</span><div><strong>Settings</strong> — admin users & Smart Invites</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
+        <div class="intro-control-item" onclick="covAskWelli(&quot;What support resources are available in the Help section of the Wellhub admin portal?&quot;)"><span class="intro-ctrl-icon">❓</span><div><strong>Help</strong> — guides, FAQs, and support</div><span class="intro-ctrl-ask">Ask Welli →</span></div>
       </div>
       <div class="vid-card" onclick="toggleVidPlayer(this)" style="cursor:pointer;margin-top:8px;padding:10px 12px;border-radius:10px;">
         <div class="vid-play" style="width:32px;height:32px;flex-shrink:0;"></div>
@@ -1290,6 +1376,35 @@ function renderIntroStep() {
         <div style="font-size:12px;color:rgba(27,19,64,.45);line-height:1.5;margin-bottom:10px;">What's your best estimate for your launch date? This helps us build a plan that works for you.</div>
         <input class="intro-setup-input" id="intro-date" type="date" min="${localToday}" value="${escH(savedDate)}" placeholder="Pick a date">
       </div>
+      <!-- Email reminders (shown after date is set, sits above GP list) -->
+      <div id="intro-reminder-section" style="display:${hasDate ? 'block' : 'none'};margin-bottom:14px;">
+        <div id="intro-reminder-form" style="background:#fff;border:.5px solid var(--ow2);border-radius:12px;padding:12px 14px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:15px;">📬</span>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--dp);">Get a reminder for each step</div>
+                <div style="font-size:11px;color:rgba(27,19,64,.45);line-height:1.4;">We'll email you when each Golden Path action is due.</div>
+              </div>
+            </div>
+            <button onclick="document.getElementById('intro-reminder-section').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:14px;color:rgba(27,19,64,.3);line-height:1;padding:0;flex-shrink:0;" title="Dismiss">×</button>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <input id="intro-reminder-email" type="email" placeholder="your@email.com"
+                   style="flex:1;background:var(--ow1);border:.5px solid var(--ow2);border-radius:8px;padding:8px 10px;font-family:Inter,sans-serif;font-size:12px;color:var(--dp);outline:none;"
+                   onfocus="this.style.borderColor='var(--mg)'" onblur="this.style.borderColor='var(--ow2)'"
+                   value="${escH(localStorage.getItem('welli_reminder_email') || '')}">
+            <button onclick="submitReminderEmail()" style="background:var(--dp);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">Set reminders</button>
+          </div>
+        </div>
+        <div id="intro-reminder-confirmed" style="display:none;align-items:center;justify-content:space-between;gap:8px;background:rgba(12,128,70,.08);border:.5px solid rgba(12,128,70,.2);border-radius:12px;padding:10px 14px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:15px;">✅</span>
+            <div style="font-size:12px;color:var(--mgrn);font-weight:600;">Reminders set — we'll email you before each step is due.</div>
+          </div>
+          <button onclick="document.getElementById('intro-reminder-section').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:14px;color:rgba(12,128,70,.4);line-height:1;padding:0;flex-shrink:0;" title="Close">×</button>
+        </div>
+      </div>
       <!-- Golden Path steps (shown after date is set) -->
       <div id="intro-gp-list" style="display:${hasDate ? 'block' : 'none'};">
         <div style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(27,19,64,.35);margin-bottom:8px;">Your 7-step Golden Path</div>
@@ -1345,29 +1460,6 @@ function renderIntroStep() {
             </div>` : ''}
           </div>`;
         }).join('')}
-      </div>
-      <!-- Email reminders (shown after date is set) -->
-      <div id="intro-reminder-section" style="display:${hasDate ? 'block' : 'none'};margin-top:14px;border-top:.5px solid var(--ow2);padding-top:14px;">
-        <div id="intro-reminder-form">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:15px;">📬</span>
-            <div>
-              <div style="font-size:12px;font-weight:700;color:var(--dp);">Get a reminder for each step</div>
-              <div style="font-size:11px;color:rgba(27,19,64,.45);line-height:1.4;">We'll email you when each Golden Path action is due.</div>
-            </div>
-          </div>
-          <div style="display:flex;gap:6px;margin-top:8px;">
-            <input id="intro-reminder-email" type="email" placeholder="your@email.com"
-                   style="flex:1;background:#fff;border:.5px solid var(--ow2);border-radius:8px;padding:8px 10px;font-family:Inter,sans-serif;font-size:12px;color:var(--dp);outline:none;"
-                   onfocus="this.style.borderColor='var(--mg)'" onblur="this.style.borderColor='var(--ow2)'"
-                   value="${escH(localStorage.getItem('welli_reminder_email') || '')}">
-            <button onclick="submitReminderEmail()" style="background:var(--dp);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:Inter,sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">Set reminders</button>
-          </div>
-        </div>
-        <div id="intro-reminder-confirmed" style="display:none;display:flex;align-items:center;gap:8px;background:rgba(12,128,70,.08);border-radius:8px;padding:10px 12px;">
-          <span style="font-size:16px;">✅</span>
-          <div style="font-size:12px;color:var(--mgrn);font-weight:600;">Reminders set — we'll email you before each step is due.</div>
-        </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:.5px solid var(--ow2);">
         <button class="intro-nav-back" onclick="introPrev()">← Back</button>
@@ -1461,6 +1553,7 @@ function introSkipSetup() {
 function completeIntro() {
   localStorage.setItem('welli_seen_welcome', '1');
   introStep = -1;
+  _introReturnStep = -1; // clear the stage-pill bookmark — intro is now fully done
   atualizarFaseUI();
   updateGPProgress();
   renderPanelOverview();
@@ -1487,6 +1580,11 @@ function submitReminderEmail() {
   }).catch(() => {});
   document.getElementById('intro-reminder-form').style.display = 'none';
   document.getElementById('intro-reminder-confirmed').style.display = 'flex';
+  // Auto-dismiss the whole section after 4 seconds
+  setTimeout(() => {
+    const sec = document.getElementById('intro-reminder-section');
+    if (sec) { sec.style.transition = 'opacity .4s'; sec.style.opacity = '0'; setTimeout(() => { sec.style.display = 'none'; }, 400); }
+  }, 4000);
 }
 
 // Toggle the dark builder hint panel under a builder GP card
@@ -1906,7 +2004,7 @@ Stay tuned for more information!
 At {{company}}, we believe that prioritizing your health and wellbeing should always come first. We are thrilled to announce our new partnership with Wellhub! Starting {{date}}, all employees can take advantage of this benefit!
 
 Through our new wellness partnership, you will have access to the following, all with ONE Wellhub membership:
-• A diverse network of gyms and studios near you
+• A diverse range of gyms and studios near you
 • Premium access to a library of wellbeing apps focused on topics like meditation, nutrition, healthy habits, and fitness
 • 1:1 virtual personal training or wellness coach sessions
 • Live and on-demand fitness classes
@@ -1923,7 +2021,7 @@ Stay tuned for more information!
 At {{company}}, we believe that prioritizing your health and wellbeing should always come first. That's why we are thrilled to announce our new partnership with Wellhub — the world's largest corporate wellness platform. Starting {{date}}, all employees can take advantage of this benefit at no additional cost!
 
 Through our new wellness partnership, you will have access to the following, all with ONE Wellhub membership:
-• A diverse network of gyms and studios near you — from major chains to boutique fitness studios, wherever you live or work
+• A diverse range of gyms and studios near you — from major chains to boutique fitness studios, wherever you live or work
 • Premium access to a library of wellbeing apps focused on topics like meditation, nutrition, healthy habits, and fitness — including Headspace, Calm, Noom, and more
 • 1:1 virtual personal training or wellness coach sessions with certified professionals
 • Live and on-demand fitness classes — yoga, HIIT, pilates, cycling, and more
@@ -1960,7 +2058,7 @@ More details coming soon — stay tuned! 💪
 
 Starting *{{date}}*, you'll have access to:
 🏋️ Thousands of gyms & boutique studios
-🧘 Wellness apps — meditation, sleep, nutrition, mental health
+🧘 Wellness apps — meditation, sleep, nutrition, emotional health
 💻 Live & on-demand workout classes
 🤸 Personal coaching sessions
 
@@ -2343,11 +2441,6 @@ function renderPanelOverview() {
         <span class="cov-prog-count">${done}/${total}</span>
       </div>
       ${checklist}
-      <div class="cov-section">Tools</div>
-      <div class="cov-builders">
-        <button class="cov-builder-btn" onclick="showTeaserScreen()"><span class="cov-btn-icon">🎨</span>Teaser Builder</button>
-        <button class="cov-builder-btn" onclick="showAnnounceScreen()"><span class="cov-btn-icon">📢</span>Announcement Builder</button>
-      </div>
       <div class="cov-section">Resources</div>
       <a class="cov-link" href="https://clients.gympass.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">🏢</div>
@@ -2373,110 +2466,141 @@ function renderPanelOverview() {
       ${done < total ? `<button class="cov-cta" onclick="covAskWelli('What is my most important next step to prepare for a successful launch?')">Ask Welli what to prioritize →</button>` : ''}`;
 
   } else {
+    // ── Stage 3: Life After Launch ───────────────────────────────────────────
     const days3 = daysUntilLaunch();
-    let s3Card = '';
+    let s3TimeCard = '';
     if (days3 !== null) {
       const abs3 = Math.abs(days3);
       if (days3 > 0) {
-        // User manually moved to Stage 3 before launch date
-        s3Card = `<div class="cov-launch cov-launch-sm"><div class="cov-launch-icon">🚀</div><div class="cov-launch-num">${abs3}</div><div class="cov-launch-label"><strong>${abs3 === 1 ? 'day to launch' : 'days to launch'}</strong>Your team gets access soon — prepare your first outreach.</div></div>`;
+        s3TimeCard = `<div class="cov-launch cov-launch-sm"><div class="cov-launch-icon">🚀</div><div class="cov-launch-num">${abs3}</div><div class="cov-launch-label"><strong>${abs3 === 1 ? 'day to launch' : 'days to launch'}</strong>Your team gets access soon — prepare your first outreach.</div></div>`;
       } else if (days3 === 0) {
-        s3Card = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🎉</div><div style="flex:1;"><div style="font-size:13px;font-weight:800;color:var(--grn);margin-bottom:2px;">It's Launch Day!</div><div class="cov-launch-label">Share the invitation link now and invite your whole team.</div></div></div>`;
+        s3TimeCard = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🎉</div><div style="flex:1;"><div style="font-size:13px;font-weight:800;color:var(--grn);margin-bottom:2px;">It's Launch Day!</div><div class="cov-launch-label">Share the invitation link now and invite your whole team.</div></div></div>`;
       } else {
         const months = Math.floor(abs3 / 30);
-        // Surface the relevant post-launch checkpoint based on days elapsed
         const checkpointMsg = abs3 >= 5 && abs3 <= 10
-          ? 'D7 First Value — confirm at least one employee has signed in and checked in.'
+          ? '🎯 D7 check — confirm at least one employee has signed in.'
           : abs3 >= 13 && abs3 <= 18
-          ? 'D15 Health Checkpoint — review your enrollment number in the portal now.'
+          ? '📋 D15 check — review your enrollment number in the portal.'
           : abs3 >= 28 && abs3 <= 36
-          ? 'D30 Growth Checkpoint — check your enrollment rate and plan your next action.'
+          ? '📈 D30 check — review enrollment rate and send your monthly pack.'
           : abs3 >= 58 && abs3 <= 66
-          ? 'D60 Growth Checkpoint — plan your next challenge, raffle, or comms push.'
+          ? '🏆 D60 check — run a challenge or raffle to re-spark engagement.'
           : months >= 1
-          ? 'Keep the engagement momentum going.'
+          ? 'Keep the momentum going — share your monthly comms pack.'
           : 'Great start — keep communicating with your team.';
         const lbl3 = months >= 1
           ? `<strong>${months} month${months !== 1 ? 's' : ''} since launch</strong>${checkpointMsg}`
           : `<strong>${abs3} day${abs3 !== 1 ? 's' : ''} since launch</strong>${checkpointMsg}`;
-        s3Card = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🌱</div><div class="cov-launch-num" style="font-size:${months>=10?'18':'26'}px">${months>=1?months+'mo':abs3+'d'}</div><div class="cov-launch-label">${lbl3}</div></div>`;
+        s3TimeCard = `<div class="cov-launch cov-launch-today"><div class="cov-launch-icon">🌱</div><div class="cov-launch-num" style="font-size:${months>=10?'18':'26'}px">${months>=1?months+'mo':abs3+'d'}</div><div class="cov-launch-label">${lbl3}</div></div>`;
       }
     }
+
+    // Time-based primary CTA
+    const s3Cta = (() => {
+      if (days3 !== null && days3 < 0) {
+        const abs3 = Math.abs(days3);
+        if (abs3 >= 5 && abs3 <= 10)  return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D7 First Value window — how do I confirm employees are signing in? What should I look for in the portal?')">→ D7 checkpoint: confirm first value</button>`;
+        if (abs3 >= 13 && abs3 <= 18) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D15 Health Checkpoint — how do I review my enrollment numbers and what should I do if they\\'re lower than expected?')">→ D15 checkpoint: review enrollment</button>`;
+        if (abs3 >= 28 && abs3 <= 36) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D30 Growth Checkpoint — what should I check in the portal and what\\'s the single most effective action to boost enrollment now?')">→ D30 checkpoint: plan your next action</button>`;
+        if (abs3 >= 58 && abs3 <= 66) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D60 Growth Checkpoint — what engagement tactics should I run this month to keep enrollment growing?')">→ D60 checkpoint: plan next initiative</button>`;
+      }
+      return `<button class="cov-cta" onclick="covAskWelli('I\\'m in Stage 3 — what should I focus on this month to improve enrollment and keep employees engaged?')">Ask Welli what to focus on →</button>`;
+    })();
+
     inner.innerHTML = `
       <div class="cov-hdr">
-        <div class="cov-title">${co ? escH(co) + ' · Engagement' : 'Life After Launch'}</div>
-        <div class="cov-sub">Month 1+ · Drive ongoing enrollment</div>
+        <div class="cov-title">${co ? escH(co) + ' · Life After Launch' : 'Life After Launch'}</div>
+        <div class="cov-sub">Month 1+ · Keep the momentum going</div>
       </div>
-      ${s3Card}
-      <div class="cov-section">Monthly Actions</div>
-      <div class="cov-action" onclick="covAskWelli('How do I check my enrollment rate and what should I be aiming for?')">
+      ${s3TimeCard}
+
+      <!-- Hero: "We handle the comms" -->
+      <div class="s3-hero">
+        <div class="s3-hero-label">Wellhub handles it</div>
+        <div class="s3-hero-title">We'll handle the launch comms for you</div>
+        <div class="s3-hero-sub">Every month, Wellhub sends you a ready-made pack — emails, social posts, challenge templates. Your only job is to hit forward.</div>
+        <div class="s3-forward">
+          <div class="s3-fwd-step"><span>Wellhub sends</span><strong>Monthly pack</strong></div>
+          <div class="s3-fwd-arrow">→</div>
+          <div class="s3-fwd-step"><span>You forward to</span><strong>Your team</strong></div>
+          <div class="s3-fwd-arrow">→</div>
+          <div class="s3-fwd-step"><span>Employees stay</span><strong>Engaged</strong></div>
+        </div>
+      </div>
+
+      <!-- 4-tile engagement pillars -->
+      <div class="cov-section">How to sustain engagement</div>
+      <div class="s3-grid">
+        <div class="s3-tile" onclick="covAskWelli('Where do I get the monthly Wellhub communication pack? I want to forward the ready-made emails and social posts to my employees this month.')">
+          <div class="s3-tile-icon">📧</div>
+          <div class="s3-tile-title">Monthly email pack</div>
+          <div class="s3-tile-desc">Wellhub provides it. Just forward to your team — done.</div>
+          <div class="s3-tile-tag">Monthly</div>
+        </div>
+        <div class="s3-tile" onclick="covAskWelli('How do I access and share the Wellbeing Content Library, Wellhub Video content, and how-to videos with my employees?')">
+          <div class="s3-tile-icon">📚</div>
+          <div class="s3-tile-title">Content library</div>
+          <div class="s3-tile-desc">Wellbeing videos, how-tos, and digital content for your team.</div>
+          <div class="s3-tile-tag pur">Always on</div>
+        </div>
+        <div class="s3-tile" onclick="covAskWelli('How do I promote the monthly Wellhub webinar to my employees? Where do I get the calendar link to share?')">
+          <div class="s3-tile-icon">🎙️</div>
+          <div class="s3-tile-title">Monthly webinars</div>
+          <div class="s3-tile-desc">Wellhub runs them — you just share the calendar link.</div>
+          <div class="s3-tile-tag">Monthly</div>
+        </div>
+        <div class="s3-tile" onclick="covAskWelli('How do I launch a Team Wellness Challenge? Walk me through the steps — does it require extra setup or cost?')">
+          <div class="s3-tile-icon">🏆</div>
+          <div class="s3-tile-title">Team challenges</div>
+          <div class="s3-tile-desc">Steps, visits & raffles. No extra subscription needed.</div>
+          <div class="s3-tile-tag grn">High impact</div>
+        </div>
+      </div>
+
+      <!-- Track progress -->
+      <div class="cov-section">Track your numbers</div>
+      <div class="cov-action" onclick="covAskWelli('How do I check my enrollment rate in the Wellhub portal and what should I be aiming for?')">
         <div class="cov-action-icon">📊</div>
-        <div style="flex:1;"><div class="cov-action-title">Check your enrollment rate</div><div class="cov-action-desc">Review signups vs. eligible employees in the Wellhub portal.</div><span class="cov-action-tag">Monthly</span></div>
+        <div style="flex:1;"><div class="cov-action-title">Check your enrollment rate</div><div class="cov-action-desc">Review signups vs. eligible employees — Subscribers Report in the portal.</div><span class="cov-action-tag">Monthly</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
-      <div class="cov-action" onclick="covAskWelli('Where do I find the monthly communication assets and how do I use them?')">
-        <div class="cov-action-icon">📧</div>
-        <div style="flex:1;"><div class="cov-action-title">Share communication assets</div><div class="cov-action-desc">Forward Wellhub's ready-made emails and social posts to boost awareness.</div><span class="cov-action-tag">Monthly</span></div>
-        <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
-      </div>
-      <div class="cov-action" onclick="covAskWelli('How do I re-invite employees who haven\'t signed up yet? Does Smart Invites do this automatically?')">
+      <div class="cov-action" onclick="covAskWelli('How do I re-invite employees who haven\\'t signed up yet? Does Smart Invites handle this automatically?')">
         <div class="cov-action-icon">📩</div>
-        <div style="flex:1;"><div class="cov-action-title">Re-invite non-subscribers</div><div class="cov-action-desc">Smart Invites auto-resends every 60 days — or send manually to specific employees now.</div><span class="cov-action-tag neutral">As needed</span></div>
+        <div style="flex:1;"><div class="cov-action-title">Re-invite non-subscribers</div><div class="cov-action-desc">Smart Invites auto-resends every 60 days — or trigger a manual send now.</div><span class="cov-action-tag neutral">As needed</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
-      <div class="cov-action" onclick="covAskWelli('How do I run a Wellhub Challenge or Raffle to re-engage my team?')">
-        <div class="cov-action-icon">🏆</div>
-        <div style="flex:1;"><div class="cov-action-title">Run a Challenge or Raffle</div><div class="cov-action-desc">Wellhub Challenges drive check-ins and re-engage inactive members.</div><span class="cov-action-tag">Quarterly</span></div>
-        <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
-      </div>
-      <div class="cov-action" onclick="covAskWelli('What reports are available in the Wellhub portal and how do I read them? I want to understand subscriber count, check-ins, and engagement trends.')">
-        <div class="cov-action-icon">📈</div>
-        <div style="flex:1;"><div class="cov-action-title">Review your portal reports</div><div class="cov-action-desc">Engagement Report, Subscribers Report, Check-in Details — all in the portal dashboard.</div><span class="cov-action-tag">Monthly</span></div>
-        <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
-      </div>
-      <div class="cov-section">Troubleshooting</div>
-      <div class="cov-action" onclick="covAskWelli('My enrollment rate is low — what are the most effective actions I can take right now to boost it?')">
+      <div class="cov-action" onclick="covAskWelli('My enrollment rate is lower than I expected — what are the most effective actions I can take right now to boost it?')">
         <div class="cov-action-icon">⚠️</div>
-        <div style="flex:1;"><div class="cov-action-title">Enrollment lower than expected?</div><div class="cov-action-desc">Get a personalized action plan to boost signups and re-engage your team.</div><span class="cov-action-tag warn">If needed</span></div>
+        <div style="flex:1;"><div class="cov-action-title">Enrollment lower than expected?</div><div class="cov-action-desc">Get a personalised action plan to boost signups and re-engage your team.</div><span class="cov-action-tag warn">If needed</span></div>
         <div style="color:var(--mg);font-size:16px;align-self:center;flex-shrink:0;padding-left:6px;">›</div>
       </div>
+
+      <!-- Resources -->
       <div class="cov-section">Resources</div>
       <a class="cov-link" href="https://clients.gympass.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">🏢</div>
-        <div class="cov-link-text"><strong>Wellhub for Companies</strong> — check enrollment numbers and run engagement reports.</div>
+        <div class="cov-link-text"><strong>Wellhub for Companies</strong> — enrollment numbers, Subscribers Report, Engagement Report.</div>
       </a>
       <a class="cov-link" href="https://digital.gympass.com/momentum-program/us/" target="_blank" rel="noopener">
         <div class="cov-link-icon">🚀</div>
-        <div class="cov-link-text"><strong>Momentum Program</strong> — free HR toolkit with engagement templates, challenge guides, monthly webinars, and the HR Insider briefing.</div>
+        <div class="cov-link-text"><strong>Momentum Program</strong> — monthly packs, challenge guides, webinar calendar, HR Insider briefing.</div>
       </a>
       <a class="cov-link" href="https://wellhub.bynder.com" target="_blank" rel="noopener">
         <div class="cov-link-icon">🎨</div>
-        <div class="cov-link-text"><strong>Brand Library (Bynder)</strong> — monthly assets, posters, challenges, email templates.</div>
+        <div class="cov-link-text"><strong>Brand Library (Bynder)</strong> — posters, social posts, email templates, challenge graphics.</div>
       </a>
-      <a class="cov-link" href="https://helpcenter.gympass.com" target="_blank" rel="noopener">
-        <div class="cov-link-icon">📚</div>
-        <div class="cov-link-text"><strong>Help Center</strong> — engagement guides, challenge setup, and portal navigation.</div>
-      </a>
+
+      <!-- FAQ -->
       <div class="cov-section">Common questions</div>
       <div class="cov-faq-grid">
         <button class="cov-faq" onclick="covAskWelli('An employee says they can\\'t check in at a gym — what should they do?')">Can't check in at a gym?</button>
         <button class="cov-faq" onclick="covAskWelli('How do I add a new employee to Wellhub after launch?')">Adding employees after launch?</button>
         <button class="cov-faq" onclick="covAskWelli('An employee left the company — how do I remove them from Wellhub?')">Remove a departed employee?</button>
-        <button class="cov-faq" onclick="covAskWelli('What is a good enrollment rate and how do I benchmark mine?')">What's a good enrollment rate?</button>
-        <button class="cov-faq" onclick="covAskWelli('An employee wants to change their Wellhub plan — can they do that themselves?')">Can employees change their plan?</button>
+        <button class="cov-faq" onclick="covAskWelli('What is a good enrollment rate and how do I benchmark mine against similar companies?')">What's a good enrollment rate?</button>
         <button class="cov-faq" onclick="covAskWelli('How do I re-engage employees who signed up but stopped using Wellhub?')">Re-engage inactive members?</button>
+        <button class="cov-faq" onclick="covAskWelli('An employee wants to change their Wellhub plan — can they do that themselves?')">Can employees change their plan?</button>
       </div>
-      ${(() => {
-        const d3 = daysUntilLaunch();
-        if (d3 !== null && d3 < 0) {
-          const abs3 = Math.abs(d3);
-          if (abs3 >= 5 && abs3 <= 10)  return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D7 First Value window — how do I confirm employees are signing in and checking in? What should I look for in the portal?')">→ D7 checkpoint: confirm first value</button>`;
-          if (abs3 >= 13 && abs3 <= 18) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D15 Health Checkpoint — how do I review my enrollment numbers and what should I do if they\\'re lower than expected?')">→ D15 checkpoint: review enrollment</button>`;
-          if (abs3 >= 28 && abs3 <= 36) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D30 Growth Checkpoint — what should I check in the portal and what\\'s the single most effective action to boost enrollment now?')">→ D30 checkpoint: plan your next action</button>`;
-          if (abs3 >= 58 && abs3 <= 66) return `<button class="cov-cta" onclick="covAskWelli('It\\'s my D60 Growth Checkpoint — what engagement tactics should I run this month to keep enrollment growing?')">→ D60 checkpoint: plan next initiative</button>`;
-        }
-        return `<button class="cov-cta" onclick="covAskWelli('I\\'m in Stage 3 — what should I focus on this month to improve my enrollment and keep employees engaged?')">Ask Welli what to focus on this month →</button>`;
-      })()}`;
+      ${s3Cta}`;
   }
 
   // Always scroll back to top
@@ -2519,9 +2643,11 @@ function toggleCovStep(id) {
 
 // Tap a content panel card → ask Welli that question and switch to Chat
 function covAskWelli(question) {
+  // Send the question to chat. Never force-complete the intro here — the split
+  // view already shows both panels side by side, so the content panel should
+  // stay exactly where it is. The user advances the intro with Next → themselves.
   switchMobileTab('chat');
-  document.getElementById('inp').value = question;
-  send();
+  sendDirect(question, question);
 }
 
 // Set launch date from the inline date picker in the content panel
@@ -2716,7 +2842,7 @@ function buildWelcomeText() {
   // Stage 3: focus on post-launch engagement, not GP checklist
   if (faseAtual === 3) {
     const allDone = done.length === GP_STEPS.length;
-    return `${hi}${ll}\n\nYour Wellhub is live — now it's time to grow enrollment and keep employees engaged.${allDone ? '\n\nYou completed the full Golden Path before launch — great setup.' : ''}\n\nKey resources available to you:\n→ Portal reports (Dashboard & Reports) — track subscription rate and check-ins\n→ Momentum Program — free HR toolkit with monthly assets and webinars\n→ Challenges — average +35% enrollment lift\n\nWhat would you like to focus on first?`;
+    return `${hi}${ll}\n\nYour Wellhub is live — now it's time to grow enrollment and keep employees engaged.${allDone ? '\n\nYou completed the full Golden Path before launch — great setup.' : ''}\n\nKey resources available to you:\n→ Portal reports (Dashboard & Reports) — track subscription rate and visits\n→ Momentum Program — free HR toolkit with monthly assets and webinars\n→ Challenges — average +35% enrollment lift\n\nWhat would you like to focus on first?`;
   }
 
   if (done.length === 0) {
@@ -2751,8 +2877,31 @@ function atualizarFaseUI() {
 }
 
 function mudarFase(f) {
-  if (introStep >= 0) return; // stage pills disabled during intro
-  if (f === faseAtual || busy) return;
+  let exitedIntro = false;
+  if (introStep >= 0) {
+    // If chat is already showing (shell-wide), allow stage switch and exit intro gracefully
+    if (!document.querySelector('.shell-wide')) return;
+    _introReturnStep = introStep; // bookmark so Stage 1 pill can restore the intro
+    introStep = -1;
+    exitedIntro = true;
+    // NOTE: do NOT set welli_seen_welcome here — only completeIntro() should do that
+  }
+  // If user navigates back to Stage 1 before completing the intro, restore where they left off
+  if (f === 1 && _introReturnStep >= 0 && !localStorage.getItem('welli_seen_welcome')) {
+    introStep = _introReturnStep;
+    _introReturnStep = -1;
+    faseAtual = 1;
+    atualizarFaseUI();
+    updateGPProgress();
+    renderPanelOverview();
+    showPanel('overview');
+    return;
+  }
+  if (f === faseAtual || busy) {
+    // We just exited intro but stage didn't change — still need to re-render the panel
+    if (exitedIntro) { atualizarFaseUI(); updateGPProgress(); renderPanelOverview(); showPanel('overview'); }
+    return;
+  }
   faseAtual = f;
   try { localStorage.setItem('welli_stage', f); } catch(e) {}
   hist = [];
@@ -3207,6 +3356,41 @@ function devReset() {
   }
 }
 
+// ── Welcome Video Modal ────────────────────────────────────────────────────
+// Drop your MP4 path here once the video is ready (e.g. '/welcome.mp4')
+const WELCOME_VIDEO_SRC = '/Avatar_Video.mp4';
+
+function initWelcomeVideo() {
+  if (!WELCOME_VIDEO_SRC) return; // no video yet — skip modal entirely
+  const modal = document.getElementById('wv-modal');
+  const video = document.getElementById('wv-video');
+  video.src = WELCOME_VIDEO_SRC;
+  modal.style.display = 'flex';
+  // Always show play overlay first — user clicks to start
+  document.getElementById('wv-play-overlay').classList.remove('hidden');
+  video.play().catch(() => {}); // attempt autoplay silently; overlay stays until user clicks
+}
+
+function dismissWelcomeVideo() {
+  const modal = document.getElementById('wv-modal');
+  modal.classList.add('wv-out');
+  setTimeout(() => { modal.style.display = 'none'; modal.classList.remove('wv-out'); }, 350);
+  const v = document.getElementById('wv-video');
+  v.pause();
+}
+
+function wvTogglePlay() {
+  const v = document.getElementById('wv-video');
+  if (v.paused) { v.play(); document.getElementById('wv-play-overlay').classList.add('hidden'); }
+  else { v.pause(); document.getElementById('wv-play-overlay').classList.remove('hidden'); }
+}
+
+function wvProgress() {} // no progress bar — no-op
+
+function wvEnded() {
+  dismissWelcomeVideo(); // close immediately when video finishes
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────
 // On desktop: strip mp-hidden from content-panel so it's always accessible
 if (window.innerWidth >= 720) {
@@ -3216,6 +3400,7 @@ if (window.innerWidth >= 720) {
 // introStep is already initialised above based on welli_seen_welcome.
 // Always show the split-panel immediately — intro runs inside the content panel.
 showChat();
+initWelcomeVideo();
 </script>
 </body>
 </html>
