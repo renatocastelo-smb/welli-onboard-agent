@@ -4,3 +4,7 @@ node_modules/
 .env*.local
 .vercel/
 .vercel
+
+# Large media — deployed as static assets via `vercel --prod`, kept out of git
+*.mov
+*.mp4
